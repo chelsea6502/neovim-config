@@ -3,11 +3,9 @@ require('plugins')
 vim.o.background = "dark"
 vim.opt.laststatus = 3
 --vim.opt.backspace = { "indent", "eol", "start" }
-vim.opt.tabstop = 8
-vim.opt.shiftwidth = 4
-vim.opt.softtabstop = -1       
-vim.opt.expandtab = true
-vim.opt.smarttab = true
+vim.opt.tabstop = 2
+vim.opt.shiftwidth = 2
+vim.opt.softtabstop = 2   
 vim.opt.number = true   
 vim.opt.colorcolumn = "80"
 vim.opt.cursorline = true
@@ -16,19 +14,20 @@ vim.opt.virtualedit = "onemore"
 vim.opt.equalalways = false
 vim.opt.textwidth = 80
 vim.opt.guicursor = ""
-vim.opt.foldmethod = "expr"
-vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
-vim.opt.foldlevel = 3
+--vim.opt.foldmethod = "expr"
+--vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
+--vim.opt.foldlevel = 3
 vim.opt.relativenumber = true 
+vim.opt.clipboard="unnamedplus"
 
 vim.loader.enable()
 vim.api.nvim_set_keymap('n', '<Tab>', ':bnext<CR>', {noremap = true, silent = true})
 vim.api.nvim_set_keymap('n', '<S-Tab>', ':bprevious<CR>', {noremap = true, silent = true})
 
 -- Custom Commands
-vim.api.nvim_create_user_command('Soc', 'source  ~/.config/nvim/init.lua', {})
-vim.api.nvim_create_user_command('Econf', 'edit ~/.config/nvim/init.lua', {})
-vim.api.nvim_create_user_command('Eplugins', 'edit ~/.config/nvim/lua/plugins.lua', {})
+vim.api.nvim_create_user_command('Sc', 'source  ~/.config/nvim/init.lua', {})
+vim.api.nvim_create_user_command('Ec', 'edit ~/.config/nvim/init.lua', {})
+vim.api.nvim_create_user_command('Ep', 'edit ~/.config/nvim/lua/plugins.lua', {})
 
 local builtin = require('telescope.builtin')
 vim.keymap.set('n', '<leader>ff', builtin.find_files, {})
@@ -40,12 +39,20 @@ vim.g.gruvbox_dark_sidebar = false
 vim.g.gruvbox_flat_style = "dark"
 vim.cmd[[colorscheme gruvbox-flat]]
 
+
+--local clang = require('lint').linters.clangtidy
+
+--clang.args = {
+--	"-std=c89"
+--}
+
 require('lint').linters_by_ft = {
     javascript = {'eslint'},
+    c = {'clangtidy'}
   -- Add other file types here if needed
 }
 
-vim.api.nvim_create_autocmd({ "BufWritePost" }, {
+vim.api.nvim_create_autocmd("BufWritePost", {
     callback = function()
     require("lint").try_lint()
   end,
@@ -113,6 +120,8 @@ require('gitsigns').setup()
 
 require('colorizer').setup()
 
+require('prettiergroup')
+
 -- disable copilot
 vim.b.copilot_enabled = 0
 
@@ -130,13 +139,23 @@ wilder.set_option('renderer', wilder.popupmenu_renderer(
 ))
 vim.diagnostic.config({
   virtual_text = false,
-  virtual_lines = false
+	virtual_lines = { only_current_line = true },
+	severity_sort = true
 })
 
---require("lsp_lines").setup()
+require("lsp_lines").setup()
 
 require('lualine').setup({
     options = { theme = 'gruvbox-flat' },
 })
 
-
+vim.api.nvim_create_autocmd("BufWritePost", {
+    pattern = "*.c",
+    callback = function()
+        local filenameNoExtension = vim.fn.expand('%:t:r')
+        local filename = vim.fn.expand('%')
+        vim.cmd('silent !clang-format -i ' .. filename)
+        vim.cmd('edit!') -- Reload the buffer
+        vim.cmd('silent !clang -g -std=c89 ' .. vim.fn.expand('%') .. ' -o ' .. filenameNoExtension)
+    end,
+})

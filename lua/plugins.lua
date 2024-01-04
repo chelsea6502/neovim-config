@@ -1,4 +1,4 @@
-return require('packer').startup(function(use) 
+return require('packer').startup(function(use)
 use 'wbthomason/packer.nvim'
 use { 'nvim-tree/nvim-tree.lua', requires = { 'nvim-tree/nvim-web-devicons', },}
 use 'mfussenegger/nvim-lint'
@@ -26,18 +26,23 @@ use {
     -- config goes here
   end,
 }
---use({
---  "https://git.sr.ht/~whynothugo/lsp_lines.nvim",
---  config = function()
---    --require("lsp_lines").setup()
---  end,
---})
+use {
+  "https://git.sr.ht/~whynothugo/lsp_lines.nvim",
+  config = function()
+    require("lsp_lines").setup()
+  end,
+}
+
 use 'tpope/vim-fugitive'
 use {
 	"windwp/nvim-autopairs",
     config = function() require("nvim-autopairs").setup {} end
 }
 use { "mxsdev/nvim-dap-vscode-js", requires = {"mfussenegger/nvim-dap"} }
-end)
 
-    
+-- Prettier
+use('neovim/nvim-lspconfig')
+use('jose-elias-alvarez/null-ls.nvim')
+use('MunifTanjim/prettier.nvim')
+
+end)
