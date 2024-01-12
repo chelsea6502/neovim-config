@@ -79,11 +79,6 @@ _G.packer_plugins = {
     path = "/Users/chelseawilkinson/.local/share/nvim/site/pack/packer/start/bufferline.nvim",
     url = "https://github.com/akinsho/bufferline.nvim"
   },
-  ["coc.nvim"] = {
-    loaded = true,
-    path = "/Users/chelseawilkinson/.local/share/nvim/site/pack/packer/start/coc.nvim",
-    url = "https://github.com/neoclide/coc.nvim"
-  },
   ["gitsigns.nvim"] = {
     loaded = true,
     path = "/Users/chelseawilkinson/.local/share/nvim/site/pack/packer/start/gitsigns.nvim",
@@ -108,11 +103,6 @@ _G.packer_plugins = {
     loaded = true,
     path = "/Users/chelseawilkinson/.local/share/nvim/site/pack/packer/start/lualine.nvim",
     url = "https://github.com/nvim-lualine/lualine.nvim"
-  },
-  ["null-ls.nvim"] = {
-    loaded = true,
-    path = "/Users/chelseawilkinson/.local/share/nvim/site/pack/packer/start/null-ls.nvim",
-    url = "https://github.com/jose-elias-alvarez/null-ls.nvim"
   },
   ["nvim-autopairs"] = {
     loaded = true,
@@ -144,11 +134,6 @@ _G.packer_plugins = {
     path = "/Users/chelseawilkinson/.local/share/nvim/site/pack/packer/start/nvim-lint",
     url = "https://github.com/mfussenegger/nvim-lint"
   },
-  ["nvim-lspconfig"] = {
-    loaded = true,
-    path = "/Users/chelseawilkinson/.local/share/nvim/site/pack/packer/start/nvim-lspconfig",
-    url = "https://github.com/neovim/nvim-lspconfig"
-  },
   ["nvim-tree.lua"] = {
     loaded = true,
     path = "/Users/chelseawilkinson/.local/share/nvim/site/pack/packer/start/nvim-tree.lua",
@@ -173,11 +158,6 @@ _G.packer_plugins = {
     loaded = true,
     path = "/Users/chelseawilkinson/.local/share/nvim/site/pack/packer/start/plenary.nvim",
     url = "https://github.com/nvim-lua/plenary.nvim"
-  },
-  ["prettier.nvim"] = {
-    loaded = true,
-    path = "/Users/chelseawilkinson/.local/share/nvim/site/pack/packer/start/prettier.nvim",
-    url = "https://github.com/MunifTanjim/prettier.nvim"
   },
   ["vim-fugitive"] = {
     loaded = true,

@@ -10,8 +10,6 @@ use { 'nvim-treesitter/nvim-treesitter', run = function()
 use 'eddyekofo94/gruvbox-flat.nvim'
 use 'nvim-lualine/lualine.nvim'
 use 'norcalli/nvim-colorizer.lua'
-use { "rcarriga/nvim-dap-ui", requires = {"mfussenegger/nvim-dap"} }
-use {'neoclide/coc.nvim', branch = 'release'}
 use {'lewis6991/gitsigns.nvim', requires = {'nvim-lua/plenary.nvim'}}
 use { 'gelguy/wilder.nvim' }
 use { "https://git.sr.ht/~whynothugo/lsp_lines.nvim" }
@@ -19,11 +17,6 @@ use 'tpope/vim-fugitive'
 use "windwp/nvim-autopairs"
 use { "mxsdev/nvim-dap-vscode-js", requires = {"mfussenegger/nvim-dap"} }
 
--- Prettier
-use('neovim/nvim-lspconfig')
-use('jose-elias-alvarez/null-ls.nvim')
-use('MunifTanjim/prettier.nvim')
-
 end, 
-config = { compile_path = vim.fn.stdpath('config') .. '/packer_compiled.lua'}
+config = { compile_path = vim.fn.stdpath('config') .. '/plugins_compiled.lua'}
 })
