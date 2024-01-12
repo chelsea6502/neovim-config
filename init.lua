@@ -1,5 +1,3 @@
-require('plugins')
-
 vim.cmd[[
 	set background=dark
 	set laststatus=3
@@ -15,85 +13,84 @@ vim.cmd[[
 	set guicursor=
 	set relativenumber
 	set clipboard=unnamedplus
+	set list
+	set lcs=trail:·,tab:\|\ 
+	let g:netrw_winsize = 20
+	let g:netrw_banner = 0
+	let g:netrw_altv=1
+	autocmd VimEnter * :silent! Lexplore
 
 	" Key mappings
 	nnoremap <Tab> :bnext<CR>
 	nnoremap <S-Tab> :bprevious<CR>
-	nnoremap <leader><Tab> :lua CloseBuffer()<CR>
+	nnoremap <Leader>b :set nomore <Bar> :ls <Bar> :set more <CR>:b<Space>
+
+	" Autopairing
+	inoremap " ""<left>
+	inoremap ' ''<left>
+	inoremap ( ()<left>
+	inoremap [ []<left>
+	inoremap { {}<left>
+	inoremap < <><left>
+	inoremap {<CR> {<CR>}<ESC>O
 
 	" Custom Commands
 	command! Sc source ~/.config/nvim/init.lua
 	command! Ec edit ~/.config/nvim/init.lua
 	command! Ep edit ~/.config/nvim/lua/plugins.lua
 
+	" Theme
 	let g:gruvbox_dark_sidebar = 0
 	let g:gruvbox_flat_style = "dark"
 	colorscheme gruvbox-flat
 
-	function! CloseBuffer()
-		let bufnr = bufnr('%')
-		if buflisted(bufnr)
-			bprevious
-			execute 'bdelete ' . bufnr
-		endif
-	endfunction
-
-	" Create an autocommand group and clear it
-	augroup NvimTreeResize
-		autocmd!
-	augroup END
-
-	" Define the autocmd within the group
-	autocmd VimResized * if exists(":NvimTreeResize") | exe "tabdo NvimTreeResize " . float2nr(&columns * 1/4) | endif
-
 	autocmd BufWritePost *.c call s:CompileAndFormatCFile()
-
 	function! s:CompileAndFormatCFile()
-    let l:filenameNoExtension = expand('%:t:r')
-    let l:filename = expand('%')
-    silent !clang-format -i l:filename
-    edit!
-    silent !clang -g -std=c89 l:filename -o l:filenameNoExtension
+		let l:filenameNoExtension = expand('%:t:r')
+		let l:filename = expand('%')
+		silent !clang-format -i l:filename
+		edit!
+		silent !clang -g -std=c89 l:filename -o l:filenameNoExtension
 	endfunction
-
-	let g:loaded_netrw = 1
-	let g:loaded_netrwPlugin = 1
 
 	au BufWritePost * lua require('lint').try_lint()
 
 ]]
 
-require('gitsigns').setup()
-require('colorizer').setup()
-require("nvim-web-devicons").refresh()
-require("lsp_lines").setup()
-require('lualine').setup({ options = { theme = 'gruvbox-flat' } })
-require("nvim-autopairs").setup()
-require("ibl").setup()
-require('wilder').setup({modes = {':', '/', '?'}})
-require("bufferline").setup({ options = { diagnostics = "nvim_lsp", close_command = CloseBuffer }})
-require("nvim-tree").setup()
-require("nvim-tree.api").tree.toggle({ update_cwd = true, update_root = true })
-
--- Error lines/text -- 
-vim.diagnostic.config({
-  virtual_text = false,
-	virtual_lines = { only_current_line = true },
-	severity_sort = true
+-- Move to /pack/ when all set up
+require('packer').startup({function(use)
+	use 'wbthomason/packer.nvim' -- Package manager
+	use 'eddyekofo94/gruvbox-flat.nvim' -- Theme
+	-- Search (fzf.vim)
+  use "mfussenegger/nvim-dap" -- Debugger
+	use "mxsdev/nvim-dap-vscode-js" -- JavaScript debugger
+	-- C/C++ debugger (vscode-cpptools)
+	-- Debugger UI (dap-ui or dap-inline)
+	use 'mfussenegger/nvim-lint' -- Linter
+	-- Prettier (nvim/prettier?)
+	-- Autocomplete (nvim-cmp?)
+	-- Copilot
+	use 'nvim-treesitter/nvim-treesitter' -- Syntax Highlighter
+end, 
+config = { compile_path = vim.fn.stdpath('config') .. '/init_compiled.lua'}
 })
+
+require('nvim-treesitter.install').update({ with_sync = true })
+require('nvim-treesitter.configs').setup({ highlight = { enable = true, additional_vim_regex_highlighting = false } })
 
 -- Linter --
 local linter = require("lint")
 linter.linters.clangtidy.args = { "-std=c89" }
-linter.linters_by_ft = {
-    javascript = {'eslint'},
-    c = {'clangtidy'}
+linter.linters_by_ft = { 
+	javascript = {'eslint'}, 
+	typescript = {'eslint'}, 
+	javascriptreact = {'eslint'}, 
+	typescriptreact = {'eslint'}, 
+	json = {'eslint'},
+	c = {'clangtidy'},
+	cpp = {'clangtidy'},
+	-- html
+	-- css
+	-- lua
 }
 
--- Syntax Highlighting  --
-require("nvim-treesitter.configs").setup {
-    ensure_installed = { "c", "lua", "vim", "vimdoc", "query", "javascript", "css", "html" },
-    sync_install = true,
-    auto_install = true,
-    highlight = { enable = true, additional_vim_regex_highlighting = false },
-}
