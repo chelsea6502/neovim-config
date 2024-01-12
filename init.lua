@@ -1,78 +1,114 @@
 require('plugins')
 
-vim.o.background = "dark"
-vim.opt.laststatus = 3
---vim.opt.backspace = { "indent", "eol", "start" }
-vim.opt.tabstop = 2
-vim.opt.shiftwidth = 2
-vim.opt.softtabstop = 2   
-vim.opt.number = true   
-vim.opt.colorcolumn = "80"
-vim.opt.cursorline = true
-vim.opt.termguicolors = true
-vim.opt.virtualedit = "onemore"
-vim.opt.equalalways = false
-vim.opt.textwidth = 80
-vim.opt.guicursor = ""
---vim.opt.foldmethod = "expr"
---vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
---vim.opt.foldlevel = 3
-vim.opt.relativenumber = true 
-vim.opt.clipboard="unnamedplus"
+vim.cmd[[
+	set background=dark
+	set laststatus=3
+	set tabstop=2
+	set shiftwidth=2
+	set softtabstop=2
+	set number
+	set colorcolumn=80
+	set cursorline
+	set termguicolors
+	set virtualedit=onemore
+	set textwidth=80
+	set guicursor=
+	set relativenumber
+	set clipboard=unnamedplus
 
-vim.loader.enable()
-vim.api.nvim_set_keymap('n', '<Tab>', ':bnext<CR>', {noremap = true, silent = true})
-vim.api.nvim_set_keymap('n', '<S-Tab>', ':bprevious<CR>', {noremap = true, silent = true})
+	" Key mappings
+	nnoremap <Tab> :bnext<CR>
+	nnoremap <S-Tab> :bprevious<CR>
+	nnoremap <leader><Tab> :lua CloseBuffer()<CR>
 
--- Custom Commands
-vim.api.nvim_create_user_command('Sc', 'source  ~/.config/nvim/init.lua', {})
-vim.api.nvim_create_user_command('Ec', 'edit ~/.config/nvim/init.lua', {})
-vim.api.nvim_create_user_command('Ep', 'edit ~/.config/nvim/lua/plugins.lua', {})
+	" Custom Commands
+	command! Sc source ~/.config/nvim/init.lua
+	command! Ec edit ~/.config/nvim/init.lua
+	command! Ep edit ~/.config/nvim/lua/plugins.lua
 
-local builtin = require('telescope.builtin')
-vim.keymap.set('n', '<leader>ff', builtin.find_files, {})
-vim.keymap.set('n', '<leader>fg', builtin.live_grep, {})
-vim.keymap.set('n', '<leader>fb', builtin.buffers, {})
-vim.keymap.set('n', '<leader>fh', builtin.help_tags, {})
+	let g:gruvbox_dark_sidebar = 0
+	let g:gruvbox_flat_style = "dark"
+	colorscheme gruvbox-flat
 
-vim.g.gruvbox_dark_sidebar = false
-vim.g.gruvbox_flat_style = "dark"
-vim.cmd[[colorscheme gruvbox-flat]]
+	function! CloseBuffer()
+		let bufnr = bufnr('%')
+		if buflisted(bufnr)
+			bprevious
+			execute 'bdelete ' . bufnr
+		endif
+	endfunction
 
+	" Create an autocommand group and clear it
+	augroup NvimTreeResize
+		autocmd!
+	augroup END
 
---local clang = require('lint').linters.clangtidy
+	" Define the autocmd within the group
+	autocmd VimResized * if exists(":NvimTreeResize") | exe "tabdo NvimTreeResize " . float2nr(&columns * 1/4) | endif
 
---clang.args = {
---	"-std=c89"
---}
+	autocmd BufWritePost *.c call s:CompileAndFormatCFile()
 
-require('lint').linters_by_ft = {
-    javascript = {'eslint'},
-    c = {'clangtidy'}
-  -- Add other file types here if needed
-}
+	function! s:CompileAndFormatCFile()
+    let l:filenameNoExtension = expand('%:t:r')
+    let l:filename = expand('%')
+    silent !clang-format -i l:filename
+    edit!
+    silent !clang -g -std=c89 l:filename -o l:filenameNoExtension
+	endfunction
 
-vim.api.nvim_create_autocmd("BufWritePost", {
-    callback = function()
-    require("lint").try_lint()
-  end,
+let g:loaded_netrw = 1
+let g:loaded_netrwPlugin = 1
+
+]]
+
+vim.diagnostic.config({
+  virtual_text = false,
+	virtual_lines = { only_current_line = true },
+	severity_sort = true
 })
 
+require('debugger')
+require('prettiergroup')
+require('gitsigns').setup()
+require('colorizer').setup()
+require("nvim-web-devicons").refresh()
+require("lsp_lines").setup()
+require('lualine').setup({ options = { theme = 'gruvbox-flat' } })
+require("nvim-autopairs").setup()
 
-require('coc')
 
-require('file-explorer')
+-- empty setup using defaults
+require("nvim-tree").setup({
+	respect_buf_cwd = true,
+	update_cwd = false,
+	view = { width = "25%", side = "left"},
+	update_focused_file = { enable = true, update_cwd = true, update_root = true },
+	git = { enable = true, ignore = false, timeout = 500 },
+})
 
--- Function to close buffer without disturbing window layout
-function CloseBuffer()
-  local bufnr = vim.fn.bufnr()
-  if vim.fn.buflisted(bufnr) == 1 then
-    vim.cmd('bprevious')  -- Switch to the previous buffer
-    vim.cmd('bdelete ' .. bufnr)  -- Delete the original buffer
+require("nvim-tree.api").tree.toggle({ update_cwd = true, update_root = true })
+
+vim.api.nvim_create_autocmd("BufEnter", {
+  nested = true,
+  callback = function()
+    if #vim.api.nvim_list_wins() == 1 and require("nvim-tree.utils").is_nvim_tree_buf() then
+      vim.cmd "quit"
+    end
   end
-end
+})
 
-vim.api.nvim_set_keymap('n', '<leader><Tab>', ':lua CloseBuffer()<CR>', {noremap = true, silent = true})
+-- Linter --
+local linter = require("lint")
+linter.linters.clangtidy.args = { "-std=c89" }
+linter.linters_by_ft = {
+    javascript = {'eslint'},
+    c = {'clangtidy'}
+}
+vim.api.nvim_create_autocmd("BufWritePost", { 
+	callback = function() linter.try_lint() end,
+})
+
+-- 'Tab' bar --
 require("bufferline").setup({ 
     options = { 
         diagnostics = "nvim_lsp",
@@ -81,7 +117,7 @@ require("bufferline").setup({
         close_command = CloseBuffer,
     }
 })
-require("nvim-web-devicons").refresh()
+
 require("ibl").setup({ 
     scope = {
        enabled = true,
@@ -92,7 +128,8 @@ require("ibl").setup({
        priority = 500,
    }
 })
-require'nvim-treesitter.configs'.setup {
+
+require("nvim-treesitter.configs").setup {
     ensure_installed = { "c", "lua", "vim", "vimdoc", "query", "javascript", "css", "html" },
     sync_install = true,
     auto_install = true,
@@ -102,60 +139,13 @@ require'nvim-treesitter.configs'.setup {
     },
 }
 
-vim.api.nvim_create_autocmd({ "VimResized" }, {
-    group = vim.api.nvim_create_augroup("NvimTreeResize", { clear = true }),
-    callback = function()
-        local percentage = 25
-        local ratio = percentage / 100
-        local width = math.floor(vim.go.columns * ratio)
-        vim.cmd("tabdo NvimTreeResize " .. width)
-        
-    end,
-})
-
-
-require('debugger')
-
-require('gitsigns').setup()
-
-require('colorizer').setup()
-
-require('prettiergroup')
-
--- disable copilot
-vim.b.copilot_enabled = 0
-
-
+-- Command autocomplete --
 local wilder = require('wilder')
 wilder.setup({modes = {':', '/', '?'}})
-
 wilder.set_option('renderer', wilder.popupmenu_renderer(
   wilder.popupmenu_border_theme({
-    highlights = {
-      border = 'Normal',
-    },
+		highlights = { border = 'Normal' },
     border = 'rounded',
   })
 ))
-vim.diagnostic.config({
-  virtual_text = false,
-	virtual_lines = { only_current_line = true },
-	severity_sort = true
-})
 
-require("lsp_lines").setup()
-
-require('lualine').setup({
-    options = { theme = 'gruvbox-flat' },
-})
-
-vim.api.nvim_create_autocmd("BufWritePost", {
-    pattern = "*.c",
-    callback = function()
-        local filenameNoExtension = vim.fn.expand('%:t:r')
-        local filename = vim.fn.expand('%')
-        vim.cmd('silent !clang-format -i ' .. filename)
-        vim.cmd('edit!') -- Reload the buffer
-        vim.cmd('silent !clang -g -std=c89 ' .. vim.fn.expand('%') .. ' -o ' .. filenameNoExtension)
-    end,
-})
