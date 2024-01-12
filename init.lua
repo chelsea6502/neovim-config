@@ -61,16 +61,16 @@ vim.cmd[[
 require('packer').startup({function(use)
 	use 'wbthomason/packer.nvim' -- Package manager
 	use 'eddyekofo94/gruvbox-flat.nvim' -- Theme
+	use 'nvim-treesitter/nvim-treesitter' -- Syntax Highlighter
 	-- Search (fzf.vim)
-  use "mfussenegger/nvim-dap" -- Debugger
-	use "mxsdev/nvim-dap-vscode-js" -- JavaScript debugger
-	-- C/C++ debugger (vscode-cpptools)
-	-- Debugger UI (dap-ui or dap-inline)
+	-- Autocomplete (nvim-cmp?)
 	use 'mfussenegger/nvim-lint' -- Linter
 	-- Prettier (nvim/prettier?)
-	-- Autocomplete (nvim-cmp?)
+	use "mfussenegger/nvim-dap" -- Debugger
+	use "mxsdev/nvim-dap-vscode-js" -- JavaScript debugger
+  -- Debugger UI (dap-ui or dap-inline)
+	-- C/C++ debugger (vscode-cpptools)
 	-- Copilot
-	use 'nvim-treesitter/nvim-treesitter' -- Syntax Highlighter
 end, 
 config = { compile_path = vim.fn.stdpath('config') .. '/init_compiled.lua'}
 })
