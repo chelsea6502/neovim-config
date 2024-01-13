@@ -66,12 +66,21 @@ require("packer").startup({
 		use("windwp/nvim-autopairs") -- Bracket pairing
 		use({ "rcarriga/nvim-dap-ui", requires = { "mfussenegger/nvim-dap" } }) -- Debugger UI
 		use("theHamsta/nvim-dap-virtual-text") -- Debugger inline text
-
-		-- Bufferline (tab bar)
+		use({
+			"akinsho/bufferline.nvim",
+			tag = "*",
+			requires = "nvim-tree/nvim-web-devicons",
+		})
 		-- Copilot
 	end,
 	config = { compile_path = vim.fn.stdpath("config") .. "/init_compiled.lua" },
 })
+
+-- Tab Bar ---
+--
+require("bufferline").setup({})
+
+-- Formatter --
 
 require("conform").setup({
 	formatters_by_ft = {
