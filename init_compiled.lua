@@ -74,6 +74,11 @@ end
 time([[try_loadstring definition]], false)
 time([[Defining packer_plugins]], true)
 _G.packer_plugins = {
+  ["bufferline.nvim"] = {
+    loaded = true,
+    path = "/Users/chelseawilkinson/.local/share/nvim/site/pack/packer/start/bufferline.nvim",
+    url = "https://github.com/akinsho/bufferline.nvim"
+  },
   ["conform.nvim"] = {
     loaded = true,
     path = "/Users/chelseawilkinson/.local/share/nvim/site/pack/packer/start/conform.nvim",
@@ -104,6 +109,11 @@ _G.packer_plugins = {
     path = "/Users/chelseawilkinson/.local/share/nvim/site/pack/packer/start/nvim-dap",
     url = "https://github.com/mfussenegger/nvim-dap"
   },
+  ["nvim-dap-ui"] = {
+    loaded = true,
+    path = "/Users/chelseawilkinson/.local/share/nvim/site/pack/packer/start/nvim-dap-ui",
+    url = "https://github.com/rcarriga/nvim-dap-ui"
+  },
   ["nvim-dap-virtual-text"] = {
     loaded = true,
     path = "/Users/chelseawilkinson/.local/share/nvim/site/pack/packer/start/nvim-dap-virtual-text",
@@ -128,6 +138,11 @@ _G.packer_plugins = {
     loaded = true,
     path = "/Users/chelseawilkinson/.local/share/nvim/site/pack/packer/start/nvim-treesitter",
     url = "https://github.com/nvim-treesitter/nvim-treesitter"
+  },
+  ["nvim-web-devicons"] = {
+    loaded = true,
+    path = "/Users/chelseawilkinson/.local/share/nvim/site/pack/packer/start/nvim-web-devicons",
+    url = "https://github.com/nvim-tree/nvim-web-devicons"
   },
   ["packer.nvim"] = {
     loaded = true,

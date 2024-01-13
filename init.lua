@@ -22,8 +22,8 @@ vim.cmd([[
 	let g:coq_settings = { 'auto_start': v:true }
 	
 	" Key mappings
-	nnoremap <Tab> :bnext<CR>
-	nnoremap <S-Tab> :bprevious<CR>
+	nnoremap <Leader>n :bnext<CR>
+	nnoremap <Leader>p :bprevious<CR>
 	nnoremap <Leader>b :set nomore <Bar> :ls <Bar> :set more <CR>:b<Space>
 
 	" Custom Commands
@@ -66,18 +66,25 @@ require("packer").startup({
 		use("windwp/nvim-autopairs") -- Bracket pairing
 		use({ "rcarriga/nvim-dap-ui", requires = { "mfussenegger/nvim-dap" } }) -- Debugger UI
 		use("theHamsta/nvim-dap-virtual-text") -- Debugger inline text
-		use({
-			"akinsho/bufferline.nvim",
-			tag = "*",
-			requires = "nvim-tree/nvim-web-devicons",
-		})
-		-- Copilot
+		use({ "akinsho/bufferline.nvim", tag = "*", requires = "nvim-tree/nvim-web-devicons" })
+		use("github/copilot.vim") -- AI completion
+		use("gptlang/CopilotChat.nvim") -- AI completion chat
 	end,
 	config = { compile_path = vim.fn.stdpath("config") .. "/init_compiled.lua" },
 })
 
+vim.g.copilot_no_tab_map = true
+vim.api.nvim_set_keymap("i", "<C-J>", 'copilot#Accept("<CR>")', { silent = true, expr = true })
+vim.g.copilot_filetypes = {
+	["*"] = false,
+	["css"] = true,
+	["html"] = true,
+	["lua"] = true,
+	["json"] = true,
+	["asm"] = true,
+}
+
 -- Tab Bar ---
---
 require("bufferline").setup({})
 
 -- Formatter --
