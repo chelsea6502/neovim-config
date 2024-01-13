@@ -67,6 +67,7 @@ require("packer").startup({
 		use({ "microsoft/vscode-js-debug", opt = true })
 		use("windwp/nvim-autopairs") -- Bracket pairing
 		-- Debugger UI (dap-ui or dap-inline)
+		use({ "rcarriga/nvim-dap-ui", requires = { "mfussenegger/nvim-dap" } })
 		use("theHamsta/nvim-dap-virtual-text")
 		-- C/C++ debugger (vscode-cpptools)
 		-- Copilot
@@ -176,6 +177,10 @@ end
 
 require("nvim-dap-virtual-text").setup()
 
+local dapui = require("dapui")
+
+dapui.setup()
+
 -- Keybindings
 vim.api.nvim_set_keymap(
 	"n",
@@ -183,6 +188,7 @@ vim.api.nvim_set_keymap(
 	'<Cmd>lua require"dap".toggle_breakpoint()<CR>',
 	{ noremap = true, silent = true }
 )
+vim.api.nvim_set_keymap("n", "<Leader>du", '<Cmd>lua require"dapui".toggle()<CR>', { noremap = true, silent = false })
 vim.api.nvim_set_keymap("n", "<Leader>dc", '<Cmd>lua require"dap".continue()<CR>', { noremap = true, silent = false })
 vim.api.nvim_set_keymap("n", "<Leader>ds", '<Cmd>lua require"dap".step_over()<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap("n", "<Leader>di", '<Cmd>lua require"dap".step_into()<CR>', { noremap = true, silent = true })
@@ -190,3 +196,16 @@ vim.api.nvim_set_keymap("n", "<Leader>do", '<Cmd>lua require"dap".step_out()<CR>
 vim.api.nvim_set_keymap("n", "<Leader>dd", '<Cmd>lua require"dap".disconnect()<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap("n", "<Leader>dr", '<Cmd>lua require"dap".restart()<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap("n", "<Leader>dt", '<Cmd>lua require"dap".close()<CR>', { noremap = true, silent = true })
+
+dap.listeners.before.attach.dapui_config = function()
+	dapui.open()
+end
+dap.listeners.before.launch.dapui_config = function()
+	dapui.open()
+end
+dap.listeners.before.event_terminated.dapui_config = function()
+	dapui.close()
+end
+dap.listeners.before.event_exited.dapui_config = function()
+	dapui.close()
+end
