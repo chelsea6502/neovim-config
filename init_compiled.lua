@@ -74,15 +74,40 @@ end
 time([[try_loadstring definition]], false)
 time([[Defining packer_plugins]], true)
 _G.packer_plugins = {
-  ["gruvbox-flat.nvim"] = {
+  ["conform.nvim"] = {
     loaded = true,
-    path = "/Users/chelseawilkinson/.local/share/nvim/site/pack/packer/start/gruvbox-flat.nvim",
-    url = "https://github.com/eddyekofo94/gruvbox-flat.nvim"
+    path = "/Users/chelseawilkinson/.local/share/nvim/site/pack/packer/start/conform.nvim",
+    url = "https://github.com/stevearc/conform.nvim"
+  },
+  ["coq.artifacts"] = {
+    loaded = true,
+    path = "/Users/chelseawilkinson/.local/share/nvim/site/pack/packer/start/coq.artifacts",
+    url = "https://github.com/ms-jpq/coq.artifacts"
+  },
+  coq_nvim = {
+    loaded = true,
+    path = "/Users/chelseawilkinson/.local/share/nvim/site/pack/packer/start/coq_nvim",
+    url = "https://github.com/ms-jpq/coq_nvim"
+  },
+  ["gruvbox-material"] = {
+    loaded = true,
+    path = "/Users/chelseawilkinson/.local/share/nvim/site/pack/packer/start/gruvbox-material",
+    url = "https://github.com/sainnhe/gruvbox-material"
+  },
+  ["nvim-autopairs"] = {
+    loaded = true,
+    path = "/Users/chelseawilkinson/.local/share/nvim/site/pack/packer/start/nvim-autopairs",
+    url = "https://github.com/windwp/nvim-autopairs"
   },
   ["nvim-dap"] = {
     loaded = true,
     path = "/Users/chelseawilkinson/.local/share/nvim/site/pack/packer/start/nvim-dap",
     url = "https://github.com/mfussenegger/nvim-dap"
+  },
+  ["nvim-dap-virtual-text"] = {
+    loaded = true,
+    path = "/Users/chelseawilkinson/.local/share/nvim/site/pack/packer/start/nvim-dap-virtual-text",
+    url = "https://github.com/theHamsta/nvim-dap-virtual-text"
   },
   ["nvim-dap-vscode-js"] = {
     loaded = true,
@@ -94,6 +119,11 @@ _G.packer_plugins = {
     path = "/Users/chelseawilkinson/.local/share/nvim/site/pack/packer/start/nvim-lint",
     url = "https://github.com/mfussenegger/nvim-lint"
   },
+  ["nvim-lspconfig"] = {
+    loaded = true,
+    path = "/Users/chelseawilkinson/.local/share/nvim/site/pack/packer/start/nvim-lspconfig",
+    url = "https://github.com/neovim/nvim-lspconfig"
+  },
   ["nvim-treesitter"] = {
     loaded = true,
     path = "/Users/chelseawilkinson/.local/share/nvim/site/pack/packer/start/nvim-treesitter",
@@ -103,10 +133,36 @@ _G.packer_plugins = {
     loaded = true,
     path = "/Users/chelseawilkinson/.local/share/nvim/site/pack/packer/start/packer.nvim",
     url = "https://github.com/wbthomason/packer.nvim"
+  },
+  ["plenary.nvim"] = {
+    loaded = true,
+    path = "/Users/chelseawilkinson/.local/share/nvim/site/pack/packer/start/plenary.nvim",
+    url = "https://github.com/nvim-lua/plenary.nvim"
+  },
+  ["quick-lint-js"] = {
+    loaded = false,
+    needs_bufread = false,
+    path = "/Users/chelseawilkinson/.local/share/nvim/site/pack/packer/opt/quick-lint-js/plugin/vim/quick-lint-js.vim",
+    url = "https://github.com/quick-lint/quick-lint-js"
+  },
+  ["telescope.nvim"] = {
+    loaded = true,
+    path = "/Users/chelseawilkinson/.local/share/nvim/site/pack/packer/start/telescope.nvim",
+    url = "https://github.com/nvim-telescope/telescope.nvim"
+  },
+  ["vscode-js-debug"] = {
+    loaded = false,
+    needs_bufread = false,
+    path = "/Users/chelseawilkinson/.local/share/nvim/site/pack/packer/opt/vscode-js-debug",
+    url = "https://github.com/microsoft/vscode-js-debug"
   }
 }
 
 time([[Defining packer_plugins]], false)
+-- Runtimepath customization
+time([[Runtimepath customization]], true)
+vim.o.runtimepath = vim.o.runtimepath .. ",/Users/chelseawilkinson/.local/share/nvim/site/pack/packer/opt/quick-lint-js/plugin/vim/quick-lint-js.vim"
+time([[Runtimepath customization]], false)
 
 _G._packer.inside_compile = false
 if _G._packer.needs_bufread == true then
