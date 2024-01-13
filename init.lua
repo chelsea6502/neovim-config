@@ -134,7 +134,7 @@ dap.configurations.c = {
 require("dap-vscode-js").setup({
 	node_path = "/opt/homebrew/bin/node",
 	debugger_path = vim.fn.expand("$HOME/.config/nvim/vscode-js-debug/"),
-	adapters = { "pwa-node" },
+	adapters = { "pwa-node", "pwa-chrome" },
 })
 
 for _, language in ipairs({ "typescript", "javascript" }) do
@@ -145,6 +145,7 @@ for _, language in ipairs({ "typescript", "javascript" }) do
 			name = "Launch file",
 			program = "${file}",
 			cwd = "${workspaceFolder}",
+			skipFiles = { "<node_internals>/**", "**/node_modules/**" },
 		},
 		{
 			type = "pwa-node",
@@ -152,6 +153,23 @@ for _, language in ipairs({ "typescript", "javascript" }) do
 			name = "Attach",
 			processId = require("dap.utils").pick_process,
 			cwd = "${workspaceFolder}",
+			skipFiles = { "<node_internals>/**", "**/node_modules/**" },
+		},
+	}
+end
+
+for _, language in ipairs({ "typescriptreact", "javascriptreact" }) do
+	dap.configurations[language] = {
+		{
+			type = "pwa-chrome",
+			request = "launch",
+			name = "Launch file",
+			url = "http://localhost:5173",
+			webRoot = vim.fn.getcwd() .. "/src",
+			protocol = "inspector",
+			sourceMaps = true,
+			userDataDir = false,
+			skipFiles = { "<node_internals>/**", "**/node_modules/**" },
 		},
 	}
 end
