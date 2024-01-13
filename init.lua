@@ -43,10 +43,7 @@ vim.cmd([[
 	nnoremap <leader>fg <cmd>Telescope live_grep<cr>
 	nnoremap <leader>fb <cmd>Telescope buffers<cr>
 	nnoremap <leader>fh <cmd>Telescope help_tags<cr>
-	
 	nnoremap <leader>c <cmd>:!clang -g % -std=c89<cr>
-
-
 ]])
 
 -- Move to /pack/ when all set up
@@ -56,20 +53,21 @@ require("packer").startup({
 		use("sainnhe/gruvbox-material") -- Theme
 		use("nvim-treesitter/nvim-treesitter") -- Syntax Highlighter
 		use({ "nvim-telescope/telescope.nvim", tag = "0.1.5", requires = { { "nvim-lua/plenary.nvim" } } }) -- Search
-		use("neovim/nvim-lspconfig")
+		use("neovim/nvim-lspconfig") -- Needed for everything below
 		use("ms-jpq/coq_nvim") -- Autocomplete
 		use("ms-jpq/coq.artifacts") -- Autocomplete snippets
 		use("mfussenegger/nvim-lint") -- Linter
 		use({ "quick-lint/quick-lint-js", rtp = "plugin/vim/quick-lint-js.vim", tag = "3.1.0", opt = true })
 		use("stevearc/conform.nvim") -- Formatter
+
 		use("mfussenegger/nvim-dap") -- Debugger
 		use("mxsdev/nvim-dap-vscode-js") -- JavaScript debugger
 		use({ "microsoft/vscode-js-debug", opt = true })
 		use("windwp/nvim-autopairs") -- Bracket pairing
-		-- Debugger UI (dap-ui or dap-inline)
-		use({ "rcarriga/nvim-dap-ui", requires = { "mfussenegger/nvim-dap" } })
-		use("theHamsta/nvim-dap-virtual-text")
-		-- C/C++ debugger (vscode-cpptools)
+		use({ "rcarriga/nvim-dap-ui", requires = { "mfussenegger/nvim-dap" } }) -- Debugger UI
+		use("theHamsta/nvim-dap-virtual-text") -- Debugger inline text
+
+		-- Bufferline (tab bar)
 		-- Copilot
 	end,
 	config = { compile_path = vim.fn.stdpath("config") .. "/init_compiled.lua" },
