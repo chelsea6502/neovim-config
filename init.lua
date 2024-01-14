@@ -18,13 +18,17 @@ vim.cmd([[
 	let g:netrw_winsize = 20
 	let g:netrw_banner = 0
 	let g:netrw_altv=1
-	autocmd VimEnter * :silent! Lexplore
 	let g:coq_settings = { 'auto_start': v:true }
-	
+	set fillchars=vert:\
+	set fo+=t
+	set updatetime=500
+
 	" Key mappings
 	nnoremap <Leader>n :bnext<CR>
 	nnoremap <Leader>p :bprevious<CR>
-	nnoremap <Leader>b :set nomore <Bar> :ls <Bar> :set more <CR>:b<Space>
+	nnoremap <Leader>b :set nomore <Bar>
+	nnoremap <Leader>cd :cd %:p:h<CR>:pwd<CR>
+
 
 	" Custom Commands
 	command! Sc source ~/.config/nvim/init.lua
@@ -37,38 +41,44 @@ vim.cmd([[
 	let g:gruvbox_material_better_performance = 1
 	colorscheme gruvbox-material
 
-	au BufWritePost * lua require('lint').try_lint()
+	nnoremap ff <cmd>Telescope find_files<cr>
+	nnoremap fg <cmd>Telescope live_grep<cr>
+	nnoremap fb <cmd>Telescope buffers<cr>
+	nnoremap fh <cmd>Telescope help_tags<cr>
+	nnoremap <leader>cc <cmd>:!clang -g % -std=c89<cr>
+	
+	nnoremap <leader>ch :CopilotChat  <Left>
 
-	nnoremap <leader>ff <cmd>Telescope find_files<cr>
-	nnoremap <leader>fg <cmd>Telescope live_grep<cr>
-	nnoremap <leader>fb <cmd>Telescope buffers<cr>
-	nnoremap <leader>fh <cmd>Telescope help_tags<cr>
-	nnoremap <leader>c <cmd>:!clang -g % -std=c89<cr>
+	let g:mutton_disable_keymaps=1
+	let g:mutton_min_center_width=100
+
+	autocmd CursorHold * lua vim.diagnostic.open_float(nil, { focusable = false })
 ]])
 
 -- Move to /pack/ when all set up
 require("packer").startup({
 	function(use)
-		use("wbthomason/packer.nvim") -- Package manager
-		use("sainnhe/gruvbox-material") -- Theme
-		use("nvim-treesitter/nvim-treesitter") -- Syntax Highlighter
+		use("wbthomason/packer.nvim")                                                                     -- Package manager
+		use("sainnhe/gruvbox-material")                                                                   -- Theme
+		use("nvim-treesitter/nvim-treesitter")                                                            -- Syntax Highlighter
 		use({ "nvim-telescope/telescope.nvim", tag = "0.1.5", requires = { { "nvim-lua/plenary.nvim" } } }) -- Search
-		use("neovim/nvim-lspconfig") -- Needed for everything below
-		use("ms-jpq/coq_nvim") -- Autocomplete
-		use("ms-jpq/coq.artifacts") -- Autocomplete snippets
-		use("mfussenegger/nvim-lint") -- Linter
-		use({ "quick-lint/quick-lint-js", rtp = "plugin/vim/quick-lint-js.vim", tag = "3.1.0", opt = true })
-		use("stevearc/conform.nvim") -- Formatter
+		use("neovim/nvim-lspconfig")                                                                      -- Needed for everything below
+		use("ms-jpq/coq_nvim")                                                                            -- Autocomplete
+		use("ms-jpq/coq.artifacts")                                                                       -- Autocomplete snippets
+		use("mfussenegger/nvim-lint")                                                                     -- Linter
+		use("stevearc/conform.nvim")
 
-		use("mfussenegger/nvim-dap") -- Debugger
-		use("mxsdev/nvim-dap-vscode-js") -- JavaScript debugger
+		use("mfussenegger/nvim-dap")                                          -- Debugger
+		use("mxsdev/nvim-dap-vscode-js")                                      -- JavaScript debugger
 		use({ "microsoft/vscode-js-debug", opt = true })
-		use("windwp/nvim-autopairs") -- Bracket pairing
+		use("windwp/nvim-autopairs")                                          -- Bracket pairing
 		use({ "rcarriga/nvim-dap-ui", requires = { "mfussenegger/nvim-dap" } }) -- Debugger UI
-		use("theHamsta/nvim-dap-virtual-text") -- Debugger inline text
-		use({ "akinsho/bufferline.nvim", tag = "*", requires = "nvim-tree/nvim-web-devicons" })
-		use("github/copilot.vim") -- AI completion
-		use("gptlang/CopilotChat.nvim") -- AI completion chat
+		use("theHamsta/nvim-dap-virtual-text")                                -- Debugger inline text
+		use("github/copilot.vim")                                             -- AI completion
+		use("gptlang/CopilotChat.nvim")                                       -- AI completion chat
+		use({ "shortcuts/no-neck-pain.nvim", tag = "*" })
+		use("ahmedkhalf/project.nvim")
+		use("Maan2003/lsp_lines.nvim")
 	end,
 	config = { compile_path = vim.fn.stdpath("config") .. "/init_compiled.lua" },
 })
@@ -84,9 +94,6 @@ vim.g.copilot_filetypes = {
 	["asm"] = true,
 }
 
--- Tab Bar ---
-require("bufferline").setup({})
-
 -- Formatter --
 
 require("conform").setup({
@@ -96,6 +103,7 @@ require("conform").setup({
 		javascriptreact = { "prettier" },
 		typescript = { "prettier" },
 		typescriptreact = { "prettier" },
+		json = { "prettier" },
 		c = { "clang_format" },
 		cpp = { "clang_format" },
 	},
@@ -103,7 +111,6 @@ require("conform").setup({
 })
 
 require("nvim-autopairs").setup()
-require("lspconfig/quick_lint_js").setup({})
 local lsp = require("lspconfig")
 local coq = require("coq")
 lsp.lua_ls.setup(coq.lsp_ensure_capabilities({})) -- lua
@@ -211,6 +218,13 @@ vim.api.nvim_set_keymap("n", "<Leader>dd", '<Cmd>lua require"dap".disconnect()<C
 vim.api.nvim_set_keymap("n", "<Leader>dr", '<Cmd>lua require"dap".restart()<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap("n", "<Leader>dt", '<Cmd>lua require"dap".close()<CR>', { noremap = true, silent = true })
 
+vim.api.nvim_set_keymap(
+	"n",
+	"<Leader>ff",
+	'<Cmd>lua require("telescope").extensions.projects.projects({})<CR>',
+	{ noremap = true, silent = true }
+)
+
 dap.listeners.before.attach.dapui_config = function()
 	dapui.open()
 end
@@ -223,3 +237,46 @@ end
 dap.listeners.before.event_exited.dapui_config = function()
 	dapui.close()
 end
+
+require("project_nvim").setup({
+	detection_methods = { "pattern" },
+	patterns = { ".git" },
+})
+
+local nnp = require("no-neck-pain")
+nnp.setup({
+	options = {
+		width = 100,
+		minSideBufferWidth = 100,
+		autocmds = { enableOnVimEnter = true },
+	},
+	buffers = {
+		right = { enabled = false },
+		wo = {
+			fillchars = "vert: ,eob: ",
+		},
+	},
+})
+nnp.enable()
+vim.api.nvim_set_keymap("n", "<Leader>np", "<Cmd>NoNeckPain<CR>", { noremap = true, silent = true })
+
+require('telescope').setup({
+	defaults = {
+		file_ignore_patterns = { "node_modules" },
+	},
+})
+
+require("telescope").load_extension("projects")
+
+vim.diagnostic.config({
+	underline = false,
+	signs = true,
+	virtual_text = false, -- Disable virtual text
+	signs = true,        -- Show signs
+	severity_sort = true, -- Show signs
+	float = {
+		focusable = false, -- Window can't gain focus
+		source = 'if_many',
+		border = 'rounded', -- Rounded border
+	},
+})
