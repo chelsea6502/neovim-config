@@ -114,8 +114,10 @@ require("nvim-autopairs").setup()
 local lsp = require("lspconfig")
 local coq = require("coq")
 lsp.lua_ls.setup(coq.lsp_ensure_capabilities({})) -- lua
-lsp.eslint.setup(coq.lsp_ensure_capabilities({})) -- JS
-lsp.clangd.setup(coq.lsp_ensure_capabilities({})) -- C
+lsp.lua_ls.setup(coq.lsp_ensure_capabilities({}))   -- lua
+lsp.eslint.setup(coq.lsp_ensure_capabilities({}))   -- JS
+lsp.clangd.setup(coq.lsp_ensure_capabilities({}))   -- C
+lsp.tsserver.setup(coq.lsp_ensure_capabilities({})) -- TS
 
 require("nvim-treesitter.install").update({ with_sync = true })
 require("nvim-treesitter.configs").setup({ highlight = { enable = true, additional_vim_regex_highlighting = false } })
