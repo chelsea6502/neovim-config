@@ -66,19 +66,18 @@ require("packer").startup({
 		use("ms-jpq/coq_nvim")                                                                            -- Autocomplete
 		use("ms-jpq/coq.artifacts")                                                                       -- Autocomplete snippets
 		use("mfussenegger/nvim-lint")                                                                     -- Linter
-		use("stevearc/conform.nvim")
+		use("stevearc/conform.nvim")                                                                      -- Formatter
 
-		use("mfussenegger/nvim-dap")                                          -- Debugger
-		use("mxsdev/nvim-dap-vscode-js")                                      -- JavaScript debugger
+		use("mfussenegger/nvim-dap")                                                                      -- Debugger
+		use("mxsdev/nvim-dap-vscode-js")                                                                  -- JavaScript debugger
 		use({ "microsoft/vscode-js-debug", opt = true })
-		use("windwp/nvim-autopairs")                                          -- Bracket pairing
-		use({ "rcarriga/nvim-dap-ui", requires = { "mfussenegger/nvim-dap" } }) -- Debugger UI
-		use("theHamsta/nvim-dap-virtual-text")                                -- Debugger inline text
-		use("github/copilot.vim")                                             -- AI completion
-		use("gptlang/CopilotChat.nvim")                                       -- AI completion chat
+		use("windwp/nvim-autopairs")                                                                      -- Bracket pairing
+		use({ "rcarriga/nvim-dap-ui", requires = { "mfussenegger/nvim-dap" } })                           -- Debugger UI
+		use("theHamsta/nvim-dap-virtual-text")                                                            -- Debugger inline text
+		use("github/copilot.vim")                                                                         -- AI completion
+		use("gptlang/CopilotChat.nvim")                                                                   -- AI completion chat
 		use({ "shortcuts/no-neck-pain.nvim", tag = "*" })
-		use("ahmedkhalf/project.nvim")
-		use("Maan2003/lsp_lines.nvim")
+		use("ahmedkhalf/project.nvim")                                                                    -- Jump between github projects
 	end,
 	config = { compile_path = vim.fn.stdpath("config") .. "/init_compiled.lua" },
 })
@@ -106,6 +105,7 @@ require("conform").setup({
 		json = { "prettier" },
 		c = { "clang_format" },
 		cpp = { "clang_format" },
+		css = { "prettier" },
 	},
 	format_on_save = { timeout_ms = 500, lsp_fallback = true },
 })
@@ -113,11 +113,11 @@ require("conform").setup({
 require("nvim-autopairs").setup()
 local lsp = require("lspconfig")
 local coq = require("coq")
-lsp.lua_ls.setup(coq.lsp_ensure_capabilities({})) -- lua
-lsp.lua_ls.setup(coq.lsp_ensure_capabilities({}))   -- lua
-lsp.eslint.setup(coq.lsp_ensure_capabilities({}))   -- JS
-lsp.clangd.setup(coq.lsp_ensure_capabilities({}))   -- C
-lsp.tsserver.setup(coq.lsp_ensure_capabilities({})) -- TS
+lsp.lua_ls.setup(coq.lsp_ensure_capabilities({}))        -- lua
+lsp.eslint.setup(coq.lsp_ensure_capabilities({}))        -- JS
+lsp.clangd.setup(coq.lsp_ensure_capabilities({}))        -- C
+lsp.tsserver.setup(coq.lsp_ensure_capabilities({}))      -- TS
+lsp.stylelint_lsp.setup(coq.lsp_ensure_capabilities({})) -- CSS
 
 require("nvim-treesitter.install").update({ with_sync = true })
 require("nvim-treesitter.configs").setup({ highlight = { enable = true, additional_vim_regex_highlighting = false } })
@@ -133,6 +133,7 @@ linter.linters_by_ft = {
 	json = { "eslint" },
 	c = { "clangtidy" },
 	cpp = { "clangtidy" },
+	css = { "stylelint" },
 }
 
 ------- Debugger ------
@@ -273,12 +274,22 @@ require("telescope").load_extension("projects")
 vim.diagnostic.config({
 	underline = false,
 	signs = true,
-	virtual_text = false, -- Disable virtual text
-	signs = true,        -- Show signs
 	severity_sort = true, -- Show signs
 	float = {
 		focusable = false, -- Window can't gain focus
 		source = 'if_many',
-		border = 'rounded', -- Rounded border
+		border = 'rounded', -- Rou
+		format = function(diagnostic)
+			return string.format(
+				"%s (%s) [%s]: %s:%s",
+				diagnostic.message,
+				diagnostic.source,
+				diagnostic.code or diagnostic.user_data.lsp.code,
+				(diagnostic.lnum or diagnostic.user_data.lsp.lnum) + 1,
+				diagnostic.col or diagnostic.user_date.lsp.col
+			)
+		end,
 	},
 })
+
+vim.lsp.set_log_level("off")
