@@ -1,6 +1,5 @@
 vim.cmd([[
 	set background=dark
-	set laststatus=3
 	set tabstop=2
 	set shiftwidth=2
 	set softtabstop=2
@@ -13,8 +12,6 @@ vim.cmd([[
 	set guicursor=
 	set relativenumber
 	set clipboard=unnamedplus
-	"set list
-	"set lcs=trail:·,tab:\|\ "
 	let g:netrw_winsize = 20
 	let g:netrw_banner = 0
 	let g:netrw_altv=1
@@ -26,6 +23,7 @@ vim.cmd([[
 	set noruler
 	set noshowcmd
 	set laststatus=0
+	set cmdheight=0
 
 	" Key mappings
 	nnoremap <Leader>n :bnext<CR>
@@ -55,7 +53,10 @@ vim.cmd([[
 	let g:mutton_disable_keymaps=1
 	let g:mutton_min_center_width=100
 
-	autocmd CursorHold * lua vim.diagnostic.open_float(nil, { focusable = false })
+	set updatetime=500
+
+	let g:coq_settings = { 'auto_start': 'shut-up' }
+
 ]])
 
 -- Move to /pack/ when all set up
@@ -84,10 +85,12 @@ require("packer").startup({
 		use("luukvbaal/statuscol.nvim")
 		use { 'kevinhwang91/nvim-ufo', requires = 'kevinhwang91/promise-async' }
 		use { 'sainnhe/gruvbox-material' }
+		use({ "folke/noice.nvim", requires = "MunifTanjim/nui.nvim" })
 	end,
-
 	config = { compile_path = vim.fn.stdpath("config") .. "/init_compiled.lua" },
 })
+
+vim.keymap.set('n', 'K', '<cmd>Lspsaga hover_doc')
 
 vim.g.copilot_no_tab_map = true
 vim.api.nvim_set_keymap("i", "<C-J>", 'copilot#Accept("<CR>")', { silent = true, expr = true })
@@ -108,6 +111,7 @@ require("conform").setup({
 		javascript = { "prettier" },
 		javascriptreact = { "prettier" },
 		typescript = { "prettier" },
+
 		typescriptreact = { "prettier" },
 		json = { "prettier" },
 		c = { "clang_format" },
@@ -118,42 +122,13 @@ require("conform").setup({
 })
 
 
--- Weird trick to stop 'no information available' on hovering
-vim.lsp.handlers['textDocument/hover'] = function(_, result, ctx, config)
-	config = config or {}
-	config.focus_id = ctx.method
-	if not (result and result.contents) then
-		return
-	end
-	local markdown_lines = vim.lsp.util.convert_input_to_markdown_lines(result.contents)
-	markdown_lines = vim.lsp.util.trim_empty_lines(markdown_lines)
-	if vim.tbl_isempty(markdown_lines) then
-		return
-	end
-	return vim.lsp.util.open_floating_preview(markdown_lines, 'markdown', config)
-end
-
 require("nvim-autopairs").setup()
 local lsp = require("lspconfig")
 local coq = require("coq")
-lsp.lua_ls.setup(coq.lsp_ensure_capabilities({})) -- lua
-lsp.eslint.setup(coq.lsp_ensure_capabilities({})) -- JS
-lsp.clangd.setup(coq.lsp_ensure_capabilities({})) -- C
-lsp.tsserver.setup(coq.lsp_ensure_capabilities({
-
-	on_attach = function(client)
-		client.server_capabilities.document_formatting = false
-
-		vim.api.nvim_exec([[
-      augroup LspHover
-				 autocmd!
-         autocmd CursorHold <buffer> lua vim.lsp.buf.hover()
-			augroup END
-        ]], false)
-	end,
-
-
-}))                                                      -- TSlsp.tsserver.setup(coq.lsp_ensure_capabilities({}))      -- TS
+lsp.lua_ls.setup(coq.lsp_ensure_capabilities({}))        -- lua
+lsp.eslint.setup(coq.lsp_ensure_capabilities({}))        -- JS
+lsp.clangd.setup(coq.lsp_ensure_capabilities({}))        -- C
+lsp.tsserver.setup(coq.lsp_ensure_capabilities({}))      -- TS
 lsp.stylelint_lsp.setup(coq.lsp_ensure_capabilities({})) -- CSS
 
 require("nvim-treesitter.install").update({ with_sync = true })
@@ -312,21 +287,6 @@ vim.diagnostic.config({
 	underline = false,
 	signs = true,
 	severity_sort = true, -- Show signs
-	float = {
-		focusable = false, -- Window can't gain focus
-		source = 'if_many',
-		border = 'rounded', -- Rou
-		format = function(diagnostic)
-			return string.format(
-				"%s (%s) [%s]: %s:%s",
-				diagnostic.message,
-				diagnostic.source,
-				diagnostic.code or diagnostic.user_data.lsp.code,
-				(diagnostic.lnum or diagnostic.user_data.lsp.lnum) + 1,
-				diagnostic.col or diagnostic.user_date.lsp.col
-			)
-		end,
-	},
 })
 
 vim.lsp.set_log_level("off")
@@ -349,36 +309,27 @@ vim.api.nvim_create_autocmd('LspAttach', {
 local builtin = require("statuscol.builtin")
 require("statuscol").setup({
 	relculright = true,
-	segments = {
-		{
-			sign = { name = { "Diagnostic" }, maxwidth = 2, auto = false },
-			click = "v:lua.ScSa"
-		},
+	segments = { { text = { "%s" },     click = "v:lua.ScSa" },
 		{ text = { builtin.lnumfunc, " " }, click = "v:lua.ScLa", },
-		{
-			sign = { name = { ".*" }, maxwidth = 1, colwidth = 3, auto = true },
-			click = "v:lua.ScSa"
-		},
 		{ text = { builtin.foldfunc, " " }, click = "v:lua.ScFa" },
 	}
 })
 
-local capabilities = vim.lsp.protocol.make_client_capabilities()
-capabilities.textDocument.foldingRange = {
-	dynamicRegistration = false,
-	lineFoldingOnly = true
-}
-local language_servers = require("lspconfig").util.available_servers() -- or list servers manually like {'gopls', 'clangd'}
-for _, ls in ipairs(language_servers) do
-	require('lspconfig')[ls].setup({
-		capabilities = capabilities
-		-- you can add other fields for setting up lsp server in this table
-	})
-end
 require('ufo').setup()
 
 require("ibl").setup({
 	indent = {
 		char = "▏",
 	}
+})
+
+require("noice").setup({
+	presets = { command_palette = true, }, -- position the cmdline and popupmenu together
+	lsp = {
+		-- override markdown rendering so that **cmp** and other plugins use **Treesitter**
+		override = {
+			["vim.lsp.util.convert_input_to_markdown_lines"] = true,
+			["vim.lsp.util.stylize_markdown"] = true,
+		},
+	},
 })
