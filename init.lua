@@ -23,6 +23,10 @@ vim.cmd([[
 	set fo+=t
 	set updatetime=500
 
+	set noruler
+	set noshowcmd
+	set laststatus=0
+
 	" Key mappings
 	nnoremap <Leader>n :bnext<CR>
 	nnoremap <Leader>p :bprevious<CR>
