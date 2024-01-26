@@ -13,8 +13,8 @@ vim.cmd([[
 	set guicursor=
 	set relativenumber
 	set clipboard=unnamedplus
-	set list
-	set lcs=trail:·,tab:\|\ "
+	"set list
+	"set lcs=trail:·,tab:\|\ "
 	let g:netrw_winsize = 20
 	let g:netrw_banner = 0
 	let g:netrw_altv=1
@@ -28,7 +28,6 @@ vim.cmd([[
 	nnoremap <Leader>p :bprevious<CR>
 	nnoremap <Leader>b :set nomore <Bar>
 	nnoremap <Leader>cd :cd %:p:h<CR>:pwd<CR>
-
 
 	" Custom Commands
 	command! Sc source ~/.config/nvim/init.lua
@@ -59,7 +58,6 @@ vim.cmd([[
 require("packer").startup({
 	function(use)
 		use("wbthomason/packer.nvim")                                                                     -- Package manager
-		use("sainnhe/gruvbox-material")                                                                   -- Theme
 		use("nvim-treesitter/nvim-treesitter")                                                            -- Syntax Highlighter
 		use({ "nvim-telescope/telescope.nvim", tag = "0.1.5", requires = { { "nvim-lua/plenary.nvim" } } }) -- Search
 		use("neovim/nvim-lspconfig")                                                                      -- Needed for everything below
@@ -78,7 +76,12 @@ require("packer").startup({
 		use("gptlang/CopilotChat.nvim")                                                                   -- AI completion chat
 		use({ "shortcuts/no-neck-pain.nvim", tag = "*" })
 		use("ahmedkhalf/project.nvim")                                                                    -- Jump between github projects
+		use("lukas-reineke/indent-blankline.nvim")
+		use("luukvbaal/statuscol.nvim")
+		use { 'kevinhwang91/nvim-ufo', requires = 'kevinhwang91/promise-async' }
+		use { 'sainnhe/gruvbox-material' }
 	end,
+
 	config = { compile_path = vim.fn.stdpath("config") .. "/init_compiled.lua" },
 })
 
@@ -110,13 +113,43 @@ require("conform").setup({
 	format_on_save = { timeout_ms = 500, lsp_fallback = true },
 })
 
+
+-- Weird trick to stop 'no information available' on hovering
+vim.lsp.handlers['textDocument/hover'] = function(_, result, ctx, config)
+	config = config or {}
+	config.focus_id = ctx.method
+	if not (result and result.contents) then
+		return
+	end
+	local markdown_lines = vim.lsp.util.convert_input_to_markdown_lines(result.contents)
+	markdown_lines = vim.lsp.util.trim_empty_lines(markdown_lines)
+	if vim.tbl_isempty(markdown_lines) then
+		return
+	end
+	return vim.lsp.util.open_floating_preview(markdown_lines, 'markdown', config)
+end
+
 require("nvim-autopairs").setup()
 local lsp = require("lspconfig")
 local coq = require("coq")
-lsp.lua_ls.setup(coq.lsp_ensure_capabilities({}))        -- lua
-lsp.eslint.setup(coq.lsp_ensure_capabilities({}))        -- JS
-lsp.clangd.setup(coq.lsp_ensure_capabilities({}))        -- C
-lsp.tsserver.setup(coq.lsp_ensure_capabilities({}))      -- TS
+lsp.lua_ls.setup(coq.lsp_ensure_capabilities({})) -- lua
+lsp.eslint.setup(coq.lsp_ensure_capabilities({})) -- JS
+lsp.clangd.setup(coq.lsp_ensure_capabilities({})) -- C
+lsp.tsserver.setup(coq.lsp_ensure_capabilities({
+
+	on_attach = function(client)
+		client.server_capabilities.document_formatting = false
+
+		vim.api.nvim_exec([[
+      augroup LspHover
+				 autocmd!
+         autocmd CursorHold <buffer> lua vim.lsp.buf.hover()
+			augroup END
+        ]], false)
+	end,
+
+
+}))                                                      -- TSlsp.tsserver.setup(coq.lsp_ensure_capabilities({}))      -- TS
 lsp.stylelint_lsp.setup(coq.lsp_ensure_capabilities({})) -- CSS
 
 require("nvim-treesitter.install").update({ with_sync = true })
@@ -293,3 +326,55 @@ vim.diagnostic.config({
 })
 
 vim.lsp.set_log_level("off")
+
+vim.o.foldcolumn = '1' -- '0' is not bad
+vim.o.foldlevel = 99   -- Using ufo provider need a large value, feel free to decrease the value
+vim.o.foldlevelstart = 99
+vim.o.foldenable = true
+vim.o.fillchars = [[eob: ,fold: ,foldopen:,foldsep: ,foldclose:]]
+require("ibl").setup {}
+
+vim.api.nvim_create_autocmd('LspAttach', {
+	group = vim.api.nvim_create_augroup('UserLspConfig', {}),
+	callback = function(ev)
+		local opts = { buffer = ev.buf }
+		vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
+	end,
+})
+
+local builtin = require("statuscol.builtin")
+require("statuscol").setup({
+	relculright = true,
+	segments = {
+		{
+			sign = { name = { "Diagnostic" }, maxwidth = 2, auto = false },
+			click = "v:lua.ScSa"
+		},
+		{ text = { builtin.lnumfunc, " " }, click = "v:lua.ScLa", },
+		{
+			sign = { name = { ".*" }, maxwidth = 1, colwidth = 3, auto = true },
+			click = "v:lua.ScSa"
+		},
+		{ text = { builtin.foldfunc, " " }, click = "v:lua.ScFa" },
+	}
+})
+
+local capabilities = vim.lsp.protocol.make_client_capabilities()
+capabilities.textDocument.foldingRange = {
+	dynamicRegistration = false,
+	lineFoldingOnly = true
+}
+local language_servers = require("lspconfig").util.available_servers() -- or list servers manually like {'gopls', 'clangd'}
+for _, ls in ipairs(language_servers) do
+	require('lspconfig')[ls].setup({
+		capabilities = capabilities
+		-- you can add other fields for setting up lsp server in this table
+	})
+end
+require('ufo').setup()
+
+require("ibl").setup({
+	indent = {
+		char = "▏",
+	}
+})
