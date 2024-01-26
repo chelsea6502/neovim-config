@@ -1,3 +1,5 @@
+local vim = vim;
+
 vim.cmd([[
 	set background=dark
 	set tabstop=2
@@ -12,9 +14,6 @@ vim.cmd([[
 	set guicursor=
 	set relativenumber
 	set clipboard=unnamedplus
-	let g:netrw_winsize = 20
-	let g:netrw_banner = 0
-	let g:netrw_altv=1
 	let g:coq_settings = { 'auto_start': v:true }
 	set fillchars=vert:\
 	set fo+=t
@@ -48,11 +47,6 @@ vim.cmd([[
 	nnoremap fh <cmd>Telescope help_tags<cr>
 	nnoremap <leader>cc <cmd>:!clang -g % -std=c89<cr>
 	
-	nnoremap <leader>ch :CopilotChat  <Left>
-
-	let g:mutton_disable_keymaps=1
-	let g:mutton_min_center_width=100
-
 	set updatetime=500
 
 	let g:coq_settings = { 'auto_start': 'shut-up' }
@@ -125,6 +119,7 @@ require("conform").setup({
 require("nvim-autopairs").setup()
 local lsp = require("lspconfig")
 local coq = require("coq")
+
 lsp.lua_ls.setup(coq.lsp_ensure_capabilities({}))        -- lua
 lsp.eslint.setup(coq.lsp_ensure_capabilities({}))        -- JS
 lsp.clangd.setup(coq.lsp_ensure_capabilities({}))        -- C
@@ -150,10 +145,10 @@ linter.linters_by_ft = {
 
 ------- Debugger ------
 local dap = require("dap")
-vim.lsp.set_log_level("DEBUG") -- Sets the logging level. 'DEBUG' is the most verbose.
+vim.lsp.set_log_level("DEBUG")
 dap.adapters.lldb = {
 	type = "executable",
-	command = "/opt/homebrew/opt/llvm/bin/lldb-vscode", -- adjust as needed
+	command = "/opt/homebrew/opt/llvm/bin/lldb-vscode",
 	name = "lldb",
 }
 dap.configurations.c = {
@@ -326,7 +321,6 @@ require("ibl").setup({
 require("noice").setup({
 	presets = { command_palette = true, }, -- position the cmdline and popupmenu together
 	lsp = {
-		-- override markdown rendering so that **cmp** and other plugins use **Treesitter**
 		override = {
 			["vim.lsp.util.convert_input_to_markdown_lines"] = true,
 			["vim.lsp.util.stylize_markdown"] = true,
