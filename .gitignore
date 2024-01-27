@@ -2,3 +2,4 @@
 vscode-js-debug/
 .gitattributes
 init_compiled.lua
+.gitignore
