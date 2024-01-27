@@ -41,9 +41,10 @@ vim.cmd([[
 	colorscheme gruvbox-material
 
 	nnoremap ff <cmd>Telescope find_files<cr>
-	nnoremap fg <cmd>Telescope live_grep<cr>
+	nnoremap fs <cmd>Telescope live_grep<cr>
 	nnoremap fb <cmd>Telescope buffers<cr>
 	nnoremap fh <cmd>Telescope help_tags<cr>
+	nnoremap fn <cmd>Telescope noice<cr>
 	nnoremap <leader>cc <cmd>:!clang -g % -std=c89<cr>
 	
 	set updatetime=500
