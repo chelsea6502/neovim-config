@@ -63,7 +63,6 @@ require("packer").startup({
 		use("ms-jpq/coq.artifacts")                                                                       -- Autocomplete snippets
 		use("mfussenegger/nvim-lint")                                                                     -- Linter
 		use("stevearc/conform.nvim")                                                                      -- Formatter
-
 		use("mfussenegger/nvim-dap")                                                                      -- Debugger
 		use("mxsdev/nvim-dap-vscode-js")                                                                  -- JavaScript debugger
 		use({ "microsoft/vscode-js-debug", opt = true })
