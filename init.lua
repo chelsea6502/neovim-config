@@ -9,7 +9,6 @@ vim.cmd([[
 	set termguicolors
 	set virtualedit=onemore
 	set textwidth=80
-	set guicursor=
 	set relativenumber
 	set clipboard=unnamedplus
 	let g:coq_settings = { 'auto_start': v:true }
@@ -206,7 +205,6 @@ for _, language in ipairs({ "typescriptreact", "javascriptreact" }) do
 		},
 	}
 end
-
 require("nvim-dap-virtual-text").setup()
 
 local dapui = require("dapui")
@@ -296,7 +294,8 @@ require("ibl").setup {}
 
 vim.api.nvim_create_autocmd('LspAttach', {
 	require('lspsaga').setup({
-		lightbulb = { enable = false, }
+		lightbulb = { enable = false, },
+		symbol_in_winbar = { enable = false, }
 	}),
 	group = vim.api.nvim_create_augroup('UserLspConfig', {}),
 	callback = function(ev)
@@ -338,4 +337,5 @@ vim.api.nvim_set_keymap('n', '<leader>a', '<cmd>Lspsaga hover_doc<CR>', opts)
 vim.api.nvim_set_keymap('n', '<leader>s', '<cmd>Lspsaga peek_definition<CR>', opts)
 vim.api.nvim_set_keymap('n', '<leader>d', '<cmd>Lspsaga show_line_diagnostics<CR>', opts)
 vim.api.nvim_set_keymap('n', '<leader>f', '<cmd>Lspsaga code_action<CR>', opts)
+vim.api.nvim_set_keymap('n', '<leader>r', '<cmd>Lspsaga rename<CR>', opts)
 vim.api.nvim_set_keymap('n', '<leader>r', '<cmd>Lspsaga rename<CR>', opts)
