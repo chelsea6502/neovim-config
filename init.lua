@@ -334,8 +334,8 @@ require("noice").setup({
 
 local opts = { noremap = true, silent = true }
 
-vim.api.nvim_set_keymap('n', '<leader>aa', '<cmd>Lspsaga code_action<CR>', opts)
-vim.api.nvim_set_keymap('n', '<leader>af', '<cmd>Lspsaga hover_doc<CR>', opts)
-vim.api.nvim_set_keymap('n', '<leader>ar', '<cmd>Lspsaga rename<CR>', opts)
-vim.api.nvim_set_keymap('n', '<leader>ad', '<cmd>Lspsaga peek_definition<CR>', opts)
-vim.api.nvim_set_keymap('n', '<leader>al', '<cmd>Lspsaga show_line_diagnostics<CR>', opts)
+vim.api.nvim_set_keymap('n', '<leader>a', '<cmd>Lspsaga hover_doc<CR>', opts)
+vim.api.nvim_set_keymap('n', '<leader>s', '<cmd>Lspsaga peek_definition<CR>', opts)
+vim.api.nvim_set_keymap('n', '<leader>d', '<cmd>Lspsaga show_line_diagnostics<CR>', opts)
+vim.api.nvim_set_keymap('n', '<leader>f', '<cmd>Lspsaga code_action<CR>', opts)
+vim.api.nvim_set_keymap('n', '<leader>r', '<cmd>Lspsaga rename<CR>', opts)
