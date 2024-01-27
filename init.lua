@@ -79,7 +79,7 @@ require("packer").startup({
 		use { 'kevinhwang91/nvim-ufo', requires = 'kevinhwang91/promise-async' }
 		use { 'sainnhe/gruvbox-material' }
 		use({ "folke/noice.nvim", requires = "MunifTanjim/nui.nvim" })
-		use({ 'nvimdev/lspsaga.nvim' })
+		use({ 'nvimdev/lspsaga.nvim', requires = "rcarriga/nvim-notify" })
 	end,
 	config = { compile_path = vim.fn.stdpath("config") .. "/init_compiled.lua" },
 })
@@ -337,5 +337,4 @@ vim.api.nvim_set_keymap('n', '<leader>a', '<cmd>Lspsaga hover_doc<CR>', opts)
 vim.api.nvim_set_keymap('n', '<leader>s', '<cmd>Lspsaga peek_definition<CR>', opts)
 vim.api.nvim_set_keymap('n', '<leader>d', '<cmd>Lspsaga show_line_diagnostics<CR>', opts)
 vim.api.nvim_set_keymap('n', '<leader>f', '<cmd>Lspsaga code_action<CR>', opts)
-vim.api.nvim_set_keymap('n', '<leader>r', '<cmd>Lspsaga rename<CR>', opts)
 vim.api.nvim_set_keymap('n', '<leader>r', '<cmd>Lspsaga rename<CR>', opts)
