@@ -56,30 +56,44 @@ vim.cmd([[
 -- Move to /pack/ when all set up
 require("packer").startup({
 	function(use)
-		use("wbthomason/packer.nvim")                                                                     -- Package manager
-		use("nvim-treesitter/nvim-treesitter")                                                            -- Syntax Highlighter
-		use({ "nvim-telescope/telescope.nvim", tag = "0.1.5", requires = { { "nvim-lua/plenary.nvim" } } }) -- Search
-		use("neovim/nvim-lspconfig")                                                                      -- Needed for everything below
-		use("ms-jpq/coq_nvim")                                                                            -- Autocomplete
-		use("ms-jpq/coq.artifacts")                                                                       -- Autocomplete snippets
-		use("mfussenegger/nvim-lint")                                                                     -- Linter
-		use("stevearc/conform.nvim")                                                                      -- Formatter
-		use("mfussenegger/nvim-dap")                                                                      -- Debugger
-		use("mxsdev/nvim-dap-vscode-js")                                                                  -- JavaScript debugger
+		use("wbthomason/packer.nvim")        -- Package manager
+		use("nvim-treesitter/nvim-treesitter") -- Syntax Highlighter
+		use({
+			"nvim-telescope/telescope.nvim",
+			tag = "0.1.5",
+			requires = { { "nvim-lua/plenary.nvim" } }
+		})                             -- Search
+		use("neovim/nvim-lspconfig")   -- Needed for everything below
+		use("ms-jpq/coq_nvim")         -- Autocomplete
+		use("ms-jpq/coq.artifacts")    -- Autocomplete snippets
+		use("mfussenegger/nvim-lint")  -- Linter
+		use("stevearc/conform.nvim")   -- Formatter
+		use("mfussenegger/nvim-dap")   -- Debugger
+		use("mxsdev/nvim-dap-vscode-js") -- JavaScript debugger
 		use({ "microsoft/vscode-js-debug", opt = true })
-		use("windwp/nvim-autopairs")                                                                      -- Bracket pairing
-		use({ "rcarriga/nvim-dap-ui", requires = { "mfussenegger/nvim-dap" } })                           -- Debugger UI
-		use("theHamsta/nvim-dap-virtual-text")                                                            -- Debugger inline text
-		use("github/copilot.vim")                                                                         -- AI completion
-		use("gptlang/CopilotChat.nvim")                                                                   -- AI completion chat
+		use("windwp/nvim-autopairs")   -- Bracket pairing
+		use({
+			"rcarriga/nvim-dap-ui",
+			requires = { "mfussenegger/nvim-dap" }
+		})                                   -- Debugger UI
+		use("theHamsta/nvim-dap-virtual-text") -- Debugger inline text
+		use("github/copilot.vim")            -- AI completion
+		use("gptlang/CopilotChat.nvim")      -- AI completion chat
 		use({ "shortcuts/no-neck-pain.nvim", tag = "*" })
-		use("ahmedkhalf/project.nvim")                                                                    -- Jump between github projects
+		use("ahmedkhalf/project.nvim")       -- Jump between github projects
 		use("lukas-reineke/indent-blankline.nvim")
 		use("luukvbaal/statuscol.nvim")
-		use { 'kevinhwang91/nvim-ufo', requires = 'kevinhwang91/promise-async' }
+		use { 'kevinhwang91/nvim-ufo',
+			requires = 'kevinhwang91/promise-async' }
 		use { 'sainnhe/gruvbox-material' }
-		use({ "folke/noice.nvim", requires = "MunifTanjim/nui.nvim" })
-		use({ 'nvimdev/lspsaga.nvim', requires = "rcarriga/nvim-notify" })
+		use({
+			"folke/noice.nvim",
+			requires = "MunifTanjim/nui.nvim"
+		})
+		use({
+			'nvimdev/lspsaga.nvim',
+			requires = "rcarriga/nvim-notify"
+		})
 	end,
 	config = { compile_path = vim.fn.stdpath("config") .. "/init_compiled.lua" },
 })
