@@ -1,5 +1,3 @@
-local vim = vim;
-
 vim.cmd([[
 	set background=dark
 	set tabstop=2
@@ -18,6 +16,8 @@ vim.cmd([[
 	set fillchars=vert:\
 	set fo+=t
 	set updatetime=500
+
+	let g:mapleader = " "
 
 	set noruler
 	set noshowcmd
@@ -80,6 +80,7 @@ require("packer").startup({
 		use { 'kevinhwang91/nvim-ufo', requires = 'kevinhwang91/promise-async' }
 		use { 'sainnhe/gruvbox-material' }
 		use({ "folke/noice.nvim", requires = "MunifTanjim/nui.nvim" })
+		use({ 'nvimdev/lspsaga.nvim' })
 	end,
 	config = { compile_path = vim.fn.stdpath("config") .. "/init_compiled.lua" },
 })
@@ -294,6 +295,9 @@ vim.o.fillchars = [[eob: ,fold: ,foldopen:,foldsep: ,foldclose:]]
 require("ibl").setup {}
 
 vim.api.nvim_create_autocmd('LspAttach', {
+	require('lspsaga').setup({
+		lightbulb = { enable = false, }
+	}),
 	group = vim.api.nvim_create_augroup('UserLspConfig', {}),
 	callback = function(ev)
 		local opts = { buffer = ev.buf }
@@ -327,3 +331,11 @@ require("noice").setup({
 		},
 	},
 })
+
+local opts = { noremap = true, silent = true }
+
+vim.api.nvim_set_keymap('n', '<leader>aa', '<cmd>Lspsaga code_action<CR>', opts)
+vim.api.nvim_set_keymap('n', '<leader>af', '<cmd>Lspsaga hover_doc<CR>', opts)
+vim.api.nvim_set_keymap('n', '<leader>ar', '<cmd>Lspsaga rename<CR>', opts)
+vim.api.nvim_set_keymap('n', '<leader>ad', '<cmd>Lspsaga peek_definition<CR>', opts)
+vim.api.nvim_set_keymap('n', '<leader>al', '<cmd>Lspsaga show_line_diagnostics<CR>', opts)
