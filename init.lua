@@ -26,6 +26,9 @@ vim.cmd([[
 	set updatetime=50
 	set incsearch
 
+	set ignorecase
+	set smartcase
+
 	set backupdir=~/.cache/vim
 
 	" Folding Configuration
