@@ -1,5 +1,6 @@
 local vim = vim
 
+
 -- General nvim settings
 vim.cmd([[
 	let g:mapleader = " "
@@ -46,6 +47,10 @@ vim.cmd([[
 	endif
 	set undodir=/tmp/.vim-undo-dir
 	set undofile
+
+	" persistent folding and cursor placement
+	autocmd BufWinLeave *.* mkview
+	autocmd BufWinEnter *.* silent! loadview
 
 	" Command shortcuts
 	command! Ec edit ~/.config/nvim/init.lua
