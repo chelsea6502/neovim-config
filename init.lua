@@ -62,6 +62,7 @@ require("lazy").setup({
 		"LazyVim/LazyVim",
 		opts = {
 			colorscheme = "gruvbox-material",
+			defaults = { version = "*" },
 		},
 		priority = 1000,
 	},
@@ -298,7 +299,6 @@ require("lazy").setup({
 	-- Other utilities
 	{
 		"shortcuts/no-neck-pain.nvim",
-		version = "*",
 		config = function()
 			local nnp = require("no-neck-pain")
 			nnp.setup({
