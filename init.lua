@@ -32,6 +32,7 @@ vim.cmd([[
 	set backupdir=~/.cache/vim
 
 	" Folding Configuration
+	set foldmethod=indent
 	set foldcolumn=1
 	set foldlevel=99
 	set foldlevelstart=99
