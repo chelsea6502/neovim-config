@@ -59,6 +59,58 @@ endif
 set undodir=/tmp/.vim-undo-dir
 set undofile
 
+" Key Mapping for Lspsaga hover_doc
+nnoremap K :Lspsaga hover_doc<CR>
+
+" Copilot Configuration
+let g:copilot_no_tab_map = 1
+inoremap <C-J> <cmd>copilot#Accept("<CR>")<CR>
+
+" Copilot Filetypes Configuration
+let g:copilot_filetypes = {}
+let g:copilot_filetypes['*'] = v:false
+let g:copilot_filetypes['css'] = v:true
+let g:copilot_filetypes['html'] = v:true
+let g:copilot_filetypes['lua'] = v:true
+let g:copilot_filetypes['json'] = v:true
+let g:copilot_filetypes['asm'] = v:true
+
+" Keybindings for DAP (Debug Adapter Protocol)
+nnoremap <Leader>db :lua require'dap'.toggle_breakpoint()<CR>
+nnoremap <Leader>du :lua require'dapui'.toggle()<CR>
+nnoremap <Leader>dc :lua require'dap'.continue()<CR>
+nnoremap <Leader>ds :lua require'dap'.step_over()<CR>
+nnoremap <Leader>di :lua require'dap'.step_into()<CR>
+nnoremap <Leader>do :lua require'dap'.step_out()<CR>
+nnoremap <Leader>dd :lua require'dap'.disconnect()<CR>
+nnoremap <Leader>dr :lua require'dap'.restart()<CR>
+nnoremap <Leader>dt :lua require'dap'.close()<CR>
+
+" Keybinding for Telescope projects
+nnoremap <Leader>ff :lua require("telescope").extensions.projects.projects({})<CR>
+
+" Keybinding for No Neck Pain
+nnoremap <Leader>np :NoNeckPain<CR>
+
+" Diagnostic Configuration
+let g:diagnostic_underline = 0
+let g:diagnostic_signs = 1
+let g:diagnostic_severity_sort = 1
+
+" Folding Configuration
+set foldcolumn=1
+set foldlevel=99
+set foldlevelstart=99
+set foldenable
+set fillchars=eob:\ ,fold:\ ,foldopen:,foldsep:\ ,foldclose:
+
+" LSP Saga Keybindings
+nnoremap <leader>a :Lspsaga hover_doc<CR>
+nnoremap <leader>s :Lspsaga peek_definition<CR>
+nnoremap <leader>d :Lspsaga show_line_diagnostics<CR>
+nnoremap <leader>f :Lspsaga code_action<CR>
+nnoremap <leader>r :Lspsaga rename<CR>
+
 ]])
 
 -- Move to /pack/ when all set up
@@ -115,19 +167,6 @@ require("packer").startup({
 	end,
 	config = { compile_path = vim.fn.stdpath("config") .. "/init_compiled.lua" },
 })
-
-vim.keymap.set('n', 'K', '<cmd>Lspsaga hover_doc')
-
-vim.g.copilot_no_tab_map = true
-vim.api.nvim_set_keymap("i", "<C-J>", 'copilot#Accept("<CR>")', { silent = true, expr = true })
-vim.g.copilot_filetypes = {
-	["*"] = false,
-	["css"] = true,
-	["html"] = true,
-	["lua"] = true,
-	["json"] = true,
-	["asm"] = true,
-}
 
 -- Formatter --
 
@@ -243,28 +282,6 @@ local dapui = require("dapui")
 dapui.setup()
 
 -- Keybindings
-vim.api.nvim_set_keymap(
-	"n",
-	"<Leader>db",
-	'<Cmd>lua require"dap".toggle_breakpoint()<CR>',
-	{ noremap = true, silent = true }
-)
-vim.api.nvim_set_keymap("n", "<Leader>du", '<Cmd>lua require"dapui".toggle()<CR>', { noremap = true, silent = false })
-vim.api.nvim_set_keymap("n", "<Leader>dc", '<Cmd>lua require"dap".continue()<CR>', { noremap = true, silent = false })
-vim.api.nvim_set_keymap("n", "<Leader>ds", '<Cmd>lua require"dap".step_over()<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap("n", "<Leader>di", '<Cmd>lua require"dap".step_into()<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap("n", "<Leader>do", '<Cmd>lua require"dap".step_out()<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap("n", "<Leader>dd", '<Cmd>lua require"dap".disconnect()<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap("n", "<Leader>dr", '<Cmd>lua require"dap".restart()<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap("n", "<Leader>dt", '<Cmd>lua require"dap".close()<CR>', { noremap = true, silent = true })
-
-vim.api.nvim_set_keymap(
-	"n",
-	"<Leader>ff",
-	'<Cmd>lua require("telescope").extensions.projects.projects({})<CR>',
-	{ noremap = true, silent = true }
-)
-
 dap.listeners.before.attach.dapui_config = function()
 	dapui.open()
 end
@@ -298,7 +315,6 @@ nnp.setup({
 	},
 })
 nnp.enable()
-vim.api.nvim_set_keymap("n", "<Leader>np", "<Cmd>NoNeckPain<CR>", { noremap = true, silent = true })
 
 require('telescope').setup({
 	defaults = {
@@ -308,19 +324,8 @@ require('telescope').setup({
 
 require("telescope").load_extension("projects")
 
-vim.diagnostic.config({
-	underline = false,
-	signs = true,
-	severity_sort = true, -- Show signs
-})
-
 vim.lsp.set_log_level("off")
 
-vim.o.foldcolumn = '1' -- '0' is not bad
-vim.o.foldlevel = 99   -- Using ufo provider need a large value, feel free to decrease the value
-vim.o.foldlevelstart = 99
-vim.o.foldenable = true
-vim.o.fillchars = [[eob: ,fold: ,foldopen:,foldsep: ,foldclose:]]
 require("ibl").setup {}
 
 vim.api.nvim_create_autocmd('LspAttach', {
@@ -363,13 +368,6 @@ require("noice").setup({
 })
 
 local opts = { noremap = true, silent = true }
-
-vim.api.nvim_set_keymap('n', '<leader>a', '<cmd>Lspsaga hover_doc<CR>', opts)
-vim.api.nvim_set_keymap('n', '<leader>s', '<cmd>Lspsaga peek_definition<CR>', opts)
-vim.api.nvim_set_keymap('n', '<leader>d', '<cmd>Lspsaga show_line_diagnostics<CR>', opts)
-vim.api.nvim_set_keymap('n', '<leader>f', '<cmd>Lspsaga code_action<CR>', opts)
-vim.api.nvim_set_keymap('n', '<leader>r', '<cmd>Lspsaga rename<CR>', opts)
-
 
 local cmp = require('cmp')
 
