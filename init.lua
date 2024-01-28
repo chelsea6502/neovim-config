@@ -1,6 +1,5 @@
 local vim = vim
 
-
 -- General nvim settings
 vim.cmd([[
 	let g:mapleader = " "
@@ -48,7 +47,7 @@ vim.cmd([[
 	set undodir=/tmp/.vim-undo-dir
 	set undofile
 
-	" persistent folding and cursor placement
+	" persistent folding
 	autocmd BufWinLeave *.* mkview
 	autocmd BufWinEnter *.* silent! loadview
 
