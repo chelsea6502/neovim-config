@@ -50,7 +50,8 @@ vim.cmd([[
 
 	" for NoNeckPain
 	autocmd VimEnter * wincmd w
-]])
+
+	]])
 
 -- Enable lazy
 vim.opt.rtp:prepend(vim.fn.stdpath("data") .. "/lazy/lazy.nvim")
@@ -61,7 +62,6 @@ require("lazy").setup({
 		"LazyVim/LazyVim",
 		opts = {
 			colorscheme = "gruvbox-material",
-			defaults = { version = "*" },
 		},
 		priority = 1000,
 	},
@@ -305,7 +305,6 @@ require("lazy").setup({
 				options = {
 					width = 100,
 					minSideBufferWidth = 100,
-					autocmds = { enableOnVimEnter = true },
 				},
 				buffers = {
 					right = { enabled = false },
@@ -360,6 +359,7 @@ require("lazy").setup({
 	},
 	{
 		'sainnhe/gruvbox-material',
+		event = "VimEnter",
 		config = function()
 			vim.g.gruvbox_material_foreground = 'material'
 			vim.g.gruvbox_material_background = 'medium'
