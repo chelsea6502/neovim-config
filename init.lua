@@ -102,6 +102,8 @@ require("packer").startup({
 		use('rafamadriz/friendly-snippets')
 		use('hrsh7th/cmp-buffer')
 		use('hrsh7th/cmp-path')
+
+		use('terrortylor/nvim-comment')
 	end,
 	config = { compile_path = vim.fn.stdpath("config") .. "/init_compiled.lua" },
 })
@@ -406,3 +408,5 @@ cmp.setup({
 		},
 	},
 })
+
+require('nvim_comment').setup({})
