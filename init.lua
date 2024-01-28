@@ -88,26 +88,22 @@ require("lazy").setup({
 	{
 		"nvim-telescope/telescope.nvim",
 		cmd = "Telescope",
-		tag = "0.1.5",
 		dependencies = { 'nvim-lua/plenary.nvim' },
 		keys = {
 			{ 'ff', "<cmd>Telescope find_files<CR>" },
+			{ 'FF', "<cmd>lua require('telescope').extensions.projects.projects({})<CR>" },
 			{ 'fs', "<cmd>Telescope live_grep<CR>" },
 			{ 'fb', "<cmd>Telescope buffers<CR>" },
 			{ 'fh', "<cmd>Telescope help_tags<CR>" },
 			{ 'fn', "<cmd>Telescope noice<CR>" },
 		},
-		opts = { {
+		opts = {
 			defaults = {
 				file_ignore_patterns = { "node_modules" },
 			},
-		} },
+		},
 		config = function()
 			require("telescope").load_extension("projects")
-
-			vim.cmd([[
-				nnoremap <Leader>ff :lua require("telescope").extensions.projects.projects({})<CR>
-			]])
 		end
 	},
 
