@@ -23,7 +23,8 @@ vim.cmd([[
 	set noshowcmd
 	set laststatus=0
 	set cmdheight=0
-	set updatetime=500
+	set updatetime=50
+	set incsearch
 
 	" Folding Configuration
 	set foldcolumn=1
@@ -71,6 +72,7 @@ require("lazy").setup({
 	{
 		"nvim-treesitter/nvim-treesitter",
 		event = "BufRead",
+		build = ":TSUpdate",
 		config = function()
 			require("nvim-treesitter.install").update({ with_sync = true })
 			require("nvim-treesitter.configs").setup({
