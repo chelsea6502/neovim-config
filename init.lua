@@ -135,6 +135,7 @@ require("lazy").setup({
 		opts = {
 			colorscheme = "gruvbox-material",
 		},
+		priority = 1000,
 	},
 
 	-- Syntax Highlighter
@@ -155,6 +156,7 @@ require("lazy").setup({
 	-- Search
 	{
 		"nvim-telescope/telescope.nvim",
+		cmd = "Telescope",
 		tag = "0.1.5",
 		dependencies = { 'nvim-lua/plenary.nvim' },
 		opts = { {
@@ -304,7 +306,7 @@ require("lazy").setup({
 	},
 	{
 		"mxsdev/nvim-dap-vscode-js",
-		ft = "javascript",
+		ft = "javascript, typescript, javascriptreact, typescriptreact",
 		opts = {
 			node_path = "/opt/homebrew/bin/node",
 			debugger_path = vim.fn.expand("$HOME/.config/nvim/vscode-js-debug/"),
@@ -326,8 +328,7 @@ require("lazy").setup({
 	-- Other utilities
 	{
 		"shortcuts/no-neck-pain.nvim",
-		event = "VimEnter",
-		cmd = "NoNeckPain",
+		version = "*",
 		config = function()
 			local nnp = require("no-neck-pain")
 			nnp.setup({
@@ -348,7 +349,7 @@ require("lazy").setup({
 	},
 	{
 		"ahmedkhalf/project.nvim",
-		cmd = "Project",
+		cmd = "Telescope",
 		config = function()
 			require("project_nvim").setup({
 				detection_methods = { "pattern" },
@@ -369,7 +370,6 @@ require("lazy").setup({
 	},
 	{
 		"luukvbaal/statuscol.nvim",
-		--event = "VimEnter",
 		config = function()
 			local builtin = require("statuscol.builtin")
 			require("statuscol").setup({
@@ -383,17 +383,15 @@ require("lazy").setup({
 	},
 	{
 		"kevinhwang91/nvim-ufo",
-		event = "VimEnter",
 		dependencies = "kevinhwang91/promise-async",
 		config = function()
 			require('ufo').setup()
 		end
 	},
-	{ 'sainnhe/gruvbox-material',     event = "VimEnter" },
+	{ 'sainnhe/gruvbox-material' },
 	{
 		"folke/noice.nvim",
 		dependencies = "MunifTanjim/nui.nvim",
-		event = "VimEnter",
 		opts = {
 			presets = { command_palette = true, }, -- position the cmdline and popupmenu together
 			lsp = {
@@ -406,20 +404,11 @@ require("lazy").setup({
 	},
 	{
 		'nvimdev/lspsaga.nvim',
-		event = "BufRead",
-		config = function()
-			vim.api.nvim_create_autocmd('LspAttach', {
-				require('lspsaga').setup({
-					lightbulb = { enable = false, },
-					symbol_in_winbar = { enable = false, }
-				}),
-				group = vim.api.nvim_create_augroup('UserLspConfig', {}),
-				callback = function(ev)
-					local opts = { buffer = ev.buf }
-					vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
-				end,
-			})
-		end
+		event = "LspAttach",
+		opts = {
+			lightbulb = { enable = false, },
+			symbol_in_winbar = { enable = false, }
+		},
 	},
 
 	-- Autocomplete and snippets
@@ -484,7 +473,7 @@ require("lazy").setup({
 	-- Comments
 	{
 		'terrortylor/nvim-comment',
-		cmd = "CommentToggle",
+		main = "nvim_comment",
 		opts = {
 			hook = function()
 				require('ts_context_commentstring').update_commentstring()
@@ -493,11 +482,9 @@ require("lazy").setup({
 	},
 	{
 		'JoosepAlviste/nvim-ts-context-commentstring',
-		ft = { "typescript", "javascript" },
-		config = function()
-			require('ts_context_commentstring').setup {
-				enable_autocmd = false,
-			}
-		end
+		ft = { "typescript", "javascript", "typescriptreact", "javascriptreact" },
+		opts = {
+			enable_autocmd = false,
+		}
 	},
 })
