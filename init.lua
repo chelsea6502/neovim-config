@@ -1,6 +1,6 @@
 local vim = vim
 
--- Vanilla Neovim settings
+-- General nvim settings
 vim.cmd([[
 	let g:mapleader = " "
 
@@ -25,11 +25,6 @@ vim.cmd([[
 	set cmdheight=0
 	set updatetime=500
 
-	" Theme
-	let g:gruvbox_material_foreground = 'material'
-	let g:gruvbox_material_background = 'medium'
-	let g:gruvbox_material_better_performance = 1
-
 	" Folding Configuration
 	set foldcolumn=1
 	set foldlevel=99
@@ -45,10 +40,7 @@ vim.cmd([[
 	set undofile
 
 	" Key mappings
-	nnoremap <Leader>n :bnext<CR>
-	nnoremap <Leader>p :bprevious<CR>
-	nnoremap <Leader>b :set nomore <Bar>
-	nnoremap <Leader>cd :cd %:p:h<CR>:pwd<CR>
+	nnoremap <leader>cc <cmd>:!clang -g % -std=c89<cr>
 
 	" Diagnostic Configuration
 	let g:diagnostic_underline = 0
@@ -56,77 +48,14 @@ vim.cmd([[
 	let g:diagnostic_severity_sort = 1
 
 	" Custom Commands
-	command! Sc source ~/.config/nvim/init.lua
 	command! Ec edit ~/.config/nvim/init.lua
-	command! Ep edit ~/.config/nvim/lua/plugins.lua
 
+	" for NoNeckPain
 	autocmd VimEnter * wincmd w
-
-
 ]])
 
--- Plugin-specific settings
-vim.cmd([[
-
-	lua vim.lsp.set_log_level("off")
-	
-	nnoremap ff <cmd>Telescope find_files<cr>
-	nnoremap fs <cmd>Telescope live_grep<cr>
-	nnoremap fb <cmd>Telescope buffers<cr>
-	nnoremap fh <cmd>Telescope help_tags<cr>
-	nnoremap fn <cmd>Telescope noice<cr>
-	nnoremap <leader>cc <cmd>:!clang -g % -std=c89<cr>
-	
-
-	" Copilot Configuration
-	let g:copilot_no_tab_map = 1
-	inoremap <C-J> <cmd>copilot#Accept("<CR>")<CR>
-
-	" Copilot Filetypes Configuration
-	let g:copilot_filetypes = {}
-	let g:copilot_filetypes['*'] = v:false
-	let g:copilot_filetypes['css'] = v:true
-	let g:copilot_filetypes['html'] = v:true
-	let g:copilot_filetypes['lua'] = v:true
-	let g:copilot_filetypes['json'] = v:true
-	let g:copilot_filetypes['asm'] = v:true
-
-	" Keybindings for DAP (Debug Adapter Protocol)
-	nnoremap <Leader>db :lua require'dap'.toggle_breakpoint()<CR>
-	nnoremap <Leader>du :lua require'dapui'.toggle()<CR>
-	nnoremap <Leader>dc :lua require'dap'.continue()<CR>
-	nnoremap <Leader>ds :lua require'dap'.step_over()<CR>
-	nnoremap <Leader>di :lua require'dap'.step_into()<CR>
-	nnoremap <Leader>do :lua require'dap'.step_out()<CR>
-	nnoremap <Leader>dd :lua require'dap'.disconnect()<CR>
-	nnoremap <Leader>dr :lua require'dap'.restart()<CR>
-	nnoremap <Leader>dt :lua require'dap'.close()<CR>
-
-	" Keybinding for Telescope projects
-	nnoremap <Leader>ff :lua require("telescope").extensions.projects.projects({})<CR>
-
-	" LSP Saga Keybindings
-	nnoremap <leader>a :Lspsaga hover_doc<CR>
-	nnoremap <leader>s :Lspsaga peek_definition<CR>
-	nnoremap <leader>d :Lspsaga show_line_diagnostics<CR>
-	nnoremap <leader>f :Lspsaga code_action<CR>
-	nnoremap <leader>r :Lspsaga rename<CR>
-
-]])
-
-local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not vim.loop.fs_stat(lazypath) then
-	vim.fn.system({
-		"git",
-		"clone",
-		"--filter=blob:none",
-		"https://github.com/folke/lazy.nvim.git",
-		"--branch=stable", -- latest stable release
-		lazypath,
-	})
-end
-vim.opt.rtp:prepend(lazypath)
-
+-- Enable lazy
+vim.opt.rtp:prepend(vim.fn.stdpath("data") .. "/lazy/lazy.nvim")
 
 require("lazy").setup({
 	-- Package manager
@@ -159,6 +88,13 @@ require("lazy").setup({
 		cmd = "Telescope",
 		tag = "0.1.5",
 		dependencies = { 'nvim-lua/plenary.nvim' },
+		keys = {
+			{ 'ff', "<cmd>Telescope find_files<CR>" },
+			{ 'fs', "<cmd>Telescope live_grep<CR>" },
+			{ 'fb', "<cmd>Telescope buffers<CR>" },
+			{ 'fh', "<cmd>Telescope help_tags<CR>" },
+			{ 'fn', "<cmd>Telescope noice<CR>" },
+		},
 		opts = { {
 			defaults = {
 				file_ignore_patterns = { "node_modules" },
@@ -166,6 +102,10 @@ require("lazy").setup({
 		} },
 		config = function()
 			require("telescope").load_extension("projects")
+
+			vim.cmd([[
+				nnoremap <Leader>ff :lua require("telescope").extensions.projects.projects({})<CR>
+			]])
 		end
 	},
 
@@ -174,6 +114,7 @@ require("lazy").setup({
 		"neovim/nvim-lspconfig",
 		event = "BufRead",
 		config = function()
+			vim.lsp.set_log_level("off")
 			local capabilities = { capabilities = require("cmp_nvim_lsp").default_capabilities() }
 			local lsp = require("lspconfig")
 			lsp.lua_ls.setup(capabilities)     -- lua
@@ -302,6 +243,18 @@ require("lazy").setup({
 			dap.listeners.before.event_exited.dapui_config = function()
 				dapui.close()
 			end
+
+			vim.cmd([[ 	" Keybindings for DAP (Debug Adapter Protocol)
+				nnoremap <Leader>db :lua require'dap'.toggle_breakpoint()<CR>
+				nnoremap <Leader>du :lua require'dapui'.toggle()<CR>
+				nnoremap <Leader>dc :lua require'dap'.continue()<CR>
+				nnoremap <Leader>ds :lua require'dap'.step_over()<CR>
+				nnoremap <Leader>di :lua require'dap'.step_into()<CR>
+				nnoremap <Leader>do :lua require'dap'.step_out()<CR>
+				nnoremap <Leader>dd :lua require'dap'.disconnect()<CR>
+				nnoremap <Leader>dr :lua require'dap'.restart()<CR>
+				nnoremap <Leader>dt :lua require'dap'.close()<CR>
+			]])
 		end
 	},
 	{
@@ -322,7 +275,25 @@ require("lazy").setup({
 	},
 
 	-- AI completion
-	{ "github/copilot.vim",        cmd = "Copilot" },
+	{
+		"github/copilot.vim",
+		cmd = "Copilot",
+		config = function()
+			vim.cmd([[" Copilot Configuration
+			let g:copilot_no_tab_map = 1
+			inoremap <C-J> <cmd>copilot#Accept("<CR>")<CR>
+
+			" Copilot Filetypes Configuration
+			let g:copilot_filetypes = {}
+			let g:copilot_filetypes['*'] = v:false
+			let g:copilot_filetypes['css'] = v:true
+			let g:copilot_filetypes['html'] = v:true
+			let g:copilot_filetypes['lua'] = v:true
+			let g:copilot_filetypes['json'] = v:true
+			let g:copilot_filetypes['asm'] = v:true
+		]])
+		end
+	},
 	{ "gptlang/CopilotChat.nvim",  cmd = "CopilotChat" },
 
 	-- Other utilities
@@ -349,7 +320,7 @@ require("lazy").setup({
 	},
 	{
 		"ahmedkhalf/project.nvim",
-		cmd = "Telescope",
+		cmd = "Project",
 		config = function()
 			require("project_nvim").setup({
 				detection_methods = { "pattern" },
@@ -388,7 +359,14 @@ require("lazy").setup({
 			require('ufo').setup()
 		end
 	},
-	{ 'sainnhe/gruvbox-material' },
+	{
+		'sainnhe/gruvbox-material',
+		config = function()
+			vim.g.gruvbox_material_foreground = 'material'
+			vim.g.gruvbox_material_background = 'medium'
+			vim.g.gruvbox_material_better_performance = 1
+		end
+	},
 	{
 		"folke/noice.nvim",
 		dependencies = "MunifTanjim/nui.nvim",
@@ -405,6 +383,13 @@ require("lazy").setup({
 	{
 		'nvimdev/lspsaga.nvim',
 		event = "LspAttach",
+		keys = {
+			{ '<leader>a', "<cmd>Lspsaga hover_doc<CR>" },
+			{ '<leader>s', "<cmd>Lspsaga peek_definition<CR>" },
+			{ '<leader>d', "<cmd>Lspsaga show_line_diagnostics<CR>" },
+			{ '<leader>f', "<cmd>Lspsaga code_action<CR>" },
+			{ '<leader>r', "<cmd>Lspsaga rename<CR>" },
+		},
 		opts = {
 			lightbulb = { enable = false, },
 			symbol_in_winbar = { enable = false, }
