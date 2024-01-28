@@ -29,7 +29,6 @@ vim.cmd([[
 	let g:gruvbox_material_foreground = 'material'
 	let g:gruvbox_material_background = 'medium'
 	let g:gruvbox_material_better_performance = 1
-	colorscheme gruvbox-material
 
 	" Folding Configuration
 	set foldcolumn=1
@@ -115,62 +114,97 @@ vim.cmd([[
 
 ]])
 
-require("packer").startup({
-	function(use)
-		use("wbthomason/packer.nvim")        -- Package manager
-		use("nvim-treesitter/nvim-treesitter") -- Syntax Highlighter
-		use({
-			"nvim-telescope/telescope.nvim",
-			tag = "0.1.5",
-			requires = { { "nvim-lua/plenary.nvim" } }
-		})                             -- Search
-		use("neovim/nvim-lspconfig")   -- Needed for everything below
-		use("mfussenegger/nvim-lint")  -- Linter
-		use("stevearc/conform.nvim")   -- Formatter
-		use("mfussenegger/nvim-dap")   -- Debugger
-		use("mxsdev/nvim-dap-vscode-js") -- JavaScript debugger
-		use({ "microsoft/vscode-js-debug", opt = true })
-		use("windwp/nvim-autopairs")   -- Bracket pairing
-		use({
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not vim.loop.fs_stat(lazypath) then
+	vim.fn.system({
+		"git",
+		"clone",
+		"--filter=blob:none",
+		"https://github.com/folke/lazy.nvim.git",
+		"--branch=stable", -- latest stable release
+		lazypath,
+	})
+end
+vim.opt.rtp:prepend(lazypath)
+
+
+require("lazy").setup({
+	-- Package manager
+	{
+		"LazyVim/LazyVim",
+		opts = {
+			colorscheme = "gruvbox-material",
+		},
+	},
+
+	-- Syntax Highlighter
+	{ "nvim-treesitter/nvim-treesitter", event = "BufRead" },
+
+	-- Search
+	{
+		"nvim-telescope/telescope.nvim",
+		tag = "0.1.5",
+		dependencies = { 'nvim-lua/plenary.nvim' }
+	},
+
+	-- LSP, linter, formatter, and debugger
+	{ "neovim/nvim-lspconfig",           event = "BufRead" },
+	{ "mfussenegger/nvim-lint",          event = "BufRead" },
+	{ "stevearc/conform.nvim",           event = "BufWritePre" },
+	{
+		"mfussenegger/nvim-dap",
+		event = "BufRead",
+		dependencies = {
 			"rcarriga/nvim-dap-ui",
-			requires = { "mfussenegger/nvim-dap" }
-		})                                   -- Debugger UI
-		use("theHamsta/nvim-dap-virtual-text") -- Debugger inline text
-		use("github/copilot.vim")            -- AI completion
-		use("gptlang/CopilotChat.nvim")      -- AI completion chat
-		use({ "shortcuts/no-neck-pain.nvim", tag = "*" })
-		use("ahmedkhalf/project.nvim")       -- Jump between github projects
-		use("lukas-reineke/indent-blankline.nvim")
-		use("luukvbaal/statuscol.nvim")
-		use { 'kevinhwang91/nvim-ufo',
-			requires = 'kevinhwang91/promise-async' }
-		use { 'sainnhe/gruvbox-material' }
-		use({
-			"folke/noice.nvim",
-			requires = "MunifTanjim/nui.nvim"
-		})
-		use({
-			'nvimdev/lspsaga.nvim',
-			requires = "rcarriga/nvim-notify"
-		})
+			"theHamsta/nvim-dap-virtual-text"
+		}
+	},
+	{ "mxsdev/nvim-dap-vscode-js",           ft = "javascript" },
+	{ "microsoft/vscode-js-debug",           lazy = true },
 
-		-- Autocomplete
-		use('hrsh7th/nvim-cmp')
-		use('hrsh7th/cmp-nvim-lsp')
-		use('L3MON4D3/LuaSnip')
-		use('saadparwaiz1/cmp_luasnip')
-		use('rafamadriz/friendly-snippets')
-		use('hrsh7th/cmp-buffer')
-		use('hrsh7th/cmp-path')
+	-- Bracket pairing
+	{ "windwp/nvim-autopairs",               event = "InsertEnter" },
 
-		use('terrortylor/nvim-comment')
-		use('JoosepAlviste/nvim-ts-context-commentstring')
-	end,
-	config = { compile_path = vim.fn.stdpath("config") .. "/init_compiled.lua" },
+	-- AI completion
+	{ "github/copilot.vim",                  cmd = "Copilot" },
+	{ "gptlang/CopilotChat.nvim",            cmd = "CopilotChat" },
+
+	-- Other utilities
+	{ "shortcuts/no-neck-pain.nvim",         cmd = "NoNeckPain" },
+	{ "ahmedkhalf/project.nvim",             cmd = "Project" },
+	{ "lukas-reineke/indent-blankline.nvim", event = "BufRead" },
+	{ "luukvbaal/statuscol.nvim",            event = "VimEnter" },
+	{
+		"kevinhwang91/nvim-ufo",
+		event = "BufRead"
+	},
+	{ 'sainnhe/gruvbox-material',                    event = "VimEnter" },
+	{
+		"folke/noice.nvim",
+		dependencies = "MunifTanjim/nui.nvim",
+		event = "VimEnter"
+	},
+	{
+		'nvimdev/lspsaga.nvim',
+		event = "BufRead"
+	},
+
+	-- Autocomplete and snippets
+	{ 'hrsh7th/nvim-cmp',                            event = "InsertEnter" },
+	{ 'hrsh7th/cmp-nvim-lsp', },
+	{ 'L3MON4D3/LuaSnip', },
+	{ 'saadparwaiz1/cmp_luasnip', },
+	{ 'rafamadriz/friendly-snippets',                event = "InsertEnter" },
+	{ 'hrsh7th/cmp-buffer', },
+	{ 'hrsh7th/cmp-path', },
+
+	-- Comments
+	{ 'terrortylor/nvim-comment',                    cmd = "CommentToggle" },
+	{ 'JoosepAlviste/nvim-ts-context-commentstring', ft = { "typescript", "javascript" } },
 })
 
 -- Basics
-require('ufo').setup()
+--require('ufo').setup()
 require("ibl").setup({
 	indent = {
 		char = "▏",
@@ -208,7 +242,6 @@ nnp.setup({
 })
 nnp.enable()
 
--- Telescope --
 require('telescope').setup({
 	defaults = {
 		file_ignore_patterns = { "node_modules" },
@@ -220,7 +253,6 @@ require("project_nvim").setup({
 })
 require("telescope").load_extension("projects")
 
--- Noice --
 require("noice").setup({
 	presets = { command_palette = true, }, -- position the cmdline and popupmenu together
 	lsp = {
