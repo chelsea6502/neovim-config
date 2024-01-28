@@ -50,6 +50,8 @@ vim.cmd([[
 	
 	set updatetime=500
 
+	autocmd VimEnter * wincmd w
+
 ]])
 
 -- Move to /pack/ when all set up
@@ -139,11 +141,11 @@ require("nvim-autopairs").setup()
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
 local lsp = require("lspconfig")
-lsp.lua_ls.setup({ capabilities = capabilities }) -- lua
-lsp.eslint.setup({})                              -- JS
-lsp.clangd.setup({})                              -- C
-lsp.tsserver.setup({})                            -- TS
-lsp.stylelint_lsp.setup({})                       -- CSS
+lsp.lua_ls.setup({ capabilities = capabilities })        -- lua
+lsp.eslint.setup({ capabilities = capabilities })        -- JS
+lsp.clangd.setup({ capabilties = capabilities })         -- C
+lsp.tsserver.setup({ capabilities = capabilities })      -- TS
+lsp.stylelint_lsp.setup({ capabilities = capabilities }) -- CSS
 
 require("nvim-treesitter.install").update({ with_sync = true })
 require("nvim-treesitter.configs").setup({ highlight = { enable = true, additional_vim_regex_highlighting = false } })
