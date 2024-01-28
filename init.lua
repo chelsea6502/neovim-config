@@ -32,6 +32,11 @@ vim.cmd([[
 	set foldenable
 	set fillchars=eob:\ ,fold:\ ,foldopen:,foldsep:\ ,foldclose:
 
+	" Diagnostics
+	let g:diagnostic_underline = 0
+	let g:diagnostic_signs = 1
+	let g:diagnostic_severity_sort = 1
+
 	" Use persistent history.
 	if !isdirectory("/tmp/.vim-undo-dir")
     call mkdir("/tmp/.vim-undo-dir", "", 0700)
@@ -39,16 +44,9 @@ vim.cmd([[
 	set undodir=/tmp/.vim-undo-dir
 	set undofile
 
-	" Key mappings
-	nnoremap <leader>cc <cmd>:!clang -g % -std=c89<cr>
-
-	" Diagnostic Configuration
-	let g:diagnostic_underline = 0
-	let g:diagnostic_signs = 1
-	let g:diagnostic_severity_sort = 1
-
-	" Custom Commands
+	" Command shortcuts
 	command! Ec edit ~/.config/nvim/init.lua
+	command! Cc clang -g % -std=c89<cr>
 
 	" for NoNeckPain
 	autocmd VimEnter * wincmd w
@@ -63,6 +61,7 @@ require("lazy").setup({
 		"LazyVim/LazyVim",
 		opts = {
 			colorscheme = "gruvbox-material",
+			defaults = { version = "*" },
 		},
 		priority = 1000,
 	},
