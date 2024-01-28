@@ -138,313 +138,366 @@ require("lazy").setup({
 	},
 
 	-- Syntax Highlighter
-	{ "nvim-treesitter/nvim-treesitter", event = "BufRead" },
+	{
+		"nvim-treesitter/nvim-treesitter",
+		event = "BufRead",
+		config = function()
+			require("nvim-treesitter.install").update({ with_sync = true })
+			require("nvim-treesitter.configs").setup({
+				highlight = {
+					enable = true,
+					additional_vim_regex_highlighting = false
+				}
+			})
+		end
+	},
 
 	-- Search
 	{
 		"nvim-telescope/telescope.nvim",
 		tag = "0.1.5",
-		dependencies = { 'nvim-lua/plenary.nvim' }
+		dependencies = { 'nvim-lua/plenary.nvim' },
+		opts = { {
+			defaults = {
+				file_ignore_patterns = { "node_modules" },
+			},
+		} },
+		config = function()
+			require("telescope").load_extension("projects")
+		end
 	},
 
 	-- LSP, linter, formatter, and debugger
-	{ "neovim/nvim-lspconfig",           event = "BufRead" },
-	{ "mfussenegger/nvim-lint",          event = "BufRead" },
-	{ "stevearc/conform.nvim",           event = "BufWritePre" },
+	{
+		"neovim/nvim-lspconfig",
+		event = "BufRead",
+		config = function()
+			local capabilities = { capabilities = require("cmp_nvim_lsp").default_capabilities() }
+			local lsp = require("lspconfig")
+			lsp.lua_ls.setup(capabilities)     -- lua
+			lsp.eslint.setup(capabilities)     -- JS
+			lsp.clangd.setup(capabilities)     -- C
+			lsp.tsserver.setup(capabilities)   -- TS
+			lsp.stylelint_lsp.setup(capabilities) -- CSS
+		end
+	},
+	{
+		"mfussenegger/nvim-lint",
+		event = "BufRead",
+		config = function()
+			local linter = require("lint")
+			linter.linters.clangtidy.args = { "-std=c89" }
+			linter.linters_by_ft = {
+				javascript = { "eslint" },
+				javascriptreact = { "eslint" },
+				typescript = { "eslint" },
+				typescriptreact = { "eslint" },
+				json = { "eslint" },
+				c = { "clangtidy" },
+				cpp = { "clangtidy" },
+				css = { "stylelint" },
+			}
+		end
+	},
+	{
+		"stevearc/conform.nvim",
+		event = "BufWritePre",
+		opts = {
+			formatters_by_ft = {
+				lua = { "stylua" },
+				javascript = { "prettier" },
+				javascriptreact = { "prettier" },
+				typescript = { "prettier" },
+
+				typescriptreact = { "prettier" },
+				json = { "prettier" },
+				c = { "clang_format" },
+				cpp = { "clang_format" },
+				css = { "prettier" },
+			},
+			format_on_save = { timeout_ms = 500, lsp_fallback = true },
+		}
+	},
 	{
 		"mfussenegger/nvim-dap",
 		event = "BufRead",
 		dependencies = {
 			"rcarriga/nvim-dap-ui",
 			"theHamsta/nvim-dap-virtual-text"
+		},
+		config = function()
+			local dap = require("dap")
+			vim.lsp.set_log_level("DEBUG")
+			dap.adapters.lldb = {
+				type = "executable",
+				command = "/opt/homebrew/opt/llvm/bin/lldb-vscode",
+				name = "lldb",
+			}
+			dap.configurations.c = {
+				{
+					name = "Launch",
+					type = "lldb",
+					request = "launch",
+					program = vim.fn.getcwd() .. "/a.out",
+					cwd = "${workspaceFolder}",
+					stopOnEntry = false,
+					args = {},
+				},
+			}
+
+
+			for _, language in ipairs({ "typescript", "javascript" }) do
+				dap.configurations[language] = {
+					{
+						type = "pwa-node",
+						request = "launch",
+						name = "Launch file",
+						program = "${file}",
+						cwd = "${workspaceFolder}",
+						skipFiles = { "<node_internals>/**", "**/node_modules/**" },
+					},
+					{
+						type = "pwa-node",
+						request = "attach",
+						name = "Attach",
+						processId = require("dap.utils").pick_process,
+						cwd = "${workspaceFolder}",
+						skipFiles = { "<node_internals>/**", "**/node_modules/**" },
+					},
+				}
+			end
+
+			for _, language in ipairs({ "typescriptreact", "javascriptreact" }) do
+				dap.configurations[language] = {
+					{
+						type = "pwa-chrome",
+						request = "launch",
+						name = "Launch file",
+						url = "http://localhost:5173",
+						webRoot = vim.fn.getcwd() .. "/src",
+						protocol = "inspector",
+						sourceMaps = true,
+						userDataDir = false,
+						skipFiles = { "<node_internals>/**", "**/node_modules/**" },
+					},
+				}
+			end
+
+			require("nvim-dap-virtual-text").setup()
+			local dapui = require("dapui")
+
+			dapui.setup()
+
+			dap.listeners.before.attach.dapui_config = function()
+				dapui.open()
+			end
+			dap.listeners.before.launch.dapui_config = function()
+				dapui.open()
+			end
+			dap.listeners.before.event_terminated.dapui_config = function()
+				dapui.close()
+			end
+			dap.listeners.before.event_exited.dapui_config = function()
+				dapui.close()
+			end
+		end
+	},
+	{
+		"mxsdev/nvim-dap-vscode-js",
+		ft = "javascript",
+		opts = {
+			node_path = "/opt/homebrew/bin/node",
+			debugger_path = vim.fn.expand("$HOME/.config/nvim/vscode-js-debug/"),
+			adapters = { "pwa-node", "pwa-chrome" },
 		}
 	},
-	{ "mxsdev/nvim-dap-vscode-js",           ft = "javascript" },
-	{ "microsoft/vscode-js-debug",           lazy = true },
+	{ "microsoft/vscode-js-debug", lazy = true },
 
 	-- Bracket pairing
-	{ "windwp/nvim-autopairs",               event = "InsertEnter" },
+	{
+		"windwp/nvim-autopairs",
+		event = "InsertEnter",
+	},
 
 	-- AI completion
-	{ "github/copilot.vim",                  cmd = "Copilot" },
-	{ "gptlang/CopilotChat.nvim",            cmd = "CopilotChat" },
+	{ "github/copilot.vim",        cmd = "Copilot" },
+	{ "gptlang/CopilotChat.nvim",  cmd = "CopilotChat" },
 
 	-- Other utilities
-	{ "shortcuts/no-neck-pain.nvim",         cmd = "NoNeckPain" },
-	{ "ahmedkhalf/project.nvim",             cmd = "Project" },
-	{ "lukas-reineke/indent-blankline.nvim", event = "BufRead" },
-	{ "luukvbaal/statuscol.nvim",            event = "VimEnter" },
+	{
+		"shortcuts/no-neck-pain.nvim",
+		event = "VimEnter",
+		cmd = "NoNeckPain",
+		config = function()
+			local nnp = require("no-neck-pain")
+			nnp.setup({
+				options = {
+					width = 100,
+					minSideBufferWidth = 100,
+					autocmds = { enableOnVimEnter = true },
+				},
+				buffers = {
+					right = { enabled = false },
+					wo = {
+						fillchars = "vert: ,eob: ",
+					},
+				},
+			})
+			nnp.enable()
+		end
+	},
+	{
+		"ahmedkhalf/project.nvim",
+		cmd = "Project",
+		config = function()
+			require("project_nvim").setup({
+				detection_methods = { "pattern" },
+				patterns = { ".git" },
+			})
+		end
+	},
+	{
+		"lukas-reineke/indent-blankline.nvim",
+		event = "BufRead",
+		config = function()
+			require("ibl").setup({
+				indent = {
+					char = "▏",
+				}
+			})
+		end
+	},
+	{
+		"luukvbaal/statuscol.nvim",
+		--event = "VimEnter",
+		config = function()
+			local builtin = require("statuscol.builtin")
+			require("statuscol").setup({
+				relculright = true,
+				segments = { { text = { "%s" },     click = "v:lua.ScSa" },
+					{ text = { builtin.lnumfunc, " " }, click = "v:lua.ScLa", },
+					{ text = { builtin.foldfunc, " " }, click = "v:lua.ScFa" },
+				}
+			})
+		end
+	},
 	{
 		"kevinhwang91/nvim-ufo",
-		event = "BufRead"
+		event = "VimEnter",
+		dependencies = "kevinhwang91/promise-async",
+		config = function()
+			require('ufo').setup()
+		end
 	},
-	{ 'sainnhe/gruvbox-material',                    event = "VimEnter" },
+	{ 'sainnhe/gruvbox-material',     event = "VimEnter" },
 	{
 		"folke/noice.nvim",
 		dependencies = "MunifTanjim/nui.nvim",
-		event = "VimEnter"
+		event = "VimEnter",
+		opts = {
+			presets = { command_palette = true, }, -- position the cmdline and popupmenu together
+			lsp = {
+				override = {
+					["vim.lsp.util.convert_input_to_markdown_lines"] = true,
+					["vim.lsp.util.stylize_markdown"] = true,
+				},
+			},
+		}
 	},
 	{
 		'nvimdev/lspsaga.nvim',
-		event = "BufRead"
+		event = "BufRead",
+		config = function()
+			vim.api.nvim_create_autocmd('LspAttach', {
+				require('lspsaga').setup({
+					lightbulb = { enable = false, },
+					symbol_in_winbar = { enable = false, }
+				}),
+				group = vim.api.nvim_create_augroup('UserLspConfig', {}),
+				callback = function(ev)
+					local opts = { buffer = ev.buf }
+					vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
+				end,
+			})
+		end
 	},
 
 	-- Autocomplete and snippets
-	{ 'hrsh7th/nvim-cmp',                            event = "InsertEnter" },
+	{
+		'hrsh7th/nvim-cmp',
+		event = "InsertEnter",
+		config = function()
+			local cmp = require('cmp')
+
+			require("luasnip/loaders/from_vscode").load()
+
+			cmp.setup({
+				snippet = {
+					expand = function(args)
+						require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
+					end,
+				},
+				sources = cmp.config.sources({
+					{ name = 'nvim_lsp' },
+					{ name = 'luasnip' },
+				}, {
+					{ name = 'buffer' },
+					{ name = 'path' },
+				}),
+
+				mapping = cmp.mapping.preset.insert({
+					["<Tab>"] = function(fallback)
+						if cmp.visible() then
+							cmp.select_next_item()
+						else
+							fallback()
+						end
+					end,
+					["<S-Tab>"] = function(fallback)
+						if cmp.visible() then
+							cmp.select_prev_item()
+						else
+							fallback()
+						end
+					end,
+					["<CR>"] = cmp.mapping.confirm({ select = true }),
+
+				}),
+				window = {
+					completion = {
+						border = 'rounded',
+					},
+					documentation = {
+						border = 'rounded',
+					},
+				},
+			})
+		end
+	},
 	{ 'hrsh7th/cmp-nvim-lsp', },
 	{ 'L3MON4D3/LuaSnip', },
 	{ 'saadparwaiz1/cmp_luasnip', },
-	{ 'rafamadriz/friendly-snippets',                event = "InsertEnter" },
+	{ 'rafamadriz/friendly-snippets', event = "InsertEnter" },
 	{ 'hrsh7th/cmp-buffer', },
 	{ 'hrsh7th/cmp-path', },
 
 	-- Comments
-	{ 'terrortylor/nvim-comment',                    cmd = "CommentToggle" },
-	{ 'JoosepAlviste/nvim-ts-context-commentstring', ft = { "typescript", "javascript" } },
-})
-
--- Basics
---require('ufo').setup()
-require("ibl").setup({
-	indent = {
-		char = "▏",
-	}
-})
-local builtin = require("statuscol.builtin")
-require("statuscol").setup({
-	relculright = true,
-	segments = { { text = { "%s" },     click = "v:lua.ScSa" },
-		{ text = { builtin.lnumfunc, " " }, click = "v:lua.ScLa", },
-		{ text = { builtin.foldfunc, " " }, click = "v:lua.ScFa" },
-	}
-})
-require('nvim_comment').setup({
-	hook = function()
-		require('ts_context_commentstring').update_commentstring()
-	end,
-})
-require('ts_context_commentstring').setup {
-	enable_autocmd = false,
-}
-local nnp = require("no-neck-pain")
-nnp.setup({
-	options = {
-		width = 100,
-		minSideBufferWidth = 100,
-		autocmds = { enableOnVimEnter = true },
-	},
-	buffers = {
-		right = { enabled = false },
-		wo = {
-			fillchars = "vert: ,eob: ",
-		},
-	},
-})
-nnp.enable()
-
-require('telescope').setup({
-	defaults = {
-		file_ignore_patterns = { "node_modules" },
-	},
-})
-require("project_nvim").setup({
-	detection_methods = { "pattern" },
-	patterns = { ".git" },
-})
-require("telescope").load_extension("projects")
-
-require("noice").setup({
-	presets = { command_palette = true, }, -- position the cmdline and popupmenu together
-	lsp = {
-		override = {
-			["vim.lsp.util.convert_input_to_markdown_lines"] = true,
-			["vim.lsp.util.stylize_markdown"] = true,
-		},
-	},
-})
-
--- LSP --
-require("nvim-autopairs").setup()
-local capabilities = { capabilities = require("cmp_nvim_lsp").default_capabilities() }
-local lsp = require("lspconfig")
-lsp.lua_ls.setup(capabilities)        -- lua
-lsp.eslint.setup(capabilities)        -- JS
-lsp.clangd.setup(capabilities)        -- C
-lsp.tsserver.setup(capabilities)      -- TS
-lsp.stylelint_lsp.setup(capabilities) -- CSS
-require("nvim-treesitter.install").update({ with_sync = true })
-require("nvim-treesitter.configs").setup({ highlight = { enable = true, additional_vim_regex_highlighting = false } })
-
--- Linter --
-local linter = require("lint")
-linter.linters.clangtidy.args = { "-std=c89" }
-linter.linters_by_ft = {
-	javascript = { "eslint" },
-	javascriptreact = { "eslint" },
-	typescript = { "eslint" },
-	typescriptreact = { "eslint" },
-	json = { "eslint" },
-	c = { "clangtidy" },
-	cpp = { "clangtidy" },
-	css = { "stylelint" },
-}
-
--- Formatter --
-require("conform").setup({
-	formatters_by_ft = {
-		lua = { "stylua" },
-		javascript = { "prettier" },
-		javascriptreact = { "prettier" },
-		typescript = { "prettier" },
-
-		typescriptreact = { "prettier" },
-		json = { "prettier" },
-		c = { "clang_format" },
-		cpp = { "clang_format" },
-		css = { "prettier" },
-	},
-	format_on_save = { timeout_ms = 500, lsp_fallback = true },
-})
-
-
--- LSP Saga (for type definitions) --
-vim.api.nvim_create_autocmd('LspAttach', {
-	require('lspsaga').setup({
-		lightbulb = { enable = false, },
-		symbol_in_winbar = { enable = false, }
-	}),
-	group = vim.api.nvim_create_augroup('UserLspConfig', {}),
-	callback = function(ev)
-		local opts = { buffer = ev.buf }
-		vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
-	end,
-})
-
--- Autocomplete --
-local cmp = require('cmp')
-
-require("luasnip/loaders/from_vscode").load()
-
-cmp.setup({
-	snippet = {
-		expand = function(args)
-			require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
-		end,
-	},
-	sources = cmp.config.sources({
-		{ name = 'nvim_lsp' },
-		{ name = 'luasnip' },
-	}, {
-		{ name = 'buffer' },
-		{ name = 'path' },
-	}),
-
-	mapping = cmp.mapping.preset.insert({
-		["<Tab>"] = function(fallback)
-			if cmp.visible() then
-				cmp.select_next_item()
-			else
-				fallback()
-			end
-		end,
-		["<S-Tab>"] = function(fallback)
-			if cmp.visible() then
-				cmp.select_prev_item()
-			else
-				fallback()
-			end
-		end,
-		["<CR>"] = cmp.mapping.confirm({ select = true }),
-
-	}),
-	window = {
-		completion = {
-			border = 'rounded',
-		},
-		documentation = {
-			border = 'rounded',
-		},
-	},
-})
-
-------- Debugger (from here to the end) ------
-local dap = require("dap")
-vim.lsp.set_log_level("DEBUG")
-dap.adapters.lldb = {
-	type = "executable",
-	command = "/opt/homebrew/opt/llvm/bin/lldb-vscode",
-	name = "lldb",
-}
-dap.configurations.c = {
 	{
-		name = "Launch",
-		type = "lldb",
-		request = "launch",
-		program = vim.fn.getcwd() .. "/a.out",
-		cwd = "${workspaceFolder}",
-		stopOnEntry = false,
-		args = {},
+		'terrortylor/nvim-comment',
+		cmd = "CommentToggle",
+		opts = {
+			hook = function()
+				require('ts_context_commentstring').update_commentstring()
+			end,
+		},
 	},
-}
-
-require("dap-vscode-js").setup({
-	node_path = "/opt/homebrew/bin/node",
-	debugger_path = vim.fn.expand("$HOME/.config/nvim/vscode-js-debug/"),
-	adapters = { "pwa-node", "pwa-chrome" },
+	{
+		'JoosepAlviste/nvim-ts-context-commentstring',
+		ft = { "typescript", "javascript" },
+		config = function()
+			require('ts_context_commentstring').setup {
+				enable_autocmd = false,
+			}
+		end
+	},
 })
-
-for _, language in ipairs({ "typescript", "javascript" }) do
-	dap.configurations[language] = {
-		{
-			type = "pwa-node",
-			request = "launch",
-			name = "Launch file",
-			program = "${file}",
-			cwd = "${workspaceFolder}",
-			skipFiles = { "<node_internals>/**", "**/node_modules/**" },
-		},
-		{
-			type = "pwa-node",
-			request = "attach",
-			name = "Attach",
-			processId = require("dap.utils").pick_process,
-			cwd = "${workspaceFolder}",
-			skipFiles = { "<node_internals>/**", "**/node_modules/**" },
-		},
-	}
-end
-
-for _, language in ipairs({ "typescriptreact", "javascriptreact" }) do
-	dap.configurations[language] = {
-		{
-			type = "pwa-chrome",
-			request = "launch",
-			name = "Launch file",
-			url = "http://localhost:5173",
-			webRoot = vim.fn.getcwd() .. "/src",
-			protocol = "inspector",
-			sourceMaps = true,
-			userDataDir = false,
-			skipFiles = { "<node_internals>/**", "**/node_modules/**" },
-		},
-	}
-end
-
--- Debugger UI --
-require("nvim-dap-virtual-text").setup()
-local dapui = require("dapui")
-
-dapui.setup()
-
-dap.listeners.before.attach.dapui_config = function()
-	dapui.open()
-end
-dap.listeners.before.launch.dapui_config = function()
-	dapui.open()
-end
-dap.listeners.before.event_terminated.dapui_config = function()
-	dapui.close()
-end
-dap.listeners.before.event_exited.dapui_config = function()
-	dapui.close()
-end
