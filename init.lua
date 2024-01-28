@@ -25,6 +25,7 @@ vim.cmd([[
 	set cmdheight=0
 	set updatetime=50
 	set incsearch
+	set scrolloff=10
 
 	" Folding Configuration
 	set foldcolumn=1
@@ -276,7 +277,7 @@ require("lazy").setup({
 	{
 		"github/copilot.vim",
 		cmd = "Copilot",
-		config = function()
+		init = function()
 			vim.cmd([[" Copilot Configuration
 			let g:copilot_no_tab_map = 1
 			inoremap <C-J> <cmd>copilot#Accept("<CR>")<CR>
@@ -317,23 +318,21 @@ require("lazy").setup({
 	{
 		"ahmedkhalf/project.nvim",
 		cmd = "Project",
-		config = function()
-			require("project_nvim").setup({
-				detection_methods = { "pattern" },
-				patterns = { ".git" },
-			})
-		end
+		main = "project_nvim",
+		opts = {
+			detection_methods = { "pattern" },
+			patterns = { ".git" },
+		},
 	},
 	{
 		"lukas-reineke/indent-blankline.nvim",
 		event = "BufRead",
-		config = function()
-			require("ibl").setup({
-				indent = {
-					char = "▏",
-				}
-			})
-		end
+		main = "ibl",
+		opts = {
+			indent = {
+				char = "▏",
+			}
+		},
 	},
 	{
 		"luukvbaal/statuscol.nvim",
@@ -358,7 +357,7 @@ require("lazy").setup({
 	{
 		'sainnhe/gruvbox-material',
 		event = "VimEnter",
-		config = function()
+		init = function()
 			vim.g.gruvbox_material_foreground = 'material'
 			vim.g.gruvbox_material_background = 'medium'
 			vim.g.gruvbox_material_better_performance = 1
