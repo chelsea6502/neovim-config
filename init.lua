@@ -1,3 +1,5 @@
+local vim = vim
+
 vim.cmd([[
 	set background=dark
 	set tabstop=2
@@ -11,7 +13,6 @@ vim.cmd([[
 	set textwidth=80
 	set relativenumber
 	set clipboard=unnamedplus
-	let g:coq_settings = { 'auto_start': v:true }
 	set fillchars=vert:\
 	set fo+=t
 	set updatetime=500
@@ -49,8 +50,6 @@ vim.cmd([[
 	
 	set updatetime=500
 
-	let g:coq_settings = { 'auto_start': 'shut-up' }
-
 ]])
 
 -- Move to /pack/ when all set up
@@ -64,8 +63,6 @@ require("packer").startup({
 			requires = { { "nvim-lua/plenary.nvim" } }
 		})                             -- Search
 		use("neovim/nvim-lspconfig")   -- Needed for everything below
-		use("ms-jpq/coq_nvim")         -- Autocomplete
-		use("ms-jpq/coq.artifacts")    -- Autocomplete snippets
 		use("mfussenegger/nvim-lint")  -- Linter
 		use("stevearc/conform.nvim")   -- Formatter
 		use("mfussenegger/nvim-dap")   -- Debugger
@@ -94,6 +91,13 @@ require("packer").startup({
 			'nvimdev/lspsaga.nvim',
 			requires = "rcarriga/nvim-notify"
 		})
+
+		-- Autocomplete
+		use('hrsh7th/nvim-cmp')
+		use('hrsh7th/cmp-nvim-lsp')
+		use('L3MON4D3/LuaSnip')
+		use('saadparwaiz1/cmp_luasnip')
+		use('rafamadriz/friendly-snippets')
 	end,
 	config = { compile_path = vim.fn.stdpath("config") .. "/init_compiled.lua" },
 })
@@ -129,16 +133,15 @@ require("conform").setup({
 	format_on_save = { timeout_ms = 500, lsp_fallback = true },
 })
 
-
 require("nvim-autopairs").setup()
-local lsp = require("lspconfig")
-local coq = require("coq")
+local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
-lsp.lua_ls.setup(coq.lsp_ensure_capabilities({}))        -- lua
-lsp.eslint.setup(coq.lsp_ensure_capabilities({}))        -- JS
-lsp.clangd.setup(coq.lsp_ensure_capabilities({}))        -- C
-lsp.tsserver.setup(coq.lsp_ensure_capabilities({}))      -- TS
-lsp.stylelint_lsp.setup(coq.lsp_ensure_capabilities({})) -- CSS
+local lsp = require("lspconfig")
+lsp.lua_ls.setup({ capabilities = capabilities }) -- lua
+lsp.eslint.setup({})                              -- JS
+lsp.clangd.setup({})                              -- C
+lsp.tsserver.setup({})                            -- TS
+lsp.stylelint_lsp.setup({})                       -- CSS
 
 require("nvim-treesitter.install").update({ with_sync = true })
 require("nvim-treesitter.configs").setup({ highlight = { enable = true, additional_vim_regex_highlighting = false } })
@@ -352,3 +355,49 @@ vim.api.nvim_set_keymap('n', '<leader>s', '<cmd>Lspsaga peek_definition<CR>', op
 vim.api.nvim_set_keymap('n', '<leader>d', '<cmd>Lspsaga show_line_diagnostics<CR>', opts)
 vim.api.nvim_set_keymap('n', '<leader>f', '<cmd>Lspsaga code_action<CR>', opts)
 vim.api.nvim_set_keymap('n', '<leader>r', '<cmd>Lspsaga rename<CR>', opts)
+
+
+local cmp = require('cmp')
+local luasnip = require("luasnip")
+
+local has_words_before = function()
+	unpack = unpack or table.unpack
+	local line, col = unpack(vim.api.nvim_win_get_cursor(0))
+	return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
+end
+
+require("luasnip/loaders/from_vscode").load()
+
+cmp.setup({
+	sources = cmp.config.sources({
+		{ name = 'nvim_lsp' },
+		{ name = 'luasnip' },
+	}, {
+		{ name = 'buffer' },
+	}),
+	mapping = {
+		["<Tab>"] = cmp.mapping(function(fallback)
+			if cmp.visible() then
+				cmp.select_next_item()
+			elseif luasnip.expand_or_jumpable() then
+				luasnip.expand_or_jump()
+			elseif has_words_before() then
+				cmp.complete()
+			else
+				fallback()
+			end
+		end, { "i", "s" }),
+
+		["<S-Tab>"] = cmp.mapping(function(fallback)
+			if cmp.visible() then
+				cmp.select_prev_item()
+			elseif luasnip.jumpable(-1) then
+				luasnip.jump(-1)
+			else
+				fallback()
+			end
+		end, { "i", "s" }),
+
+		-- ... Your other mappings ...
+	},
+})
