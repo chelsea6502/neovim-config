@@ -1,6 +1,9 @@
 local vim = vim
 
+-- Vanilla Neovim settings
 vim.cmd([[
+	let g:mapleader = " "
+
 	set background=dark
 	set tabstop=2
 	set shiftwidth=2
@@ -16,24 +19,11 @@ vim.cmd([[
 	set fillchars=vert:\
 	set fo+=t
 	set updatetime=500
-
-	let g:mapleader = " "
-
 	set noruler
 	set noshowcmd
 	set laststatus=0
 	set cmdheight=0
-
-	" Key mappings
-	nnoremap <Leader>n :bnext<CR>
-	nnoremap <Leader>p :bprevious<CR>
-	nnoremap <Leader>b :set nomore <Bar>
-	nnoremap <Leader>cd :cd %:p:h<CR>:pwd<CR>
-
-	" Custom Commands
-	command! Sc source ~/.config/nvim/init.lua
-	command! Ec edit ~/.config/nvim/init.lua
-	command! Ep edit ~/.config/nvim/lua/plugins.lua
+	set updatetime=500
 
 	" Theme
 	let g:gruvbox_material_foreground = 'material'
@@ -41,6 +31,46 @@ vim.cmd([[
 	let g:gruvbox_material_better_performance = 1
 	colorscheme gruvbox-material
 
+	" Folding Configuration
+	set foldcolumn=1
+	set foldlevel=99
+	set foldlevelstart=99
+	set foldenable
+	set fillchars=eob:\ ,fold:\ ,foldopen:,foldsep:\ ,foldclose:
+
+	" Use persistent history.
+	if !isdirectory("/tmp/.vim-undo-dir")
+    call mkdir("/tmp/.vim-undo-dir", "", 0700)
+	endif
+	set undodir=/tmp/.vim-undo-dir
+	set undofile
+
+	" Key mappings
+	nnoremap <Leader>n :bnext<CR>
+	nnoremap <Leader>p :bprevious<CR>
+	nnoremap <Leader>b :set nomore <Bar>
+	nnoremap <Leader>cd :cd %:p:h<CR>:pwd<CR>
+
+	" Diagnostic Configuration
+	let g:diagnostic_underline = 0
+	let g:diagnostic_signs = 1
+	let g:diagnostic_severity_sort = 1
+
+	" Custom Commands
+	command! Sc source ~/.config/nvim/init.lua
+	command! Ec edit ~/.config/nvim/init.lua
+	command! Ep edit ~/.config/nvim/lua/plugins.lua
+
+	autocmd VimEnter * wincmd w
+
+
+]])
+
+-- Plugin-specific settings
+vim.cmd([[
+
+	lua vim.lsp.set_log_level("off")
+	
 	nnoremap ff <cmd>Telescope find_files<cr>
 	nnoremap fs <cmd>Telescope live_grep<cr>
 	nnoremap fb <cmd>Telescope buffers<cr>
@@ -48,72 +78,43 @@ vim.cmd([[
 	nnoremap fn <cmd>Telescope noice<cr>
 	nnoremap <leader>cc <cmd>:!clang -g % -std=c89<cr>
 	
-	set updatetime=500
 
-	autocmd VimEnter * wincmd w
+	" Copilot Configuration
+	let g:copilot_no_tab_map = 1
+	inoremap <C-J> <cmd>copilot#Accept("<CR>")<CR>
 
-" Use persistent history.
-if !isdirectory("/tmp/.vim-undo-dir")
-    call mkdir("/tmp/.vim-undo-dir", "", 0700)
-endif
-set undodir=/tmp/.vim-undo-dir
-set undofile
+	" Copilot Filetypes Configuration
+	let g:copilot_filetypes = {}
+	let g:copilot_filetypes['*'] = v:false
+	let g:copilot_filetypes['css'] = v:true
+	let g:copilot_filetypes['html'] = v:true
+	let g:copilot_filetypes['lua'] = v:true
+	let g:copilot_filetypes['json'] = v:true
+	let g:copilot_filetypes['asm'] = v:true
 
-" Key Mapping for Lspsaga hover_doc
-nnoremap K :Lspsaga hover_doc<CR>
+	" Keybindings for DAP (Debug Adapter Protocol)
+	nnoremap <Leader>db :lua require'dap'.toggle_breakpoint()<CR>
+	nnoremap <Leader>du :lua require'dapui'.toggle()<CR>
+	nnoremap <Leader>dc :lua require'dap'.continue()<CR>
+	nnoremap <Leader>ds :lua require'dap'.step_over()<CR>
+	nnoremap <Leader>di :lua require'dap'.step_into()<CR>
+	nnoremap <Leader>do :lua require'dap'.step_out()<CR>
+	nnoremap <Leader>dd :lua require'dap'.disconnect()<CR>
+	nnoremap <Leader>dr :lua require'dap'.restart()<CR>
+	nnoremap <Leader>dt :lua require'dap'.close()<CR>
 
-" Copilot Configuration
-let g:copilot_no_tab_map = 1
-inoremap <C-J> <cmd>copilot#Accept("<CR>")<CR>
+	" Keybinding for Telescope projects
+	nnoremap <Leader>ff :lua require("telescope").extensions.projects.projects({})<CR>
 
-" Copilot Filetypes Configuration
-let g:copilot_filetypes = {}
-let g:copilot_filetypes['*'] = v:false
-let g:copilot_filetypes['css'] = v:true
-let g:copilot_filetypes['html'] = v:true
-let g:copilot_filetypes['lua'] = v:true
-let g:copilot_filetypes['json'] = v:true
-let g:copilot_filetypes['asm'] = v:true
-
-" Keybindings for DAP (Debug Adapter Protocol)
-nnoremap <Leader>db :lua require'dap'.toggle_breakpoint()<CR>
-nnoremap <Leader>du :lua require'dapui'.toggle()<CR>
-nnoremap <Leader>dc :lua require'dap'.continue()<CR>
-nnoremap <Leader>ds :lua require'dap'.step_over()<CR>
-nnoremap <Leader>di :lua require'dap'.step_into()<CR>
-nnoremap <Leader>do :lua require'dap'.step_out()<CR>
-nnoremap <Leader>dd :lua require'dap'.disconnect()<CR>
-nnoremap <Leader>dr :lua require'dap'.restart()<CR>
-nnoremap <Leader>dt :lua require'dap'.close()<CR>
-
-" Keybinding for Telescope projects
-nnoremap <Leader>ff :lua require("telescope").extensions.projects.projects({})<CR>
-
-" Keybinding for No Neck Pain
-nnoremap <Leader>np :NoNeckPain<CR>
-
-" Diagnostic Configuration
-let g:diagnostic_underline = 0
-let g:diagnostic_signs = 1
-let g:diagnostic_severity_sort = 1
-
-" Folding Configuration
-set foldcolumn=1
-set foldlevel=99
-set foldlevelstart=99
-set foldenable
-set fillchars=eob:\ ,fold:\ ,foldopen:,foldsep:\ ,foldclose:
-
-" LSP Saga Keybindings
-nnoremap <leader>a :Lspsaga hover_doc<CR>
-nnoremap <leader>s :Lspsaga peek_definition<CR>
-nnoremap <leader>d :Lspsaga show_line_diagnostics<CR>
-nnoremap <leader>f :Lspsaga code_action<CR>
-nnoremap <leader>r :Lspsaga rename<CR>
+	" LSP Saga Keybindings
+	nnoremap <leader>a :Lspsaga hover_doc<CR>
+	nnoremap <leader>s :Lspsaga peek_definition<CR>
+	nnoremap <leader>d :Lspsaga show_line_diagnostics<CR>
+	nnoremap <leader>f :Lspsaga code_action<CR>
+	nnoremap <leader>r :Lspsaga rename<CR>
 
 ]])
 
--- Move to /pack/ when all set up
 require("packer").startup({
 	function(use)
 		use("wbthomason/packer.nvim")        -- Package manager
@@ -168,34 +169,77 @@ require("packer").startup({
 	config = { compile_path = vim.fn.stdpath("config") .. "/init_compiled.lua" },
 })
 
--- Formatter --
-
-require("conform").setup({
-	formatters_by_ft = {
-		lua = { "stylua" },
-		javascript = { "prettier" },
-		javascriptreact = { "prettier" },
-		typescript = { "prettier" },
-
-		typescriptreact = { "prettier" },
-		json = { "prettier" },
-		c = { "clang_format" },
-		cpp = { "clang_format" },
-		css = { "prettier" },
+-- Basics
+require('ufo').setup()
+require("ibl").setup({
+	indent = {
+		char = "▏",
+	}
+})
+local builtin = require("statuscol.builtin")
+require("statuscol").setup({
+	relculright = true,
+	segments = { { text = { "%s" },     click = "v:lua.ScSa" },
+		{ text = { builtin.lnumfunc, " " }, click = "v:lua.ScLa", },
+		{ text = { builtin.foldfunc, " " }, click = "v:lua.ScFa" },
+	}
+})
+require('nvim_comment').setup({
+	hook = function()
+		require('ts_context_commentstring').update_commentstring()
+	end,
+})
+require('ts_context_commentstring').setup {
+	enable_autocmd = false,
+}
+local nnp = require("no-neck-pain")
+nnp.setup({
+	options = {
+		width = 100,
+		minSideBufferWidth = 100,
+		autocmds = { enableOnVimEnter = true },
 	},
-	format_on_save = { timeout_ms = 500, lsp_fallback = true },
+	buffers = {
+		right = { enabled = false },
+		wo = {
+			fillchars = "vert: ,eob: ",
+		},
+	},
+})
+nnp.enable()
+
+-- Telescope --
+require('telescope').setup({
+	defaults = {
+		file_ignore_patterns = { "node_modules" },
+	},
+})
+require("project_nvim").setup({
+	detection_methods = { "pattern" },
+	patterns = { ".git" },
+})
+require("telescope").load_extension("projects")
+
+-- Noice --
+require("noice").setup({
+	presets = { command_palette = true, }, -- position the cmdline and popupmenu together
+	lsp = {
+		override = {
+			["vim.lsp.util.convert_input_to_markdown_lines"] = true,
+			["vim.lsp.util.stylize_markdown"] = true,
+		},
+	},
 })
 
+-- LSP --
 require("nvim-autopairs").setup()
-local capabilities = require("cmp_nvim_lsp").default_capabilities()
-
+local capabilities = { capabilities = require("cmp_nvim_lsp").default_capabilities() }
 local lsp = require("lspconfig")
-lsp.lua_ls.setup({ capabilities = capabilities })        -- lua
-lsp.eslint.setup({ capabilities = capabilities })        -- JS
-lsp.clangd.setup({ capabilties = capabilities })         -- C
-lsp.tsserver.setup({ capabilities = capabilities })      -- TS
-lsp.stylelint_lsp.setup({ capabilities = capabilities }) -- CSS
-
+lsp.lua_ls.setup(capabilities)        -- lua
+lsp.eslint.setup(capabilities)        -- JS
+lsp.clangd.setup(capabilities)        -- C
+lsp.tsserver.setup(capabilities)      -- TS
+lsp.stylelint_lsp.setup(capabilities) -- CSS
 require("nvim-treesitter.install").update({ with_sync = true })
 require("nvim-treesitter.configs").setup({ highlight = { enable = true, additional_vim_regex_highlighting = false } })
 
@@ -213,7 +257,85 @@ linter.linters_by_ft = {
 	css = { "stylelint" },
 }
 
-------- Debugger ------
+-- Formatter --
+require("conform").setup({
+	formatters_by_ft = {
+		lua = { "stylua" },
+		javascript = { "prettier" },
+		javascriptreact = { "prettier" },
+		typescript = { "prettier" },
+
+		typescriptreact = { "prettier" },
+		json = { "prettier" },
+		c = { "clang_format" },
+		cpp = { "clang_format" },
+		css = { "prettier" },
+	},
+	format_on_save = { timeout_ms = 500, lsp_fallback = true },
+})
+
+
+-- LSP Saga (for type definitions) --
+vim.api.nvim_create_autocmd('LspAttach', {
+	require('lspsaga').setup({
+		lightbulb = { enable = false, },
+		symbol_in_winbar = { enable = false, }
+	}),
+	group = vim.api.nvim_create_augroup('UserLspConfig', {}),
+	callback = function(ev)
+		local opts = { buffer = ev.buf }
+		vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
+	end,
+})
+
+-- Autocomplete --
+local cmp = require('cmp')
+
+require("luasnip/loaders/from_vscode").load()
+
+cmp.setup({
+	snippet = {
+		expand = function(args)
+			require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
+		end,
+	},
+	sources = cmp.config.sources({
+		{ name = 'nvim_lsp' },
+		{ name = 'luasnip' },
+	}, {
+		{ name = 'buffer' },
+		{ name = 'path' },
+	}),
+
+	mapping = cmp.mapping.preset.insert({
+		["<Tab>"] = function(fallback)
+			if cmp.visible() then
+				cmp.select_next_item()
+			else
+				fallback()
+			end
+		end,
+		["<S-Tab>"] = function(fallback)
+			if cmp.visible() then
+				cmp.select_prev_item()
+			else
+				fallback()
+			end
+		end,
+		["<CR>"] = cmp.mapping.confirm({ select = true }),
+
+	}),
+	window = {
+		completion = {
+			border = 'rounded',
+		},
+		documentation = {
+			border = 'rounded',
+		},
+	},
+})
+
+------- Debugger (from here to the end) ------
 local dap = require("dap")
 vim.lsp.set_log_level("DEBUG")
 dap.adapters.lldb = {
@@ -275,13 +397,13 @@ for _, language in ipairs({ "typescriptreact", "javascriptreact" }) do
 		},
 	}
 end
-require("nvim-dap-virtual-text").setup()
 
+-- Debugger UI --
+require("nvim-dap-virtual-text").setup()
 local dapui = require("dapui")
 
 dapui.setup()
 
--- Keybindings
 dap.listeners.before.attach.dapui_config = function()
 	dapui.open()
 end
@@ -294,132 +416,3 @@ end
 dap.listeners.before.event_exited.dapui_config = function()
 	dapui.close()
 end
-
-require("project_nvim").setup({
-	detection_methods = { "pattern" },
-	patterns = { ".git" },
-})
-
-local nnp = require("no-neck-pain")
-nnp.setup({
-	options = {
-		width = 100,
-		minSideBufferWidth = 100,
-		autocmds = { enableOnVimEnter = true },
-	},
-	buffers = {
-		right = { enabled = false },
-		wo = {
-			fillchars = "vert: ,eob: ",
-		},
-	},
-})
-nnp.enable()
-
-require('telescope').setup({
-	defaults = {
-		file_ignore_patterns = { "node_modules" },
-	},
-})
-
-require("telescope").load_extension("projects")
-
-vim.lsp.set_log_level("off")
-
-require("ibl").setup {}
-
-vim.api.nvim_create_autocmd('LspAttach', {
-	require('lspsaga').setup({
-		lightbulb = { enable = false, },
-		symbol_in_winbar = { enable = false, }
-	}),
-	group = vim.api.nvim_create_augroup('UserLspConfig', {}),
-	callback = function(ev)
-		local opts = { buffer = ev.buf }
-		vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
-	end,
-})
-
-local builtin = require("statuscol.builtin")
-require("statuscol").setup({
-	relculright = true,
-	segments = { { text = { "%s" },     click = "v:lua.ScSa" },
-		{ text = { builtin.lnumfunc, " " }, click = "v:lua.ScLa", },
-		{ text = { builtin.foldfunc, " " }, click = "v:lua.ScFa" },
-	}
-})
-
-require('ufo').setup()
-
-require("ibl").setup({
-	indent = {
-		char = "▏",
-	}
-})
-
-require("noice").setup({
-	presets = { command_palette = true, }, -- position the cmdline and popupmenu together
-	lsp = {
-		override = {
-			["vim.lsp.util.convert_input_to_markdown_lines"] = true,
-			["vim.lsp.util.stylize_markdown"] = true,
-		},
-	},
-})
-
-local opts = { noremap = true, silent = true }
-
-local cmp = require('cmp')
-
-require("luasnip/loaders/from_vscode").load()
-
-cmp.setup({
-	snippet = {
-		expand = function(args)
-			require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
-		end,
-	},
-	sources = cmp.config.sources({
-		{ name = 'nvim_lsp' },
-		{ name = 'luasnip' },
-	}, {
-		{ name = 'buffer' },
-		{ name = 'path' },
-	}),
-
-	mapping = cmp.mapping.preset.insert({
-		["<Tab>"] = function(fallback)
-			if cmp.visible() then
-				cmp.select_next_item()
-			else
-				fallback()
-			end
-		end,
-		["<S-Tab>"] = function(fallback)
-			if cmp.visible() then
-				cmp.select_prev_item()
-			else
-				fallback()
-			end
-		end,
-		["<CR>"] = cmp.mapping.confirm({ select = true }),
-
-	}),
-	window = {
-		completion = { -- rounded border; thin-style scrollbar
-			border = 'rounded',
-		},
-		documentation = { -- no border; native-style scrollbar
-			border = 'rounded',
-		},
-	},
-})
-
-require('nvim_comment').setup({
-	hook = function()
-		require('ts_context_commentstring').update_commentstring()
-	end,
-})
-require('ts_context_commentstring').setup {
-	enable_autocmd = false,
-}
