@@ -26,6 +26,8 @@ vim.cmd([[
 	set updatetime=50
 	set incsearch
 
+	set backupdir=~/.cache/vim
+
 	" Folding Configuration
 	set foldcolumn=1
 	set foldlevel=99
