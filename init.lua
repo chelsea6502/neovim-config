@@ -111,6 +111,7 @@ require("packer").startup({
 		use('hrsh7th/cmp-path')
 
 		use('terrortylor/nvim-comment')
+		use('JoosepAlviste/nvim-ts-context-commentstring')
 	end,
 	config = { compile_path = vim.fn.stdpath("config") .. "/init_compiled.lua" },
 })
@@ -416,4 +417,11 @@ cmp.setup({
 	},
 })
 
-require('nvim_comment').setup({})
+require('nvim_comment').setup({
+	hook = function()
+		require('ts_context_commentstring').update_commentstring()
+	end,
+})
+require('ts_context_commentstring').setup {
+	enable_autocmd = false,
+}
