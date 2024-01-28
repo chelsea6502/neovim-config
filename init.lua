@@ -25,7 +25,6 @@ vim.cmd([[
 	set cmdheight=0
 	set updatetime=50
 	set incsearch
-	set scrolloff=10
 
 	" Folding Configuration
 	set foldcolumn=1
