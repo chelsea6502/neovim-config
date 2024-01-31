@@ -50,18 +50,32 @@ vim.cmd([[
 	set undodir=/tmp/.vim-undo-dir
 	set undofile
 
-	" persistent folding
+	" persistent folding & cursor
 	autocmd BufWinLeave *.* mkview
 	autocmd BufWinEnter *.* silent! loadview
+	set viewoptions=folds,cursor
 
 	" Command shortcuts
 	command! Ec edit ~/.config/nvim/init.lua
+	command! Sc source ~/.config/nvim/init.lua
 	command! Cc clang -g % -std=c89<cr>
 
 	" for NoNeckPain
 	autocmd VimEnter * wincmd w
 
+	" Line wrapping
 	autocmd FileType * setlocal formatoptions+=t
+
+	nnoremap z0 :set foldlevel=99<CR>
+	nnoremap z1 :set foldlevel=1<CR>
+	nnoremap z2 :set foldlevel=2<CR>
+	nnoremap z3 :set foldlevel=3<CR>
+	nnoremap z4 :set foldlevel=4<CR>
+	nnoremap z5 :set foldlevel=5<CR>
+	nnoremap z6 :set foldlevel=6<CR>
+	nnoremap z7 :set foldlevel=7<CR>
+	nnoremap z8 :set foldlevel=8<CR>
+	nnoremap z9 :set foldlevel=9<CR>
 
 	]])
 
@@ -395,6 +409,8 @@ require("lazy").setup({
 			{ '<leader>d', "<cmd>Lspsaga show_line_diagnostics<CR>" },
 			{ '<leader>f', "<cmd>Lspsaga code_action<CR>" },
 			{ '<leader>r', "<cmd>Lspsaga rename<CR>" },
+			{ '<leader>t', "<cmd>Lspsaga term_toggle<CR>" },
+
 		},
 		opts = {
 			lightbulb = { enable = false, },
