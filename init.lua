@@ -77,6 +77,8 @@ vim.cmd([[
 	nnoremap z8 :set foldlevel=8<CR>
 	nnoremap z9 :set foldlevel=9<CR>
 
+	autocmd LspAttach * lua vim.lsp.inlay_hint.enable()
+
 	]])
 
 -- Enable lazy
@@ -136,6 +138,9 @@ require("lazy").setup({
 	{
 		"neovim/nvim-lspconfig",
 		event = "BufRead",
+		opts = {
+			inlay_hints = { enabled = true },
+		},
 		config = function()
 			vim.lsp.set_log_level("off")
 			local capabilities = { capabilities = require("cmp_nvim_lsp").default_capabilities() }
@@ -149,7 +154,7 @@ require("lazy").setup({
 						inlayHints = {
 							parameterNames = { enabled = "literals" },
 							parameterTypes = { enabled = true },
-							variableTypes = { enabled = true },
+							variableTypes = { enabled = false },
 							propertyDeclarationTypes = { enabled = true },
 							functionLikeReturnTypes = { enabled = true },
 							enumMemberValues = { enabled = true },
