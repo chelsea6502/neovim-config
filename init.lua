@@ -17,7 +17,6 @@ vim.cmd([[
 	set relativenumber
 	set clipboard=unnamedplus
 	set fillchars=vert:\
-	set fo+=t
 	set updatetime=500
 	set noruler
 	set noshowcmd
@@ -61,6 +60,8 @@ vim.cmd([[
 
 	" for NoNeckPain
 	autocmd VimEnter * wincmd w
+
+	autocmd FileType * setlocal formatoptions+=t
 
 	]])
 
