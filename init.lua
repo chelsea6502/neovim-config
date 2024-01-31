@@ -506,9 +506,6 @@ require("lazy").setup({
 				changedelete = { text = "▎" },
 				untracked = { text = "▎" },
 			},
-			config = function()
-
-			end
 			on_attach = function(buffer)
 				local gs = package.loaded.gitsigns
 
