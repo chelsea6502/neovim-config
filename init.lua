@@ -140,10 +140,23 @@ require("lazy").setup({
 			vim.lsp.set_log_level("off")
 			local capabilities = { capabilities = require("cmp_nvim_lsp").default_capabilities() }
 			local lsp = require("lspconfig")
-			lsp.lua_ls.setup(capabilities)     -- lua
-			lsp.eslint.setup(capabilities)     -- JS
-			lsp.clangd.setup(capabilities)     -- C
-			lsp.tsserver.setup(capabilities)   -- TS
+			lsp.lua_ls.setup(capabilities) -- lua
+			lsp.eslint.setup(capabilities) -- JS
+			lsp.clangd.setup(capabilities) -- C
+			lsp.vtsls.setup({
+				settings = {
+					typescript = {
+						inlayHints = {
+							parameterNames = { enabled = "literals" },
+							parameterTypes = { enabled = true },
+							variableTypes = { enabled = true },
+							propertyDeclarationTypes = { enabled = true },
+							functionLikeReturnTypes = { enabled = true },
+							enumMemberValues = { enabled = true },
+						}
+					},
+				}
+			})                                 -- TS
 			lsp.stylelint_lsp.setup(capabilities) -- CSS
 		end
 	},
