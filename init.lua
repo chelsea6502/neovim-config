@@ -85,32 +85,29 @@ vim.cmd([[
 vim.opt.rtp:prepend(vim.fn.stdpath("data") .. "/lazy/lazy.nvim")
 
 require("lazy").setup({
-	-- Package manager
 	{
-		"LazyVim/LazyVim",
-		opts = {
-			colorscheme = "gruvbox-material",
-			defaults = { version = "*" },
-		},
-		priority = 1000,
+		'sainnhe/gruvbox-material',
+		lazy = false,
+		priority = 999,
+		config = function()
+			vim.cmd.colorscheme "gruvbox-material"
+		end,
 	},
-
 	-- Syntax Highlighter
 	{
 		"nvim-treesitter/nvim-treesitter",
-		event = "BufRead",
 		build = ":TSUpdate",
 		config = function()
-			require("nvim-treesitter.install").update({ with_sync = true })
-			require("nvim-treesitter.configs").setup({
-				highlight = {
-					enable = true,
-					additional_vim_regex_highlighting = false
-				}
+			local configs = require("nvim-treesitter.configs")
+
+			configs.setup({
+				ensure_installed = { "javascript", "tsx", "typescript", "css", "html" },
+				sync_install = true,
+				highlight = { enable = true },
+				indent = { enable = true },
 			})
 		end
 	},
-
 	-- Search
 	{
 		"nvim-telescope/telescope.nvim",
@@ -125,7 +122,7 @@ require("lazy").setup({
 		},
 		opts = {
 			defaults = {
-				file_ignore_patterns = { "node_modules" },
+				file_ignore_patterns = { "node_modules", "dist" },
 			},
 		},
 		init = function()
