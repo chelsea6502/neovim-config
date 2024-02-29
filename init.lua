@@ -380,7 +380,6 @@ require("lazy").setup({
 				or require("null-ls.utils").root_pattern(".null-ls-root", ".neoconf.json", "Makefile", ".git")
 			opts.sources = vim.list_extend(opts.sources or {}, {
 				nls.builtins.formatting.prettier,
-				nls.builtins.formatting.stylua,
 			})
 		end,
 		config = function()
