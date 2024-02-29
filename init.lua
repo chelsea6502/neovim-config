@@ -51,11 +51,6 @@ vim.cmd([[
 	set undodir=/tmp/.vim-undo-dir
 	set undofile
 
-	" persistent folding & cursor
-	autocmd BufWinLeave *.* mkview
-	autocmd BufWinEnter *.* silent! loadview
-	set viewoptions=folds,cursor
-
 	" Command shortcuts
 	command! Ec edit ~/.config/nvim/init.lua
 	command! Sc source ~/.config/nvim/init.lua
@@ -82,9 +77,9 @@ vim.cmd([[
 
 	]])
 
-vim.diagnostic.config {
+vim.diagnostic.config({
 	underline = false,
-}
+})
 
 -- Enable lazy
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
@@ -114,19 +109,19 @@ require("lazy").setup({
 				highlight = { enable = true },
 				indent = { enable = true },
 			})
-		end
+		end,
 	},
 	-- Search
 	{
 		"nvim-telescope/telescope.nvim",
 		cmd = "Telescope",
-		dependencies = { 'nvim-lua/plenary.nvim' },
+		dependencies = { "nvim-lua/plenary.nvim" },
 		keys = {
-			{ 'ff', "<cmd>Telescope find_files<CR>" },
-			{ 'fs', "<cmd>Telescope live_grep<CR>" },
-			{ 'fb', "<cmd>Telescope buffers<CR>" },
-			{ 'fh', "<cmd>Telescope help_tags<CR>" },
-			{ 'fn', "<cmd>Telescope noice<CR>" },
+			{ "ff", "<cmd>Telescope find_files<CR>" },
+			{ "fs", "<cmd>Telescope live_grep<CR>" },
+			{ "fb", "<cmd>Telescope buffers<CR>" },
+			{ "fh", "<cmd>Telescope help_tags<CR>" },
+			{ "fn", "<cmd>Telescope noice<CR>" },
 		},
 		opts = {
 			defaults = {
@@ -135,17 +130,23 @@ require("lazy").setup({
 		},
 		init = function()
 			require("telescope").load_extension("projects")
-		end
+		end,
 	},
 
 	-- LSP, linter, formatter, and debugger
 	{
 		"neovim/nvim-lspconfig",
+		dependencies = {
+			"williamboman/mason.nvim",
+		},
 		event = "BufRead",
 		opts = {
 			inlay_hints = { enabled = true },
 		},
 		config = function()
+			local mason = require("mason")
+			mason.setup()
+
 			vim.lsp.set_log_level("off")
 			local capabilities = { capabilities = require("cmp_nvim_lsp").default_capabilities() }
 			local lsp = require("lspconfig")
@@ -162,12 +163,12 @@ require("lazy").setup({
 							propertyDeclarationTypes = { enabled = true },
 							functionLikeReturnTypes = { enabled = true },
 							enumMemberValues = { enabled = true },
-						}
+						},
 					},
-				}
+				},
 			})                                 -- TS
 			lsp.stylelint_lsp.setup(capabilities) -- CSS
-		end
+		end,
 	},
 	{
 		"mfussenegger/nvim-lint",
@@ -185,7 +186,7 @@ require("lazy").setup({
 				cpp = { "clangtidy" },
 				css = { "stylelint" },
 			}
-		end
+		end,
 	},
 	{
 		"stevearc/conform.nvim",
@@ -203,14 +204,14 @@ require("lazy").setup({
 				css = { "prettier" },
 			},
 			format_on_save = { timeout_ms = 500, lsp_fallback = true },
-		}
+		},
 	},
 	{
 		"mfussenegger/nvim-dap",
 		event = "BufRead",
 		dependencies = {
 			"rcarriga/nvim-dap-ui",
-			"theHamsta/nvim-dap-virtual-text"
+			"theHamsta/nvim-dap-virtual-text",
 		},
 		config = function()
 			local dap = require("dap")
@@ -231,7 +232,6 @@ require("lazy").setup({
 					args = {},
 				},
 			}
-
 
 			for _, language in ipairs({ "typescript", "javascript" }) do
 				dap.configurations[language] = {
@@ -299,7 +299,7 @@ require("lazy").setup({
 				nnoremap <Leader>dr :lua require'dap'.restart()<CR>
 				nnoremap <Leader>dt :lua require'dap'.close()<CR>
 			]])
-		end
+		end,
 	},
 	{
 		"mxsdev/nvim-dap-vscode-js",
@@ -308,7 +308,7 @@ require("lazy").setup({
 			node_path = "/opt/homebrew/bin/node",
 			debugger_path = vim.fn.expand("$HOME/.config/nvim/vscode-js-debug/"),
 			adapters = { "pwa-node", "pwa-chrome" },
-		}
+		},
 	},
 	{ "microsoft/vscode-js-debug",    lazy = true },
 
@@ -336,12 +336,12 @@ require("lazy").setup({
 				},
 			})
 			nnp.enable()
-		end
+		end,
 	},
 	{
 		"ahmedkhalf/project.nvim",
 		keys = {
-			{ 'FF', "<cmd>lua require('telescope').extensions.projects.projects({})<CR>" },
+			{ "FF", "<cmd>lua require('telescope').extensions.projects.projects({})<CR>" },
 		},
 		main = "project_nvim",
 		opts = {
@@ -356,7 +356,7 @@ require("lazy").setup({
 		opts = {
 			indent = {
 				char = "▏",
-			}
+			},
 		},
 	},
 	{
@@ -370,79 +370,78 @@ require("lazy").setup({
 					{ text = { builtin.lnumfunc, " " },                                        click = "v:lua.ScLa" },
 					{ sign = { name = { ".*" }, namespace = { "gitsigns" }, colwidth = 1 },    click = "v:lua.ScSa" },
 					{ text = { builtin.foldfunc, " " },                                        click = "v:lua.ScFa" },
-				}
+				},
 			})
-		end
+		end,
 	},
 	{
 		"kevinhwang91/nvim-ufo",
 		dependencies = "kevinhwang91/promise-async",
 		config = function()
-			require('ufo').setup()
-		end
+			require("ufo").setup()
+		end,
 	},
 	{
-		'sainnhe/gruvbox-material',
+		"sainnhe/gruvbox-material",
 		event = "VimEnter",
 		init = function()
-			vim.g.gruvbox_material_foreground = 'material'
-			vim.g.gruvbox_material_background = 'medium'
+			vim.g.gruvbox_material_foreground = "material"
+			vim.g.gruvbox_material_background = "medium"
 			vim.g.gruvbox_material_better_performance = 1
-			vim.cmd.colorscheme "gruvbox-material"
-		end
+			vim.cmd.colorscheme("gruvbox-material")
+		end,
 	},
 	{
 		"folke/noice.nvim",
 		dependencies = "MunifTanjim/nui.nvim",
 		opts = {
-			presets = { command_palette = true, }, -- position the cmdline and popupmenu together
+			presets = { command_palette = true }, -- position the cmdline and popupmenu together
 			lsp = {
 				override = {
 					["vim.lsp.util.convert_input_to_markdown_lines"] = true,
 					["vim.lsp.util.stylize_markdown"] = true,
 				},
 			},
-		}
+		},
 	},
 	{
-		'nvimdev/lspsaga.nvim',
+		"nvimdev/lspsaga.nvim",
 		event = "LspAttach",
 		keys = {
-			{ '<leader>a', "<cmd>Lspsaga hover_doc<CR>" },
-			{ '<leader>s', "<cmd>Lspsaga peek_definition<CR>" },
-			{ '<leader>d', "<cmd>Lspsaga show_line_diagnostics<CR>" },
-			{ '<leader>f', "<cmd>Lspsaga code_action<CR>" },
-			{ '<leader>r', "<cmd>Lspsaga rename<CR>" },
-			{ '<leader>t', "<cmd>Lspsaga term_toggle<CR>" },
-
+			{ "<leader>a", "<cmd>Lspsaga hover_doc<CR>" },
+			{ "<leader>s", "<cmd>Lspsaga peek_definition<CR>" },
+			{ "<leader>d", "<cmd>Lspsaga show_line_diagnostics<CR>" },
+			{ "<leader>f", "<cmd>Lspsaga code_action<CR>" },
+			{ "<leader>r", "<cmd>Lspsaga rename<CR>" },
+			{ "<leader>t", "<cmd>Lspsaga term_toggle<CR>" },
 		},
 		opts = {
-			lightbulb = { enable = false, },
-			symbol_in_winbar = { enable = false, }
+			lightbulb = { enable = false },
+			symbol_in_winbar = { enable = false },
 		},
 	},
 
 	-- Autocomplete and snippets
 	{
-		'hrsh7th/nvim-cmp',
+		"hrsh7th/nvim-cmp",
 		event = "InsertEnter",
 		config = function()
-			local cmp = require('cmp')
+			local cmp = require("cmp")
 
 			require("luasnip/loaders/from_vscode").load()
 
 			cmp.setup({
 				snippet = {
 					expand = function(args)
-						require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
+						require("luasnip").lsp_expand(args.body) -- For `luasnip` users.
 					end,
 				},
 				sources = cmp.config.sources({
-					{ name = 'nvim_lsp' },
-					{ name = 'luasnip' },
+					{ name = "nvim_lsp" },
+					{ name = "luasnip" },
 				}, {
-					{ name = 'buffer' },
-					{ name = 'path' },
+					{ name = "buffer" },
+					{ name = "path" },
 				}),
 
 				mapping = cmp.mapping.preset.insert({
@@ -461,42 +460,41 @@ require("lazy").setup({
 						end
 					end,
 					["<CR>"] = cmp.mapping.confirm({ select = true }),
-
 				}),
 				window = {
 					completion = {
-						border = 'rounded',
+						border = "rounded",
 					},
 					documentation = {
-						border = 'rounded',
+						border = "rounded",
 					},
 				},
 			})
-		end
+		end,
 	},
-	{ 'hrsh7th/cmp-nvim-lsp', },
-	{ 'L3MON4D3/LuaSnip', },
-	{ 'saadparwaiz1/cmp_luasnip', },
-	{ 'rafamadriz/friendly-snippets', event = "InsertEnter" },
-	{ 'hrsh7th/cmp-buffer', },
-	{ 'hrsh7th/cmp-path', },
+	{ "hrsh7th/cmp-nvim-lsp" },
+	{ "L3MON4D3/LuaSnip" },
+	{ "saadparwaiz1/cmp_luasnip" },
+	{ "rafamadriz/friendly-snippets", event = "InsertEnter" },
+	{ "hrsh7th/cmp-buffer" },
+	{ "hrsh7th/cmp-path" },
 
 	-- Comments
 	{
-		'terrortylor/nvim-comment',
+		"terrortylor/nvim-comment",
 		main = "nvim_comment",
 		opts = {
 			hook = function()
-				require('ts_context_commentstring').update_commentstring()
+				require("ts_context_commentstring").update_commentstring()
 			end,
 		},
 	},
 	{
-		'JoosepAlviste/nvim-ts-context-commentstring',
+		"JoosepAlviste/nvim-ts-context-commentstring",
 		ft = { "typescript", "javascript", "typescriptreact", "javascriptreact" },
 		opts = {
 			enable_autocmd = false,
-		}
+		},
 	},
 	{
 		"lewis6991/gitsigns.nvim",
@@ -527,5 +525,8 @@ require("lazy").setup({
 				map("n", "<leader>ghR", gs.reset_buffer, "Reset Buffer")
 			end,
 		},
-	}
+	},
+	{
+		"williamboman/mason.nvim",
+	},
 })
