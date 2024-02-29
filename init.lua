@@ -12,6 +12,7 @@ vim.cmd([[
 	set colorcolumn=80
 	set cursorline
 	set termguicolors
+	"highlight Comment gui=italic
 	set virtualedit=onemore
 	set textwidth=80
 	set relativenumber
@@ -81,18 +82,25 @@ vim.cmd([[
 
 	]])
 
+vim.diagnostic.config {
+	underline = false,
+}
+
 -- Enable lazy
-vim.opt.rtp:prepend(vim.fn.stdpath("data") .. "/lazy/lazy.nvim")
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not vim.loop.fs_stat(lazypath) then
+	vim.fn.system({
+		"git",
+		"clone",
+		"--filter=blob:none",
+		"https://github.com/folke/lazy.nvim.git",
+		"--branch=stable", -- latest stable release
+		lazypath,
+	})
+end
+vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
-	{
-		'sainnhe/gruvbox-material',
-		lazy = false,
-		priority = 999,
-		config = function()
-			vim.cmd.colorscheme "gruvbox-material"
-		end,
-	},
 	-- Syntax Highlighter
 	{
 		"nvim-treesitter/nvim-treesitter",
@@ -188,7 +196,6 @@ require("lazy").setup({
 				javascript = { "prettier" },
 				javascriptreact = { "prettier" },
 				typescript = { "prettier" },
-
 				typescriptreact = { "prettier" },
 				json = { "prettier" },
 				c = { "clang_format" },
@@ -303,35 +310,13 @@ require("lazy").setup({
 			adapters = { "pwa-node", "pwa-chrome" },
 		}
 	},
-	{ "microsoft/vscode-js-debug", lazy = true },
+	{ "microsoft/vscode-js-debug",    lazy = true },
 
 	-- Bracket pairing
 	{
 		"windwp/nvim-autopairs",
 		event = "InsertEnter",
 	},
-
-	-- AI completion
-	{
-		"github/copilot.vim",
-		cmd = "Copilot",
-		init = function()
-			vim.cmd([[" Copilot Configuration
-			let g:copilot_no_tab_map = 1
-			inoremap <C-J> <cmd>copilot#Accept("<CR>")<CR>
-
-			" Copilot Filetypes Configuration
-			let g:copilot_filetypes = {}
-			let g:copilot_filetypes['*'] = v:false
-			let g:copilot_filetypes['css'] = v:true
-			let g:copilot_filetypes['html'] = v:true
-			let g:copilot_filetypes['lua'] = v:true
-			let g:copilot_filetypes['json'] = v:true
-			let g:copilot_filetypes['asm'] = v:true
-		]])
-		end
-	},
-	{ "gptlang/CopilotChat.nvim",  cmd = "CopilotChat" },
 
 	-- Other utilities
 	{
@@ -403,6 +388,7 @@ require("lazy").setup({
 			vim.g.gruvbox_material_foreground = 'material'
 			vim.g.gruvbox_material_background = 'medium'
 			vim.g.gruvbox_material_better_performance = 1
+			vim.cmd.colorscheme "gruvbox-material"
 		end
 	},
 	{
