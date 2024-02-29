@@ -101,9 +101,7 @@ require("lazy").setup({
 		"nvim-treesitter/nvim-treesitter",
 		build = ":TSUpdate",
 		config = function()
-			local configs = require("nvim-treesitter.configs")
-
-			configs.setup({
+			require("nvim-treesitter.configs").setup({
 				ensure_installed = { "javascript", "tsx", "typescript", "css", "html" },
 				sync_install = true,
 				highlight = { enable = true },
@@ -119,9 +117,6 @@ require("lazy").setup({
 		keys = {
 			{ "ff", "<cmd>Telescope find_files<CR>" },
 			{ "fs", "<cmd>Telescope live_grep<CR>" },
-			{ "fb", "<cmd>Telescope buffers<CR>" },
-			{ "fh", "<cmd>Telescope help_tags<CR>" },
-			{ "fn", "<cmd>Telescope noice<CR>" },
 		},
 		opts = {
 			defaults = {
@@ -166,7 +161,8 @@ require("lazy").setup({
 						},
 					},
 				},
-			}) --lsp.stylelint_lsp.setup(capabilities) -- CSS
+			})
+			-- lsp.stylelint_lsp.setup(capabilities) -- CSS
 		end,
 	},
 	{
@@ -205,113 +201,6 @@ require("lazy").setup({
 			format_on_save = { timeout_ms = 500, lsp_fallback = true },
 		},
 	},
-	{
-		"mfussenegger/nvim-dap",
-		event = "BufRead",
-		dependencies = {
-			"rcarriga/nvim-dap-ui",
-			"theHamsta/nvim-dap-virtual-text",
-		},
-		config = function()
-			local dap = require("dap")
-			vim.lsp.set_log_level("DEBUG")
-			dap.adapters.lldb = {
-				type = "executable",
-				command = "/opt/homebrew/opt/llvm/bin/lldb-vscode",
-				name = "lldb",
-			}
-			dap.configurations.c = {
-				{
-					name = "Launch",
-					type = "lldb",
-					request = "launch",
-					program = vim.fn.getcwd() .. "/a.out",
-					cwd = "${workspaceFolder}",
-					stopOnEntry = false,
-					args = {},
-				},
-			}
-
-			for _, language in ipairs({ "typescript", "javascript" }) do
-				dap.configurations[language] = {
-					{
-						type = "pwa-node",
-						request = "launch",
-						name = "Launch file",
-						program = "${file}",
-						cwd = "${workspaceFolder}",
-						skipFiles = { "<node_internals>/**", "**/node_modules/**" },
-					},
-					{
-						type = "pwa-node",
-						request = "attach",
-						name = "Attach",
-						processId = require("dap.utils").pick_process,
-						cwd = "${workspaceFolder}",
-						skipFiles = { "<node_internals>/**", "**/node_modules/**" },
-					},
-				}
-			end
-
-			for _, language in ipairs({ "typescriptreact", "javascriptreact" }) do
-				dap.configurations[language] = {
-					{
-						type = "pwa-chrome",
-						request = "launch",
-						name = "Launch file",
-						url = "http://localhost:5173",
-						webRoot = vim.fn.getcwd() .. "/src",
-						protocol = "inspector",
-						sourceMaps = true,
-						userDataDir = false,
-						skipFiles = { "<node_internals>/**", "**/node_modules/**" },
-					},
-				}
-			end
-
-			require("nvim-dap-virtual-text").setup()
-			local dapui = require("dapui")
-
-			dapui.setup()
-
-			dap.listeners.before.attach.dapui_config = function()
-				dapui.open()
-			end
-			dap.listeners.before.launch.dapui_config = function()
-				dapui.open()
-			end
-			dap.listeners.before.event_terminated.dapui_config = function()
-				dapui.close()
-			end
-			dap.listeners.before.event_exited.dapui_config = function()
-				dapui.close()
-			end
-
-			vim.cmd([[ 	" Keybindings for DAP (Debug Adapter Protocol)
-				nnoremap <Leader>db :lua require'dap'.toggle_breakpoint()<CR>
-				nnoremap <Leader>du :lua require'dapui'.toggle()<CR>
-				nnoremap <Leader>dc :lua require'dap'.continue()<CR>
-				nnoremap <Leader>ds :lua require'dap'.step_over()<CR>
-				nnoremap <Leader>di :lua require'dap'.step_into()<CR>
-				nnoremap <Leader>do :lua require'dap'.step_out()<CR>
-				nnoremap <Leader>dd :lua require'dap'.disconnect()<CR>
-				nnoremap <Leader>dr :lua require'dap'.restart()<CR>
-				nnoremap <Leader>dt :lua require'dap'.close()<CR>
-			]])
-		end,
-	},
-	{
-		"mxsdev/nvim-dap-vscode-js",
-		ft = "javascript, typescript, javascriptreact, typescriptreact",
-		opts = {
-			node_path = "/opt/homebrew/bin/node",
-			debugger_path = vim.fn.expand("$HOME/.config/nvim/vscode-js-debug/"),
-			adapters = { "pwa-node", "pwa-chrome" },
-		},
-	},
-	{ "microsoft/vscode-js-debug",    lazy = true },
-
-	-- Bracket pairing
 	{
 		"windwp/nvim-autopairs",
 		event = "InsertEnter",
