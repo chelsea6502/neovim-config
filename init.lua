@@ -162,7 +162,7 @@ require("lazy").setup({
 					},
 				},
 			})
-			-- lsp.stylelint_lsp.setup(capabilities) -- CSS
+			lsp.stylelint_lsp.setup(capabilities) -- CSS
 		end,
 	},
 	{
