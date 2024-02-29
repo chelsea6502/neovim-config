@@ -371,33 +371,4 @@ require("lazy").setup({
 	{ "hrsh7th/nvim-cmp" },
 	{ "L3MON4D3/LuaSnip" },
 	{ "williamboman/mason-lspconfig.nvim" },
-	{
-		"nvimtools/none-ls.nvim",
-		dependencies = { "mason.nvim" },
-		opts = function(_, opts)
-			local nls = require("null-ls")
-			opts.root_dir = opts.root_dir
-				or require("null-ls.utils").root_pattern(".null-ls-root", ".neoconf.json", "Makefile", ".git")
-			opts.sources = vim.list_extend(opts.sources or {}, {
-				nls.builtins.formatting.prettier,
-			})
-		end,
-		config = function()
-			local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
-			require("null-ls").setup({
-				on_attach = function(client, bufnr)
-					if client.supports_method("textDocument/formatting") then
-						vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
-						vim.api.nvim_create_autocmd("BufWritePre", {
-							group = augroup,
-							buffer = bufnr,
-							callback = function()
-								vim.lsp.buf.format({ async = false })
-							end,
-						})
-					end
-				end,
-			})
-		end,
-	},
 })
