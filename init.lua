@@ -142,27 +142,36 @@ require("lazy").setup({
 			local mason = require("mason")
 			mason.setup()
 
-			vim.lsp.set_log_level("off")
-			local capabilities = { capabilities = require("cmp_nvim_lsp").default_capabilities() }
-			local lsp = require("lspconfig")
-			lsp.lua_ls.setup(capabilities) -- lua
-			lsp.eslint.setup(capabilities) -- JS
-			lsp.clangd.setup(capabilities) -- C
-			lsp.vtsls.setup({
-				settings = {
-					typescript = {
-						inlayHints = {
-							parameterNames = { enabled = "literals" },
-							parameterTypes = { enabled = true },
-							variableTypes = { enabled = false },
-							propertyDeclarationTypes = { enabled = true },
-							functionLikeReturnTypes = { enabled = true },
-							enumMemberValues = { enabled = true },
-						},
-					},
+			local lsp_zero = require("lsp-zero")
+
+			lsp_zero.on_attach(function(client, bufnr)
+				lsp_zero.default_keymaps({ buffer = bufnr })
+			end)
+
+			require("mason").setup({})
+			require("mason-lspconfig").setup({
+				ensure_installed = {},
+				handlers = {
+					lsp_zero.default_setup,
+					vtsls = function()
+						require("lspconfig").vtsls.setup({
+							settings = {
+								typescript = {
+									inlayHints = {
+										parameterNames = { enabled = "literals" },
+										parameterTypes = { enabled = true },
+										variableTypes = { enabled = false },
+										propertyDeclarationTypes = { enabled = true },
+										functionLikeReturnTypes = { enabled = true },
+										enumMemberValues = { enabled = true },
+									},
+								},
+							},
+						})
+					end,
 				},
 			})
-			lsp.stylelint_lsp.setup(capabilities) -- CSS
+			vim.lsp.set_log_level("off")
 		end,
 	},
 	{
@@ -255,9 +264,9 @@ require("lazy").setup({
 				relculright = true,
 				segments = {
 					{ sign = { name = { ".*" }, namespace = { "diagnostic*" }, colwidth = 2 }, click = "v:lua.ScSa" },
-					{ text = { builtin.lnumfunc, " " },                                        click = "v:lua.ScLa" },
-					{ sign = { name = { ".*" }, namespace = { "gitsigns" }, colwidth = 1 },    click = "v:lua.ScSa" },
-					{ text = { builtin.foldfunc, " " },                                        click = "v:lua.ScFa" },
+					{ text = { builtin.lnumfunc, " " }, click = "v:lua.ScLa" },
+					{ sign = { name = { ".*" }, namespace = { "gitsigns" }, colwidth = 1 }, click = "v:lua.ScSa" },
+					{ text = { builtin.foldfunc, " " }, click = "v:lua.ScFa" },
 				},
 			})
 		end,
@@ -309,64 +318,6 @@ require("lazy").setup({
 		},
 	},
 
-	-- Autocomplete and snippets
-	{
-		"hrsh7th/nvim-cmp",
-		event = "InsertEnter",
-		config = function()
-			local cmp = require("cmp")
-
-			require("luasnip/loaders/from_vscode").load()
-
-			cmp.setup({
-				snippet = {
-					expand = function(args)
-						require("luasnip").lsp_expand(args.body) -- For `luasnip` users.
-					end,
-				},
-				sources = cmp.config.sources({
-					{ name = "nvim_lsp" },
-					{ name = "luasnip" },
-				}, {
-					{ name = "buffer" },
-					{ name = "path" },
-				}),
-
-				mapping = cmp.mapping.preset.insert({
-					["<Tab>"] = function(fallback)
-						if cmp.visible() then
-							cmp.select_next_item()
-						else
-							fallback()
-						end
-					end,
-					["<S-Tab>"] = function(fallback)
-						if cmp.visible() then
-							cmp.select_prev_item()
-						else
-							fallback()
-						end
-					end,
-					["<CR>"] = cmp.mapping.confirm({ select = true }),
-				}),
-				window = {
-					completion = {
-						border = "rounded",
-					},
-					documentation = {
-						border = "rounded",
-					},
-				},
-			})
-		end,
-	},
-	{ "hrsh7th/cmp-nvim-lsp" },
-	{ "L3MON4D3/LuaSnip" },
-	{ "saadparwaiz1/cmp_luasnip" },
-	{ "rafamadriz/friendly-snippets", event = "InsertEnter" },
-	{ "hrsh7th/cmp-buffer" },
-	{ "hrsh7th/cmp-path" },
-
 	-- Comments
 	{
 		"terrortylor/nvim-comment",
@@ -414,7 +365,11 @@ require("lazy").setup({
 			end,
 		},
 	},
-	{
-		"williamboman/mason.nvim",
-	},
+	{ "williamboman/mason.nvim" },
+	{ "VonHeikemen/lsp-zero.nvim", branch = "v3.x" },
+	{ "neovim/nvim-lspconfig" },
+	{ "hrsh7th/cmp-nvim-lsp" },
+	{ "hrsh7th/nvim-cmp" },
+	{ "L3MON4D3/LuaSnip" },
+	{ "williamboman/mason-lspconfig.nvim" },
 })
