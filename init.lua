@@ -348,6 +348,9 @@ require("lazy").setup({
 	{ "williamboman/mason-lspconfig.nvim" },
 	{
 		"nvimtools/none-ls.nvim",
+		dependencies = {
+			"nvimtools/none-ls-extras.nvim",
+		},
 		config = function()
 			local null_ls = require("null-ls")
 
@@ -355,6 +358,8 @@ require("lazy").setup({
 				sources = {
 					null_ls.builtins.formatting.stylua,
 					null_ls.builtins.formatting.prettierd,
+					null_ls.builtins.code_actions.gitsigns,
+					require("none-ls.diagnostics.eslint"),
 				},
 			})
 
@@ -368,24 +373,6 @@ require("lazy").setup({
 					})
 				end,
 			})
-		end,
-	},
-	{
-		"mfussenegger/nvim-lint",
-		event = "BufRead",
-		config = function()
-			local linter = require("lint")
-			linter.linters.clangtidy.args = { "-std=c89" }
-			linter.linters_by_ft = {
-				javascript = { "eslint" },
-				javascriptreact = { "eslint" },
-				typescript = { "eslint" },
-				typescriptreact = { "eslint" },
-				json = { "eslint" },
-				c = { "clangtidy" },
-				cpp = { "clangtidy" },
-				css = { "stylelint" },
-			}
 		end,
 	},
 })
