@@ -370,4 +370,22 @@ require("lazy").setup({
 			})
 		end,
 	},
+	{
+		"mfussenegger/nvim-lint",
+		event = "BufRead",
+		config = function()
+			local linter = require("lint")
+			linter.linters.clangtidy.args = { "-std=c89" }
+			linter.linters_by_ft = {
+				javascript = { "eslint" },
+				javascriptreact = { "eslint" },
+				typescript = { "eslint" },
+				typescriptreact = { "eslint" },
+				json = { "eslint" },
+				c = { "clangtidy" },
+				cpp = { "clangtidy" },
+				css = { "stylelint" },
+			}
+		end,
+	},
 })
