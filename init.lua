@@ -60,6 +60,10 @@ vim.cmd([[
 	" for NoNeckPain
 	autocmd VimEnter * wincmd w
 
+	autocmd FocusLost * :wa
+
+	set autoread
+
 	" Line wrapping
 	autocmd FileType * setlocal formatoptions+=t
 
