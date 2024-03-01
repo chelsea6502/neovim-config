@@ -1,5 +1,3 @@
-local vim = vim
-
 -- General nvim settings
 vim.cmd([[
 	let g:mapleader = " "
@@ -77,9 +75,7 @@ vim.cmd([[
 
 	]])
 
-vim.diagnostic.config({
-	underline = false,
-})
+vim.diagnostic.config({ underline = false })
 
 -- Enable lazy
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
@@ -89,7 +85,7 @@ if not vim.loop.fs_stat(lazypath) then
 		"clone",
 		"--filter=blob:none",
 		"https://github.com/folke/lazy.nvim.git",
-		"--branch=stable", -- latest stable release
+		"--branch=stable",
 		lazypath,
 	})
 end
@@ -118,11 +114,7 @@ require("lazy").setup({
 			{ "ff", "<cmd>Telescope find_files<CR>" },
 			{ "fs", "<cmd>Telescope live_grep<CR>" },
 		},
-		opts = {
-			defaults = {
-				file_ignore_patterns = { "node_modules", "dist" },
-			},
-		},
+		opts = { defaults = { file_ignore_patterns = { "node_modules", "dist" } } },
 		init = function()
 			require("telescope").load_extension("projects")
 		end,
@@ -131,20 +123,16 @@ require("lazy").setup({
 	-- LSP, linter, formatter, and debugger
 	{
 		"neovim/nvim-lspconfig",
-		dependencies = {
-			"williamboman/mason.nvim",
-		},
+		dependencies = { "williamboman/mason.nvim" },
 		event = "BufRead",
-		opts = {
-			inlay_hints = { enabled = true },
-		},
+		opts = { inlay_hints = { enabled = true } },
 		config = function()
 			local mason = require("mason")
 			mason.setup()
 
 			local lsp_zero = require("lsp-zero")
 
-			lsp_zero.on_attach(function(client, bufnr)
+			lsp_zero.on_attach(function(_, bufnr)
 				lsp_zero.default_keymaps({ buffer = bufnr })
 			end)
 
@@ -185,10 +173,7 @@ require("lazy").setup({
 			vim.lsp.set_log_level("off")
 		end,
 	},
-	{
-		"windwp/nvim-autopairs",
-		event = "InsertEnter",
-	},
+	{ "windwp/nvim-autopairs", event = "InsertEnter" },
 
 	-- Other utilities
 	{
@@ -196,16 +181,8 @@ require("lazy").setup({
 		config = function()
 			local nnp = require("no-neck-pain")
 			nnp.setup({
-				options = {
-					width = 100,
-					minSideBufferWidth = 100,
-				},
-				buffers = {
-					right = { enabled = false },
-					wo = {
-						fillchars = "vert: ,eob: ",
-					},
-				},
+				options = { width = 100, minSideBufferWidth = 100 },
+				buffers = { right = { enabled = false }, wo = { fillchars = "vert: ,eob: " } },
 			})
 			nnp.enable()
 		end,
@@ -216,20 +193,13 @@ require("lazy").setup({
 			{ "FF", "<cmd>lua require('telescope').extensions.projects.projects({})<CR>" },
 		},
 		main = "project_nvim",
-		opts = {
-			detection_methods = { "pattern" },
-			patterns = { ".git" },
-		},
+		opts = { detection_methods = { "pattern" }, patterns = { ".git" } },
 	},
 	{
 		"lukas-reineke/indent-blankline.nvim",
 		event = "BufRead",
 		main = "ibl",
-		opts = {
-			indent = {
-				char = "▏",
-			},
-		},
+		opts = { indent = { char = "▏" } },
 	},
 	{
 		"luukvbaal/statuscol.nvim",
@@ -287,10 +257,7 @@ require("lazy").setup({
 			{ "<leader>r", "<cmd>Lspsaga rename<CR>" },
 			{ "<leader>t", "<cmd>Lspsaga term_toggle<CR>" },
 		},
-		opts = {
-			lightbulb = { enable = false },
-			symbol_in_winbar = { enable = false },
-		},
+		opts = { lightbulb = { enable = false }, symbol_in_winbar = { enable = false } },
 	},
 
 	-- Comments
@@ -306,9 +273,7 @@ require("lazy").setup({
 	{
 		"JoosepAlviste/nvim-ts-context-commentstring",
 		ft = { "typescript", "javascript", "typescriptreact", "javascriptreact" },
-		opts = {
-			enable_autocmd = false,
-		},
+		opts = { enable_autocmd = false },
 	},
 	{
 		"lewis6991/gitsigns.nvim",
@@ -348,9 +313,7 @@ require("lazy").setup({
 	{ "williamboman/mason-lspconfig.nvim" },
 	{
 		"nvimtools/none-ls.nvim",
-		dependencies = {
-			"nvimtools/none-ls-extras.nvim",
-		},
+		dependencies = { "nvimtools/none-ls-extras.nvim" },
 		config = function()
 			local null_ls = require("null-ls")
 
