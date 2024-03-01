@@ -23,7 +23,6 @@ vim.cmd([[
 	set cmdheight=1
 	set updatetime=50
 	set incsearch
-
 	set ignorecase
 	set smartcase
 
@@ -127,9 +126,6 @@ require("lazy").setup({
 		event = "BufRead",
 		opts = { inlay_hints = { enabled = true } },
 		config = function()
-			local mason = require("mason")
-			mason.setup()
-
 			local lsp_zero = require("lsp-zero")
 
 			lsp_zero.on_attach(function(_, bufnr)
