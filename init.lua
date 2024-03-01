@@ -186,42 +186,6 @@ require("lazy").setup({
 		end,
 	},
 	{
-		"mfussenegger/nvim-lint",
-		event = "BufRead",
-		config = function()
-			local linter = require("lint")
-			linter.linters.clangtidy.args = { "-std=c89" }
-			linter.linters_by_ft = {
-				javascript = { "eslint" },
-				javascriptreact = { "eslint" },
-				typescript = { "eslint" },
-				typescriptreact = { "eslint" },
-				json = { "eslint" },
-				c = { "clangtidy" },
-				cpp = { "clangtidy" },
-				css = { "stylelint" },
-			}
-		end,
-	},
-	{
-		"stevearc/conform.nvim",
-		event = "BufWritePre",
-		opts = {
-			formatters_by_ft = {
-				lua = { "stylua" },
-				javascript = { "prettier" },
-				javascriptreact = { "prettier" },
-				typescript = { "prettier" },
-				typescriptreact = { "prettier" },
-				json = { "prettier" },
-				c = { "clang_format" },
-				cpp = { "clang_format" },
-				css = { "prettier" },
-			},
-			format_on_save = { timeout_ms = 500, lsp_fallback = true },
-		},
-	},
-	{
 		"windwp/nvim-autopairs",
 		event = "InsertEnter",
 	},
@@ -382,4 +346,20 @@ require("lazy").setup({
 	{ "hrsh7th/nvim-cmp" },
 	{ "L3MON4D3/LuaSnip" },
 	{ "williamboman/mason-lspconfig.nvim" },
+	{
+		"nvimtools/none-ls.nvim",
+		config = function()
+			local null_ls = require("null-ls")
+
+			null_ls.setup({
+				sources = {
+					null_ls.builtins.formatting.stylua,
+					null_ls.builtins.formatting.prettier,
+					--null_ls.builtins.diagnostics.eslint
+				},
+			})
+
+			vim.keymap.set("n", "<leader>gf", vim.lsp.buf.format, {})
+		end,
+	},
 })
