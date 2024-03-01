@@ -359,7 +359,7 @@ require("lazy").setup({
 					null_ls.builtins.formatting.stylua,
 					null_ls.builtins.formatting.prettierd,
 					null_ls.builtins.code_actions.gitsigns,
-					require("none-ls.diagnostics.eslint"),
+					require("none-ls.diagnostics.eslint_d"),
 				},
 			})
 
