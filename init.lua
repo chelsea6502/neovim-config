@@ -22,7 +22,7 @@ vim.cmd([[
 	set noruler
 	set noshowcmd
 	set laststatus=0
-	set cmdheight=0
+	set cmdheight=1
 	set updatetime=50
 	set incsearch
 
@@ -354,12 +354,20 @@ require("lazy").setup({
 			null_ls.setup({
 				sources = {
 					null_ls.builtins.formatting.stylua,
-					null_ls.builtins.formatting.prettier,
-					--null_ls.builtins.diagnostics.eslint
+					null_ls.builtins.formatting.prettierd,
 				},
 			})
 
-			vim.keymap.set("n", "<leader>gf", vim.lsp.buf.format, {})
+			vim.api.nvim_create_autocmd("BufWritePre", {
+				callback = function()
+					vim.lsp.buf.format({
+						async = false,
+						filter = function(client)
+							return client.name == "null-ls"
+						end,
+					})
+				end,
+			})
 		end,
 	},
 })
