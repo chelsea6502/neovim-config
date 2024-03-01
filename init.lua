@@ -28,6 +28,10 @@ vim.cmd([[
 
 	set backupdir=~/.cache/vim
 
+	" Fixed cursor scrolling
+	nnoremap <ScrollWheelUp> 1<C-u>
+	nnoremap <ScrollWheelDown> 1<C-d>
+
 	" Folding Configuration
 	set foldmethod=indent
 	set foldcolumn=1
