@@ -122,7 +122,7 @@ require("lazy").setup({
 			{ "fs", "<cmd>Telescope live_grep<CR>" },
 		},
 		opts = { defaults = { file_ignore_patterns = { "node_modules", "dist" } } },
-		init = function()
+		config = function()
 			require("telescope").load_extension("projects")
 		end,
 	},
@@ -154,25 +154,7 @@ require("lazy").setup({
 			require("mason").setup({})
 			require("mason-lspconfig").setup({
 				ensure_installed = {},
-				handlers = {
-					lsp_zero.default_setup,
-					vtsls = function()
-						require("lspconfig").vtsls.setup({
-							settings = {
-								typescript = {
-									inlayHints = {
-										parameterNames = { enabled = "literals" },
-										parameterTypes = { enabled = true },
-										variableTypes = { enabled = false },
-										propertyDeclarationTypes = { enabled = true },
-										functionLikeReturnTypes = { enabled = true },
-										enumMemberValues = { enabled = true },
-									},
-								},
-							},
-						})
-					end,
-				},
+				handlers = { lsp_zero.default_setup },
 			})
 			vim.lsp.set_log_level("off")
 		end,
