@@ -25,6 +25,7 @@ vim.cmd([[
 	set incsearch
 	set ignorecase
 	set smartcase
+	set scrolloff=10
 
 	set backupdir=~/.cache/vim
 
@@ -346,5 +347,13 @@ require("lazy").setup({
 				},
 			},
 		},
+	},
+	{
+		"folke/which-key.nvim",
+		event = "VeryLazy",
+		init = function()
+			vim.o.timeout = true
+			vim.o.timeoutlen = 300
+		end,
 	},
 })
