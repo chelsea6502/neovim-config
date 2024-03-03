@@ -44,7 +44,7 @@ vim.cmd([[
 	let g:diagnostic_underline = 0
 	let g:diagnostic_signs = 1
 	let g:diagnostic_severity_sort = 1
-	let g:gruvbox_material_diagnostic_virtual_text = 'colored'
+	"let g:gruvbox_material_diagnostic_virtual_text = 'colored'
 
 	" Use persistent history.
 	if !isdirectory("/tmp/.vim-undo-dir")
@@ -84,9 +84,8 @@ vim.cmd([[
 	]])
 
 vim.diagnostic.config({
-	virtual_lines = { only_current_line = true },
+	virtual_text = { only_current_line = true },
 	underline = false,
-	virtual_text = false,
 	severity_sort = true,
 })
 
@@ -315,6 +314,7 @@ require("lazy").setup({
 					null_ls.builtins.formatting.prettierd,
 					null_ls.builtins.code_actions.gitsigns,
 					require("none-ls.diagnostics.eslint_d"),
+					require("none-ls.code_actions.eslint_d"),
 				},
 			})
 
@@ -346,11 +346,5 @@ require("lazy").setup({
 				},
 			},
 		},
-	},
-	{
-		"https://git.sr.ht/~whynothugo/lsp_lines.nvim",
-		config = function()
-			require("lsp_lines").setup()
-		end,
 	},
 })
