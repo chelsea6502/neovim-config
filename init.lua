@@ -338,8 +338,11 @@ require("lazy").setup({
 				expose_as_code_action = "all",
 				tsserver_file_preferences = {
 					includeInlayParameterNameHints = "literals",
-					includeCompletionsForModuleExports = true,
+					includeInlayFunctionParameterTypeHints = true,
+					--includeInlayVariableTypeHints = true,
+					includeCompletionsForModuleExports = false,
 					quotePreference = "auto",
+					includeInlayFunctionLikeReturnTypeHints = true,
 				},
 			},
 		},
