@@ -356,4 +356,5 @@ require("lazy").setup({
 			vim.o.timeoutlen = 300
 		end,
 	},
+	{ "rcarriga/nvim-notify" },
 })
