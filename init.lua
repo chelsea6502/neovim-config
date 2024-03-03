@@ -87,6 +87,7 @@ vim.diagnostic.config({
 	virtual_lines = { only_current_line = true },
 	underline = false,
 	virtual_text = false,
+	severity_sort = true,
 })
 
 -- Enable lazy
