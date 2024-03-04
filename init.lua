@@ -84,12 +84,16 @@ vim.cmd([[
 
 	" Highlight on yank
 	autocmd TextYankPost * silent! 	lua vim.highlight.on_yank {higroup=(vim.fn['hlexists']('HighlightedyankRegion') > 0 and 'HighlightedyankRegion' or 'IncSearch'), timeout=300}	
+
 	]])
 
 vim.diagnostic.config({
-	virtual_text = { only_current_line = true },
 	underline = false,
 	severity_sort = true,
+	virtual_text = false, -- Disable builtin virtual text diagnostic.
+	virtual_improved = {
+		current_line = "only",
+	},
 })
 
 -- Enable lazy
@@ -359,4 +363,11 @@ require("lazy").setup({
 		end,
 	},
 	{ "rcarriga/nvim-notify" },
+	{
+		"luozhiya/lsp-virtual-improved.nvim",
+		event = { "LspAttach" },
+		config = function()
+			require("lsp-virtual-improved").setup()
+		end,
+	},
 })
