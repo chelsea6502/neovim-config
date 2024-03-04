@@ -82,6 +82,11 @@ vim.cmd([[
 
 	autocmd LspAttach * lua vim.lsp.inlay_hint.enable()
 
+	" Highlight on yank
+	augroup highlight_yank
+    autocmd!
+    au TextYankPost * silent! lua vim.highlight.on_yank { higroup='IncSearch', timeout=200 }
+	augroup END
 	]])
 
 vim.diagnostic.config({
