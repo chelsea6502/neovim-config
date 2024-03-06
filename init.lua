@@ -142,7 +142,7 @@ require("lazy").setup({
 	-- LSP, linter, formatter, and debugger
 	{
 		"neovim/nvim-lspconfig",
-		dependencies = { "williamboman/mason.nvim" },
+		dependencies = { "williamboman/mason.nvim", "williamboman/mason-lspconfig.nvim" },
 		event = "BufRead",
 		opts = { inlay_hints = { enabled = true } },
 		config = function()
@@ -166,7 +166,21 @@ require("lazy").setup({
 			require("mason").setup({})
 			require("mason-lspconfig").setup({
 				ensure_installed = {},
-				handlers = { lsp_zero.default_setup },
+				automatic_installation = true,
+				handlers = {
+					lsp_zero.default_setup,
+					tailwindcss = function()
+						require("lspconfig").tailwindcss.setup({
+							settings = {
+								tailwindCSS = {
+									experimental = {
+										classRegex = { "tw`([^`]*)", "tw\\.[^`]+`([^`]*)`", "tw\\(.*?\\).*?`([^`]*)" },
+									},
+								},
+							},
+						})
+					end,
+				},
 			})
 			vim.lsp.set_log_level("off")
 		end,
@@ -308,7 +322,6 @@ require("lazy").setup({
 	{ "hrsh7th/cmp-nvim-lsp" },
 	{ "hrsh7th/nvim-cmp" },
 	{ "L3MON4D3/LuaSnip" },
-	{ "williamboman/mason-lspconfig.nvim" },
 	{
 		"nvimtools/none-ls.nvim",
 		dependencies = { "nvimtools/none-ls-extras.nvim" },
