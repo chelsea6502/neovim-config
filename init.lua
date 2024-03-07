@@ -93,6 +93,11 @@ vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
 	{
+		"sainnhe/gruvbox-material",
+		lazy = false,
+		priority = 1000,
+		init = function()
+			vim.g.gruvbox_material_foreground = "material"
 			vim.g.gruvbox_material_background = "medium"
 			vim.g.gruvbox_material_better_performance = 1
 			vim.cmd.colorscheme("gruvbox-material")
