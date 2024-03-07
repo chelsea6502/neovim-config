@@ -26,7 +26,7 @@ vim.cmd([[
 	set ignorecase
 	set smartcase
 	set scrolloff=10
-
+	
 	set backupdir=~/.cache/vim
 
 	" Fixed cursor scrolling
@@ -93,6 +93,12 @@ vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
 	{
+			vim.g.gruvbox_material_background = "medium"
+			vim.g.gruvbox_material_better_performance = 1
+			vim.cmd.colorscheme("gruvbox-material")
+		end,
+	},
+	{
 		"nvim-treesitter/nvim-treesitter",
 		build = ":TSUpdate",
 		config = function()
@@ -116,6 +122,14 @@ require("lazy").setup({
 		config = function()
 			require("telescope").load_extension("projects")
 		end,
+	},
+	{
+		"ahmedkhalf/project.nvim",
+		keys = {
+			{ "FF", "<cmd>lua require('telescope').extensions.projects.projects({})<CR>" },
+		},
+		main = "project_nvim",
+		opts = { detection_methods = { "pattern" }, patterns = { ".git" } },
 	},
 
 	{
@@ -176,19 +190,26 @@ require("lazy").setup({
 		end,
 	},
 	{
-		"ahmedkhalf/project.nvim",
-		keys = {
-			{ "FF", "<cmd>lua require('telescope').extensions.projects.projects({})<CR>" },
-		},
-		main = "project_nvim",
-		opts = { detection_methods = { "pattern" }, patterns = { ".git" } },
-	},
-	{
 		"lukas-reineke/indent-blankline.nvim",
 		event = "BufRead",
 		main = "ibl",
 		opts = { indent = { char = "▏" } },
 	},
+	{
+		"terrortylor/nvim-comment",
+		main = "nvim_comment",
+		opts = {
+			hook = function()
+				require("ts_context_commentstring").update_commentstring()
+			end,
+		},
+	},
+	{
+		"JoosepAlviste/nvim-ts-context-commentstring",
+		ft = { "typescript", "javascript", "typescriptreact", "javascriptreact" },
+		opts = { enable_autocmd = false },
+	},
+
 	{
 		"luukvbaal/statuscol.nvim",
 		config = function()
@@ -201,16 +222,6 @@ require("lazy").setup({
 					{ sign = { name = { ".*" }, namespace = { "diagnostic*" }, colwidth = 2 }, click = "v:lua.ScSa" },
 				},
 			})
-		end,
-	},
-	{
-		"sainnhe/gruvbox-material",
-		event = "VimEnter",
-		init = function()
-			vim.g.gruvbox_material_foreground = "material"
-			vim.g.gruvbox_material_background = "medium"
-			vim.g.gruvbox_material_better_performance = 1
-			vim.cmd.colorscheme("gruvbox-material")
 		end,
 	},
 	{
@@ -237,22 +248,6 @@ require("lazy").setup({
 			{ "<leader>r", "<cmd>Lspsaga rename<CR>" },
 		},
 		opts = { lightbulb = { enable = false }, symbol_in_winbar = { enable = false } },
-	},
-
-	-- Comments
-	{
-		"terrortylor/nvim-comment",
-		main = "nvim_comment",
-		opts = {
-			hook = function()
-				require("ts_context_commentstring").update_commentstring()
-			end,
-		},
-	},
-	{
-		"JoosepAlviste/nvim-ts-context-commentstring",
-		ft = { "typescript", "javascript", "typescriptreact", "javascriptreact" },
-		opts = { enable_autocmd = false },
 	},
 	{
 		"lewis6991/gitsigns.nvim",
@@ -326,21 +321,13 @@ require("lazy").setup({
 				tsserver_file_preferences = {
 					includeInlayParameterNameHints = "literals",
 					includeInlayFunctionParameterTypeHints = true,
-					--includeInlayVariableTypeHints = true,
-					includeCompletionsForModuleExports = false,
+					--includeInlayVariableTypeHints = true, -- this crashes
+					includeCompletionsForModuleExports = true,
 					quotePreference = "auto",
 					includeInlayFunctionLikeReturnTypeHints = true,
 				},
 			},
 		},
-	},
-	{
-		"folke/which-key.nvim",
-		event = "VeryLazy",
-		init = function()
-			vim.o.timeout = true
-			vim.o.timeoutlen = 300
-		end,
 	},
 	{
 		"luozhiya/lsp-virtual-improved.nvim",
