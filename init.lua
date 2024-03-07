@@ -3,6 +3,7 @@ vim.cmd([[
 	let g:mapleader = " "
 
 	set background=dark
+
 	set tabstop=2
 	set shiftwidth=2
 	set softtabstop=2
@@ -10,7 +11,6 @@ vim.cmd([[
 	set colorcolumn=80
 	set cursorline
 	set termguicolors
-	"highlight Comment gui=italic
 	set virtualedit=onemore
 	set textwidth=80
 	set relativenumber
@@ -32,14 +32,6 @@ vim.cmd([[
 	" Fixed cursor scrolling
 	nnoremap <ScrollWheelUp> 1<C-u>
 	nnoremap <ScrollWheelDown> 1<C-d>
-
-	" Folding Configuration
-	set foldmethod=indent
-	set foldcolumn=1
-	set foldlevel=99
-	set foldlevelstart=99
-	set foldenable
-	set fillchars=eob:\ ,fold:\ ,foldopen:,foldsep:\ ,foldclose:
 
 	" Diagnostics
 	let g:diagnostic_underline = 0
@@ -68,17 +60,6 @@ vim.cmd([[
 
 	" Line wrapping
 	autocmd FileType * setlocal formatoptions+=t
-
-	nnoremap z0 :set foldlevel=99<CR>
-	nnoremap z1 :set foldlevel=1<CR>
-	nnoremap z2 :set foldlevel=2<CR>
-	nnoremap z3 :set foldlevel=3<CR>
-	nnoremap z4 :set foldlevel=4<CR>
-	nnoremap z5 :set foldlevel=5<CR>
-	nnoremap z6 :set foldlevel=6<CR>
-	nnoremap z7 :set foldlevel=7<CR>
-	nnoremap z8 :set foldlevel=8<CR>
-	nnoremap z9 :set foldlevel=9<CR>
 
 	autocmd LspAttach * lua vim.lsp.inlay_hint.enable()
 
@@ -111,7 +92,6 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
-	-- Syntax Highlighter
 	{
 		"nvim-treesitter/nvim-treesitter",
 		build = ":TSUpdate",
@@ -124,7 +104,6 @@ require("lazy").setup({
 			})
 		end,
 	},
-	-- Search
 	{
 		"nvim-telescope/telescope.nvim",
 		cmd = "Telescope",
@@ -139,7 +118,6 @@ require("lazy").setup({
 		end,
 	},
 
-	-- LSP, linter, formatter, and debugger
 	{
 		"neovim/nvim-lspconfig",
 		dependencies = { "williamboman/mason.nvim", "williamboman/mason-lspconfig.nvim" },
@@ -185,9 +163,7 @@ require("lazy").setup({
 			vim.lsp.set_log_level("off")
 		end,
 	},
-	{ "windwp/nvim-autopairs", event = "InsertEnter" },
-
-	-- Other utilities
+	{ "windwp/nvim-autopairs", event = "InsertEnter", config = true },
 	{
 		"shortcuts/no-neck-pain.nvim",
 		config = function()
@@ -220,19 +196,11 @@ require("lazy").setup({
 			require("statuscol").setup({
 				relculright = true,
 				segments = {
-					{ sign = { name = { ".*" }, namespace = { "diagnostic*" }, colwidth = 2 }, click = "v:lua.ScSa" },
-					{ text = { builtin.lnumfunc, " " }, click = "v:lua.ScLa" },
 					{ sign = { name = { ".*" }, namespace = { "gitsigns" }, colwidth = 1 }, click = "v:lua.ScSa" },
-					{ text = { builtin.foldfunc, " " }, click = "v:lua.ScFa" },
+					{ text = { builtin.lnumfunc, " " }, click = "v:lua.ScLa" },
+					{ sign = { name = { ".*" }, namespace = { "diagnostic*" }, colwidth = 2 }, click = "v:lua.ScSa" },
 				},
 			})
-		end,
-	},
-	{
-		"kevinhwang91/nvim-ufo",
-		dependencies = "kevinhwang91/promise-async",
-		config = function()
-			require("ufo").setup()
 		end,
 	},
 	{
@@ -249,7 +217,7 @@ require("lazy").setup({
 		"folke/noice.nvim",
 		dependencies = "MunifTanjim/nui.nvim",
 		opts = {
-			presets = { command_palette = true }, -- position the cmdline and popupmenu together
+			presets = { command_palette = true },
 			lsp = {
 				override = {
 					["vim.lsp.util.convert_input_to_markdown_lines"] = true,
@@ -267,7 +235,6 @@ require("lazy").setup({
 			{ "<leader>d", "<cmd>Lspsaga show_line_diagnostics<CR>" },
 			{ "<leader>f", "<cmd>Lspsaga code_action<CR>" },
 			{ "<leader>r", "<cmd>Lspsaga rename<CR>" },
-			{ "<leader>t", "<cmd>Lspsaga term_toggle<CR>" },
 		},
 		opts = { lightbulb = { enable = false }, symbol_in_winbar = { enable = false } },
 	},
@@ -375,7 +342,6 @@ require("lazy").setup({
 			vim.o.timeoutlen = 300
 		end,
 	},
-	{ "rcarriga/nvim-notify" },
 	{
 		"luozhiya/lsp-virtual-improved.nvim",
 		event = { "LspAttach" },
