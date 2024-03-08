@@ -56,8 +56,6 @@ vim.cmd([[
 	" for NoNeckPain
 	autocmd VimEnter * wincmd w
 
-	autocmd FocusLost * :wa
-
 	set autoread
 
 	" Line wrapping
@@ -199,16 +197,17 @@ require("lazy").setup({
 	{
 		"terrortylor/nvim-comment",
 		main = "nvim_comment",
+		dependencies = {
+			"JoosepAlviste/nvim-ts-context-commentstring",
+			ft = { "typescript", "javascript", "typescriptreact", "javascriptreact" },
+			opts = { enable_autocmd = false },
+		},
+
 		opts = {
 			hook = function()
 				require("ts_context_commentstring").update_commentstring()
 			end,
 		},
-	},
-	{
-		"JoosepAlviste/nvim-ts-context-commentstring",
-		ft = { "typescript", "javascript", "typescriptreact", "javascriptreact" },
-		opts = { enable_autocmd = false },
 	},
 
 	{
@@ -241,11 +240,14 @@ require("lazy").setup({
 			end,
 		},
 	},
-	{ "williamboman/mason.nvim" },
-	{ "VonHeikemen/lsp-zero.nvim", branch = "v3.x" },
-	{ "hrsh7th/cmp-nvim-lsp", event = "InsertEnter" },
 	{
 		"hrsh7th/nvim-cmp",
+		dependencies = {
+			{ "VonHeikemen/lsp-zero.nvim", branch = "v3.x" },
+
+			"hrsh7th/cmp-nvim-lsp",
+			"L3MON4D3/LuaSnip",
+		},
 		event = "InsertEnter",
 		config = function()
 			local cmp = require("cmp")
@@ -262,7 +264,6 @@ require("lazy").setup({
 			})
 		end,
 	},
-	{ "L3MON4D3/LuaSnip", event = "InsertEnter" },
 	{
 		"nvimtools/none-ls.nvim",
 		dependencies = { "nvimtools/none-ls-extras.nvim" },
