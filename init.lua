@@ -240,8 +240,7 @@ require("lazy").setup({
 		event = "InsertEnter",
 		config = function()
 			local cmp = require("cmp")
-			local cmp_autopairs = require("nvim-autopairs.completion.cmp")
-			cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done())
+			cmp.event:on("confirm_done", require("nvim-autopairs.completion.cmp").on_confirm_done())
 			local cmp_action = require("lsp-zero").cmp_action()
 
 			cmp.setup({
