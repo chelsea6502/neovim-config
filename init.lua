@@ -156,17 +156,6 @@ require("lazy").setup({
 				lsp_zero.default_keymaps({ buffer = bufnr })
 			end)
 
-			local cmp = require("cmp")
-			local cmp_action = lsp_zero.cmp_action()
-
-			cmp.setup({
-				mapping = cmp.mapping.preset.insert({
-					["<Tab>"] = cmp_action.luasnip_supertab(),
-					["<S-Tab>"] = cmp_action.luasnip_shift_supertab(),
-					["<CR>"] = cmp.mapping.confirm({ select = false }),
-				}),
-			})
-
 			require("mason").setup({})
 			require("mason-lspconfig").setup({
 				ensure_installed = {},
@@ -255,7 +244,24 @@ require("lazy").setup({
 	{ "williamboman/mason.nvim" },
 	{ "VonHeikemen/lsp-zero.nvim", branch = "v3.x" },
 	{ "hrsh7th/cmp-nvim-lsp", event = "InsertEnter" },
-	{ "hrsh7th/nvim-cmp", event = "InsertEnter" },
+	{
+		"hrsh7th/nvim-cmp",
+		event = "InsertEnter",
+		config = function()
+			local cmp = require("cmp")
+			local cmp_autopairs = require("nvim-autopairs.completion.cmp")
+			cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done())
+			local cmp_action = require("lsp-zero").cmp_action()
+
+			cmp.setup({
+				mapping = cmp.mapping.preset.insert({
+					["<Tab>"] = cmp_action.luasnip_supertab(),
+					["<S-Tab>"] = cmp_action.luasnip_shift_supertab(),
+					["<CR>"] = cmp.mapping.confirm({ select = false }),
+				}),
+			})
+		end,
+	},
 	{ "L3MON4D3/LuaSnip", event = "InsertEnter" },
 	{
 		"nvimtools/none-ls.nvim",
