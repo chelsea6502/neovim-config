@@ -256,9 +256,9 @@ require("lazy").setup({
 	},
 	{ "williamboman/mason.nvim" },
 	{ "VonHeikemen/lsp-zero.nvim", branch = "v3.x" },
-	{ "hrsh7th/cmp-nvim-lsp" },
-	{ "hrsh7th/nvim-cmp" },
-	{ "L3MON4D3/LuaSnip" },
+	{ "hrsh7th/cmp-nvim-lsp", event = "InsertEnter" },
+	{ "hrsh7th/nvim-cmp", event = "InsertEnter" },
+	{ "L3MON4D3/LuaSnip", event = "InsertEnter" },
 	{
 		"nvimtools/none-ls.nvim",
 		dependencies = { "nvimtools/none-ls-extras.nvim" },
@@ -289,6 +289,7 @@ require("lazy").setup({
 	},
 	{
 		"pmizio/typescript-tools.nvim",
+		ft = { "javascript", "typescript", "javascriptreact", "typescriptreact" },
 		dependencies = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig" },
 		opts = {
 			settings = {
