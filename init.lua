@@ -38,7 +38,6 @@ vim.cmd([[
 	let g:diagnostic_underline = 0
 	let g:diagnostic_signs = 1
 	let g:diagnostic_severity_sort = 1
-	"let g:gruvbox_material_diagnostic_virtual_text = 'colored'
 
 	" Use persistent history.
 	if !isdirectory("/tmp/.vim-undo-dir")
@@ -49,16 +48,10 @@ vim.cmd([[
 
 	" Command shortcuts
 	command! Ec edit ~/.config/nvim/init.lua
-	command! Sc source ~/.config/nvim/init.lua
-	command! Cc clang -g % -std=c89<cr>
 
-	" for NoNeckPain
-	autocmd VimEnter * wincmd w
-
-	" Line wrapping
-	autocmd FileType * setlocal formatoptions+=t
-
-	autocmd LspAttach * lua vim.lsp.inlay_hint.enable()
+	autocmd VimEnter * wincmd w  " for NoNeckPain
+	autocmd FileType * setlocal formatoptions+=t 	" Line wrapping
+	autocmd LspAttach * lua vim.lsp.inlay_hint.enable() -- Inlay hints
 
 	" Highlight on yank
 	autocmd TextYankPost * silent! 	lua vim.highlight.on_yank {higroup=(vim.fn['hlexists']('HighlightedyankRegion') > 0 and 'HighlightedyankRegion' or 'IncSearch'), timeout=300}	
@@ -110,13 +103,14 @@ require("lazy").setup({
 	{
 		"nvim-treesitter/nvim-treesitter",
 		build = ":TSUpdate",
-		config = function()
-			require("nvim-treesitter.configs").setup({
-				auto_install = true,
-				sync_install = true,
-				highlight = { enable = true },
-				indent = { enable = true },
-			})
+		opts = {
+			auto_install = true,
+			sync_install = true,
+			highlight = { enable = true },
+			indent = { enable = true },
+		},
+		config = function(_, opts)
+			require("nvim-treesitter.configs").setup(opts)
 		end,
 	},
 	{
@@ -140,7 +134,10 @@ require("lazy").setup({
 	},
 	{
 		"neovim/nvim-lspconfig",
-		dependencies = { "williamboman/mason.nvim", "williamboman/mason-lspconfig.nvim" },
+		dependencies = {
+			"williamboman/mason.nvim",
+			"williamboman/mason-lspconfig.nvim",
+		},
 		event = "BufRead",
 		opts = { inlay_hints = { enabled = true } },
 		config = function()
@@ -152,7 +149,7 @@ require("lazy").setup({
 
 			require("mason").setup()
 			require("mason-lspconfig").setup({
-				ensure_installed = { "eslint_d", "prettierd" },
+				ensure_installed = { "eslint_d", "prettierd", "tailwindcss" },
 				automatic_installation = true,
 				handlers = {
 					lsp_zero.default_setup,
@@ -175,12 +172,13 @@ require("lazy").setup({
 	{ "windwp/nvim-autopairs", event = "InsertEnter", config = true },
 	{
 		"shortcuts/no-neck-pain.nvim",
-		config = function()
+		opts = {
+			options = { width = 100, minSideBufferWidth = 100 },
+			buffers = { right = { enabled = false }, wo = { fillchars = "vert: ,eob: " } },
+		},
+		config = function(_, opts)
 			local nnp = require("no-neck-pain")
-			nnp.setup({
-				options = { width = 100, minSideBufferWidth = 100 },
-				buffers = { right = { enabled = false }, wo = { fillchars = "vert: ,eob: " } },
-			})
+			nnp.setup(opts)
 			nnp.enable()
 		end,
 	},
@@ -200,7 +198,6 @@ require("lazy").setup({
 			keys = "gc",
 			opts = { enable_autocmd = false },
 		},
-
 		opts = {
 			hook = function()
 				require("ts_context_commentstring").update_commentstring()
@@ -237,7 +234,6 @@ require("lazy").setup({
 		"hrsh7th/nvim-cmp",
 		dependencies = {
 			{ "VonHeikemen/lsp-zero.nvim", branch = "v3.x" },
-
 			"hrsh7th/cmp-nvim-lsp",
 			"L3MON4D3/LuaSnip",
 		},
