@@ -26,10 +26,9 @@ vim.cmd([[
 	set ignorecase
 	set smartcase
 	set scrolloff=10
-
 	set cmdheight=0
-	
 	set backupdir=~/.cache/vim
+	set autoread
 
 	" Fixed cursor scrolling
 	nnoremap <ScrollWheelUp> 1<C-u>
@@ -55,8 +54,6 @@ vim.cmd([[
 
 	" for NoNeckPain
 	autocmd VimEnter * wincmd w
-
-	set autoread
 
 	" Line wrapping
 	autocmd FileType * setlocal formatoptions+=t
@@ -141,7 +138,6 @@ require("lazy").setup({
 		main = "project_nvim",
 		opts = { detection_methods = { "pattern" }, patterns = { ".git" } },
 	},
-
 	{
 		"neovim/nvim-lspconfig",
 		dependencies = { "williamboman/mason.nvim", "williamboman/mason-lspconfig.nvim" },
@@ -154,9 +150,9 @@ require("lazy").setup({
 				lsp_zero.default_keymaps({ buffer = bufnr })
 			end)
 
-			require("mason").setup({})
+			require("mason").setup()
 			require("mason-lspconfig").setup({
-				ensure_installed = {},
+				ensure_installed = { "eslint_d", "prettierd" },
 				automatic_installation = true,
 				handlers = {
 					lsp_zero.default_setup,
@@ -197,9 +193,11 @@ require("lazy").setup({
 	{
 		"terrortylor/nvim-comment",
 		main = "nvim_comment",
+		keys = "gc",
 		dependencies = {
 			"JoosepAlviste/nvim-ts-context-commentstring",
 			ft = { "typescript", "javascript", "typescriptreact", "javascriptreact" },
+			keys = "gc",
 			opts = { enable_autocmd = false },
 		},
 
@@ -229,14 +227,9 @@ require("lazy").setup({
 					vim.keymap.set(mode, l, r, { buffer = buffer, desc = desc })
 				end
 
-				map("n", "]h", gs.next_hunk, "Next Hunk")
-				map("n", "[h", gs.prev_hunk, "Prev Hunk")
-				map("n", "<leader>ghp", gs.preview_hunk_inline, "Preview Hunk Inline")
-				map({ "n", "v" }, "<leader>ghs", ":Gitsigns stage_hunk<CR>", "Stage Hunk")
-				map({ "n", "v" }, "<leader>ghr", ":Gitsigns reset_hunk<CR>", "Reset Hunk")
-				map("n", "<leader>ghu", gs.undo_stage_hunk, "Undo Stage Hunk")
-				map("n", "<leader>ghS", gs.stage_buffer, "Stage Buffer")
-				map("n", "<leader>ghR", gs.reset_buffer, "Reset Buffer")
+				map("n", "<leader>gp", gs.preview_hunk_inline, "Preview Hunk Inline")
+				map({ "n", "v" }, "<leader>gr", ":Gitsigns reset_hunk<CR>", "Reset Hunk")
+				map("n", "<leader>gR", gs.reset_buffer, "Reset Buffer")
 			end,
 		},
 	},
