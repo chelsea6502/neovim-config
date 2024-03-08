@@ -53,6 +53,7 @@ vim.cmd([[
 	autocmd FileType * setlocal formatoptions+=t 	" Line wrapping
 	autocmd LspAttach * lua vim.lsp.inlay_hint.enable() -- Inlay hints
 
+
 	" Highlight on yank
 	autocmd TextYankPost * silent! 	lua vim.highlight.on_yank {higroup=(vim.fn['hlexists']('HighlightedyankRegion') > 0 and 'HighlightedyankRegion' or 'IncSearch'), timeout=300}	
 
@@ -268,6 +269,20 @@ require("lazy").setup({
 				},
 			})
 
+			-- Variable highlighting on cursor
+			vim.api.nvim_create_autocmd("LspAttach", {
+				callback = function(event)
+					local client = vim.lsp.get_client_by_id(event.data.client_id)
+					if client and client.supports_method("textDocument/documentHighlight") then
+						vim.cmd([[
+							autocmd CursorHold <buffer> lua vim.lsp.buf.document_highlight()
+							autocmd CursorMoved <buffer> lua vim.lsp.buf.clear_references()
+						]])
+					end
+				end,
+			})
+
+			-- Format on save
 			vim.api.nvim_create_autocmd("BufWritePre", {
 				callback = function()
 					vim.lsp.buf.format({
@@ -290,10 +305,9 @@ require("lazy").setup({
 				tsserver_file_preferences = {
 					includeInlayParameterNameHints = "literals",
 					includeInlayFunctionParameterTypeHints = true,
-					--includeInlayVariableTypeHints = true, -- this crashes
-					includeCompletionsForModuleExports = true,
-					quotePreference = "auto",
 					includeInlayFunctionLikeReturnTypeHints = true,
+					includeInlayPropertyDeclarationTypeHints = true, -- this crashes
+					includeInlayVariableTypeHints = true, -- this crashes
 				},
 			},
 		},
