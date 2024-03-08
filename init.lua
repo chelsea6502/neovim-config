@@ -77,6 +77,11 @@ vim.diagnostic.config({
 	},
 })
 
+vim.keymap.set("n", "<leader>a", vim.lsp.buf.hover, {})
+vim.keymap.set("n", "<leader>s", vim.lsp.buf.type_definition, {})
+vim.keymap.set("n", "<leader>d", vim.diagnostic.open_float, {})
+vim.keymap.set("n", "<leader>f", vim.lsp.buf.code_action, {})
+
 -- Enable lazy
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
@@ -215,45 +220,6 @@ require("lazy").setup({
 		opts = { enable_autocmd = false },
 	},
 
-	{
-		"luukvbaal/statuscol.nvim",
-		config = function()
-			local builtin = require("statuscol.builtin")
-			require("statuscol").setup({
-				relculright = true,
-				segments = {
-					{ sign = { name = { ".*" }, namespace = { "gitsigns" }, colwidth = 1 }, click = "v:lua.ScSa" },
-					{ text = { builtin.lnumfunc, " " }, click = "v:lua.ScLa" },
-					{ sign = { name = { ".*" }, namespace = { "diagnostic*" }, colwidth = 2 }, click = "v:lua.ScSa" },
-				},
-			})
-		end,
-	},
-	{
-		"folke/noice.nvim",
-		dependencies = "MunifTanjim/nui.nvim",
-		opts = {
-			presets = { command_palette = true },
-			lsp = {
-				override = {
-					["vim.lsp.util.convert_input_to_markdown_lines"] = true,
-					["vim.lsp.util.stylize_markdown"] = true,
-				},
-			},
-		},
-	},
-	{
-		"nvimdev/lspsaga.nvim",
-		event = "LspAttach",
-		keys = {
-			{ "<leader>a", "<cmd>Lspsaga hover_doc<CR>" },
-			{ "<leader>s", "<cmd>Lspsaga peek_definition<CR>" },
-			{ "<leader>d", "<cmd>Lspsaga show_line_diagnostics<CR>" },
-			{ "<leader>f", "<cmd>Lspsaga code_action<CR>" },
-			{ "<leader>r", "<cmd>Lspsaga rename<CR>" },
-		},
-		opts = { lightbulb = { enable = false }, symbol_in_winbar = { enable = false } },
-	},
 	{
 		"lewis6991/gitsigns.nvim",
 		event = "LspAttach",
