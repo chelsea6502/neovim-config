@@ -131,6 +131,7 @@ require("lazy").setup({
 		keys = {
 			{ "ff", "<cmd>Telescope find_files<CR>" },
 			{ "fs", "<cmd>Telescope live_grep<CR>" },
+			{ "FF", "<cmd>lua require('telescope').extensions.projects.projects({})<CR>" },
 		},
 		opts = { defaults = { file_ignore_patterns = { "node_modules", "dist" } } },
 		config = function()
@@ -139,9 +140,6 @@ require("lazy").setup({
 	},
 	{
 		"ahmedkhalf/project.nvim",
-		keys = {
-			{ "FF", "<cmd>lua require('telescope').extensions.projects.projects({})<CR>" },
-		},
 		main = "project_nvim",
 		opts = { detection_methods = { "pattern" }, patterns = { ".git" } },
 	},
