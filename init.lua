@@ -26,6 +26,8 @@ vim.cmd([[
 	set ignorecase
 	set smartcase
 	set scrolloff=10
+
+	set cmdheight=0
 	
 	set backupdir=~/.cache/vim
 
@@ -81,6 +83,8 @@ vim.keymap.set("n", "<leader>a", vim.lsp.buf.hover, {})
 vim.keymap.set("n", "<leader>s", vim.lsp.buf.type_definition, {})
 vim.keymap.set("n", "<leader>d", vim.diagnostic.open_float, {})
 vim.keymap.set("n", "<leader>f", vim.lsp.buf.code_action, {})
+
+vim.loader.enable()
 
 -- Enable lazy
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
