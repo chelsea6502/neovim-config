@@ -49,7 +49,6 @@ vim.cmd([[
 	" Command shortcuts
 	command! Ec edit ~/.config/nvim/init.lua
 
-	autocmd VimEnter * wincmd w  " for NoNeckPain
 	autocmd FileType * setlocal formatoptions+=t 	" Line wrapping
 	autocmd LspAttach * lua vim.lsp.inlay_hint.enable() -- Inlay hints
 
@@ -175,13 +174,9 @@ require("lazy").setup({
 		"shortcuts/no-neck-pain.nvim",
 		opts = {
 			options = { width = 100, minSideBufferWidth = 100 },
+			autocmds = { enableOnVimEnter = true },
 			buffers = { right = { enabled = false }, wo = { fillchars = "vert: ,eob: " } },
 		},
-		config = function(_, opts)
-			local nnp = require("no-neck-pain")
-			nnp.setup(opts)
-			nnp.enable()
-		end,
 	},
 	{
 		"lukas-reineke/indent-blankline.nvim",
@@ -306,8 +301,8 @@ require("lazy").setup({
 					includeInlayParameterNameHints = "literals",
 					includeInlayFunctionParameterTypeHints = true,
 					includeInlayFunctionLikeReturnTypeHints = true,
-					includeInlayPropertyDeclarationTypeHints = true, -- this crashes
-					includeInlayVariableTypeHints = true, -- this crashes
+					-- includeInlayPropertyDeclarationTypeHints = true, -- this crashes
+					-- includeInlayVariableTypeHints = true, -- this sucks
 				},
 			},
 		},
@@ -319,4 +314,5 @@ require("lazy").setup({
 			require("lsp-virtual-improved").setup()
 		end,
 	},
+	{ "windwp/nvim-ts-autotag", opts = { filetypes = { "html", "xml", "javascriptreact", "typescriptreact" } } },
 })
