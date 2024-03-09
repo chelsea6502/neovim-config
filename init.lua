@@ -49,9 +49,10 @@ vim.cmd([[
 	" Command shortcuts
 	command! Ec edit ~/.config/nvim/init.lua
 
+	autocmd VimEnter * wincmd w  " for NoNeckPain
+	
 	autocmd FileType * setlocal formatoptions+=t 	" Line wrapping
 	autocmd LspAttach * lua vim.lsp.inlay_hint.enable() -- Inlay hints
-
 
 	" Highlight on yank
 	autocmd TextYankPost * silent! 	lua vim.highlight.on_yank {higroup=(vim.fn['hlexists']('HighlightedyankRegion') > 0 and 'HighlightedyankRegion' or 'IncSearch'), timeout=300}	
@@ -174,9 +175,13 @@ require("lazy").setup({
 		"shortcuts/no-neck-pain.nvim",
 		opts = {
 			options = { width = 100, minSideBufferWidth = 100 },
-			autocmds = { enableOnVimEnter = true },
 			buffers = { right = { enabled = false }, wo = { fillchars = "vert: ,eob: " } },
 		},
+		config = function(_, opts)
+			local nnp = require("no-neck-pain")
+			nnp.setup(opts)
+			nnp.enable()
+		end,
 	},
 	{
 		"lukas-reineke/indent-blankline.nvim",
