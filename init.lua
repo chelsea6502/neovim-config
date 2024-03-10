@@ -355,5 +355,12 @@ require("lazy").setup({
 		keys = { { "<leader>t", "<cmd>ToggleTerm<CR>" } },
 		version = "*",
 		opts = { direction = "float", autochdir = true },
+		config = function(_, opts)
+			require("toggleterm").setup(opts)
+
+			vim.cmd(
+				'autocmd! TermOpen term://*toggleterm#* lua vim.keymap.set("t", "<esc>", [[<C-\\><C-n><cmd>ToggleTerm<CR>]], {buffer = 0})'
+			)
+		end,
 	},
 })
