@@ -117,15 +117,45 @@ require("lazy").setup({
 	{
 		"nvim-telescope/telescope.nvim",
 		cmd = "Telescope",
-		dependencies = { "nvim-lua/plenary.nvim" },
-		keys = {
-			{ "ff", "<cmd>Telescope find_files<CR>" },
-			{ "fs", "<cmd>Telescope live_grep<CR>" },
-			{ "FF", "<cmd>lua require('telescope').extensions.projects.projects({})<CR>" },
+		dependencies = {
+			"nvim-lua/plenary.nvim",
+			"jonarrien/telescope-cmdline.nvim",
+			{
+				"ahmedkhalf/project.nvim",
+				main = "project_nvim",
+				opts = { detection_methods = { "pattern" }, patterns = { ".git" } },
+			},
 		},
-		opts = { defaults = { file_ignore_patterns = { "node_modules", "dist" } } },
+		keys = {
+			{ "fa", "<cmd>Telescope lsp_references<CR>" },
+			{ "fs", "<cmd>Telescope live_grep<CR>" },
+			{ "fd", "<cmd>Telescope diagnostics<CR>" },
+			{ "ff", "<cmd>Telescope git_files<CR>" },
+			{ "FF", "<cmd>lua require('telescope').extensions.projects.projects({})<CR>" },
+			{ ":", "<cmd>Telescope cmdline<CR>" },
+			{ "/", "<cmd>Telescope current_buffer_fuzzy_find<CR>" },
+		},
+		opts = {
+			defaults = { file_ignore_patterns = { "node_modules", "dist" } },
+			extensions = {
+				cmdline = {
+					picker = {
+						layout_config = {
+							width = 120,
+							height = 25,
+						},
+					},
+					mappings = {
+						complete = "<Tab>",
+						run_selection = "<C-CR>",
+						run_input = "<CR>",
+					},
+				},
+			},
+		},
 		config = function()
 			require("telescope").load_extension("projects")
+			require("telescope").load_extension("cmdline")
 		end,
 	},
 	{
@@ -143,6 +173,7 @@ require("lazy").setup({
 		opts = { inlay_hints = { enabled = true } },
 		config = function()
 			local lsp_zero = require("lsp-zero")
+			lsp_zero.extend_lspconfig()
 
 			lsp_zero.on_attach(function(_, bufnr)
 				lsp_zero.default_keymaps({ buffer = bufnr })
