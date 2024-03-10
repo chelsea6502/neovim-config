@@ -150,7 +150,6 @@ require("lazy").setup({
 
 			require("mason").setup()
 			require("mason-lspconfig").setup({
-				ensure_installed = { "eslint_d", "prettierd", "tailwindcss" },
 				automatic_installation = true,
 				handlers = {
 					lsp_zero.default_setup,
@@ -320,25 +319,4 @@ require("lazy").setup({
 		end,
 	},
 	{ "windwp/nvim-ts-autotag", opts = { filetypes = { "html", "xml", "javascriptreact", "typescriptreact" } } },
-	{
-		"folke/noice.nvim",
-		event = "VeryLazy",
-		opts = {
-			lsp = {
-				override = {
-					["vim.lsp.util.convert_input_to_markdown_lines"] = true,
-					["vim.lsp.util.stylize_markdown"] = true,
-					["cmp.entry.get_documentation"] = true,
-				},
-			},
-			presets = {
-				command_palette = true, -- position the cmdline and popupmenu together
-				lsp_doc_border = true, -- add a border to hover docs and signature help
-			},
-		},
-		dependencies = {
-			"MunifTanjim/nui.nvim",
-			"rcarriga/nvim-notify",
-		},
-	},
 })
