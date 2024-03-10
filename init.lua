@@ -352,9 +352,9 @@ require("lazy").setup({
 	{ "windwp/nvim-ts-autotag", opts = { filetypes = { "html", "xml", "javascriptreact", "typescriptreact" } } },
 	{
 		"akinsho/toggleterm.nvim",
-		keys = { { "<leader>t", "<cmd>ToggleTerm<CR>" } },
+		keys = { { "tt", "<cmd>ToggleTerm<CR>" } },
 		version = "*",
-		opts = { direction = "float", autochdir = true },
+		opts = { direction = "float", autochdir = true, persist_mode = false, persist_side = false },
 		config = function(_, opts)
 			require("toggleterm").setup(opts)
 
