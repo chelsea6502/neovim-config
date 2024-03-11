@@ -59,8 +59,11 @@ vim.cmd([[
 
 	]])
 
+vim.api.nvim_set_keymap("", "<Space>", "<Nop>", { noremap = true, silent = true })
+
 vim.diagnostic.config({
 	underline = false,
+
 	severity_sort = true,
 	virtual_text = false, -- Disable builtin virtual text diagnostic.
 	virtual_improved = { current_line = "only" },
@@ -364,5 +367,28 @@ require("lazy").setup({
 				'autocmd! TermOpen term://*toggleterm#* lua vim.keymap.set("t", "<esc>", [[<C-\\><C-n><cmd>ToggleTerm<CR>]], {buffer = 0})'
 			)
 		end,
+	},
+	{
+		"jackMort/ChatGPT.nvim",
+		event = "VeryLazy",
+		config = function()
+			require("chatgpt").setup({
+				openai_params = { model = "gpt-4-turbo-preview", max_tokens = 1200 },
+				openai_edit_params = { model = "gpt-4-turbo-preview" },
+			})
+
+			vim.keymap.set({ "n", "v" }, "<Leader>cc", "<cmd>:ChatGPT<cr>")
+			vim.keymap.set({ "n", "v" }, "<Leader>ci", "<cmd>:ChatGPTEditWithInstructions<cr>")
+			vim.keymap.set({ "n", "v" }, "<Leader>cf", "<cmd>:ChatGPTRun fix_bugs<cr>")
+			vim.keymap.set({ "n", "v" }, "<Leader>cr", "<cmd>:ChatGPTRun code_readability_analysis<cr>")
+			vim.keymap.set({ "n", "v" }, "<Leader>co", "<cmd>:ChatGPTRun optimize_code<cr>")
+			vim.keymap.set({ "n", "v" }, "<Leader>ce", "<cmd>:ChatGPTRun explain_code<cr>")
+		end,
+		dependencies = {
+			"MunifTanjim/nui.nvim",
+			"nvim-lua/plenary.nvim",
+			"folke/trouble.nvim",
+			"nvim-telescope/telescope.nvim",
+		},
 	},
 })
