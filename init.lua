@@ -63,9 +63,7 @@ vim.diagnostic.config({
 	underline = false,
 	severity_sort = true,
 	virtual_text = false, -- Disable builtin virtual text diagnostic.
-	virtual_improved = {
-		current_line = "only",
-	},
+	virtual_improved = { current_line = "only" },
 })
 
 vim.keymap.set("n", "<leader>a", vim.lsp.buf.hover, {})
@@ -117,6 +115,7 @@ require("lazy").setup({
 	{
 		"nvim-telescope/telescope.nvim",
 		cmd = "Telescope",
+		lazy = false,
 		dependencies = {
 			"nvim-lua/plenary.nvim",
 			"jonarrien/telescope-cmdline.nvim",
@@ -125,43 +124,46 @@ require("lazy").setup({
 				main = "project_nvim",
 				opts = { detection_methods = { "pattern" }, patterns = { ".git" } },
 			},
+			"nvim-telescope/telescope-ui-select.nvim",
 		},
 		keys = {
-			{ "fa", "<cmd>Telescope lsp_references<CR>" },
-			{ "fs", "<cmd>Telescope live_grep<CR>" },
-			{ "fd", "<cmd>Telescope diagnostics<CR>" },
-			{ "ff", "<cmd>Telescope git_files<CR>" },
-			{ "FF", "<cmd>lua require('telescope').extensions.projects.projects({})<CR>" },
+			{ "fa", "<cmd>Telescope lsp_references theme=cursor<CR>" },
+			{ "fs", "<cmd>Telescope live_grep theme=dropdown<CR>" },
+			{ "fd", "<cmd>Telescope diagnostics theme=dropdown<CR>" },
+			{ "ff", "<cmd>Telescope git_files theme=dropdown<CR>" },
+			{ "FF", "<cmd>Telescope projects theme=dropdown<CR>" },
 			{ ":", "<cmd>Telescope cmdline<CR>" },
-			{ "/", "<cmd>Telescope current_buffer_fuzzy_find<CR>" },
-		},
-		opts = {
-			defaults = { file_ignore_patterns = { "node_modules", "dist" } },
-			extensions = {
-				cmdline = {
-					picker = {
-						layout_config = {
-							width = 120,
-							height = 25,
-						},
-					},
-					mappings = {
-						complete = "<Tab>",
-						run_selection = "<C-CR>",
-						run_input = "<CR>",
-					},
-				},
-			},
+			{ "/", "<cmd>Telescope current_buffer_fuzzy_find theme=dropdown<CR>" },
 		},
 		config = function()
+			local actions = require("telescope.actions")
+			local theme = require("telescope.themes")
+			require("telescope").setup({
+				defaults = {
+					file_ignore_patterns = { "node_modules", "dist" },
+					mappings = {
+						i = {
+							["<esc>"] = actions.close,
+						},
+					},
+				},
+				extensions = {
+					["ui-select"] = { theme.get_dropdown() },
+					["find_files"] = { theme.get_dropdown() },
+				},
+				cmdline = {
+					mappings = {
+						complete = "<Tab>",
+						run_selection = "<CR>",
+						run_input = "<C-CR>",
+					},
+				},
+			})
+
 			require("telescope").load_extension("projects")
 			require("telescope").load_extension("cmdline")
+			require("telescope").load_extension("ui-select")
 		end,
-	},
-	{
-		"ahmedkhalf/project.nvim",
-		main = "project_nvim",
-		opts = { detection_methods = { "pattern" }, patterns = { ".git" } },
 	},
 	{
 		"neovim/nvim-lspconfig",
