@@ -1,8 +1,8 @@
 vim.cmd([[
 	let g:mapleader = " "
+	nnoremap <Space> <Nop>
 
 	set background=dark
-
 	set tabstop=2
 	set shiftwidth=2
 	set softtabstop=2
@@ -28,6 +28,11 @@ vim.cmd([[
 	set cmdheight=0
 	set backupdir=~/.cache/vim
 	set autoread
+	set undodir=/tmp/.vim-undo-dir
+	set undofile
+	if !isdirectory("/tmp/.vim-undo-dir")
+    call mkdir("/tmp/.vim-undo-dir", "", 0700)
+	endif
 
 	" Fixed cursor scrolling
 	nnoremap <ScrollWheelUp> 1<C-u>
@@ -38,13 +43,6 @@ vim.cmd([[
 	let g:diagnostic_signs = 1
 	let g:diagnostic_severity_sort = 1
 
-	" Use persistent history.
-	if !isdirectory("/tmp/.vim-undo-dir")
-    call mkdir("/tmp/.vim-undo-dir", "", 0700)
-	endif
-	set undodir=/tmp/.vim-undo-dir
-	set undofile
-
 	" Command shortcuts
 	command! Ec edit ~/.config/nvim/init.lua
 
@@ -52,9 +50,6 @@ vim.cmd([[
 	nnoremap <leader>s <cmd>lua vim.lsp.buf.type_definition()<CR>
 	nnoremap <leader>d <cmd>lua vim.diagnostic.open_float()<CR>
 	nnoremap <leader>f <cmd>lua vim.lsp.buf.code_action()<CR>
-
-	" Make sure the leader key works in visual mode
-	nnoremap <Space> <Nop>
 
 	" Highlight on yank
 	autocmd TextYankPost * silent! 	lua vim.highlight.on_yank {higroup=(vim.fn['hlexists']('HighlightedyankRegion') > 0 and 'HighlightedyankRegion' or 'IncSearch'), timeout=300}	
@@ -134,14 +129,12 @@ require("lazy").setup({
 			{ "/", "<cmd>Telescope current_buffer_fuzzy_find theme=dropdown<CR>" },
 		},
 		config = function()
-			local actions = require("telescope.actions")
-			local theme = require("telescope.themes")
 			require("telescope").setup({
 				defaults = {
 					file_ignore_patterns = { "node_modules", "dist" },
-					mappings = { i = { ["<esc>"] = actions.close } },
+					mappings = { i = { ["<esc>"] = require("telescope.actions").close } },
 				},
-				extensions = { ["ui-select"] = { theme.get_cursor() } },
+				extensions = { ["ui-select"] = { require("telescope.themes").get_cursor() } },
 				cmdline = {
 					mappings = {
 						complete = "<Tab>",
@@ -297,24 +290,15 @@ require("lazy").setup({
 							end,
 						})
 					end
-				end,
-			})
-
-			-- Enable LSP-based features
-			vim.api.nvim_create_autocmd("LspAttach", {
-				callback = function(event)
-					local client = vim.lsp.get_client_by_id(event.data.client_id)
 					-- Variable highlighting
-					if client and client.supports_method("textDocument/documentHighlight") then
+					if client.supports_method("textDocument/documentHighlight") then
 						vim.cmd([[
 							autocmd CursorHold <buffer> lua vim.lsp.buf.document_highlight()
 							autocmd CursorMoved <buffer> lua vim.lsp.buf.clear_references()
 						]])
 					end
-					-- Inlay hints
-					if client and client.server_capabilities.inlayHintProvider then
-						vim.lsp.inlay_hint.enable(event.buf)
-					end
+
+					vim.lsp.inlay_hint.enable(bufnr, true)
 				end,
 			})
 		end,
