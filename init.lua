@@ -176,7 +176,6 @@ require("lazy").setup({
 		end,
 	},
 	{
-		-- TODO: Clean
 		"neovim/nvim-lspconfig",
 		dependencies = {
 			{ "VonHeikemen/lsp-zero.nvim", branch = "v3.x" },
@@ -337,13 +336,13 @@ require("lazy").setup({
 	{
 		"jackMort/ChatGPT.nvim",
 		keys = {
-			{ "<leader>cc", "<cmd>ChatGPT<cr>" },
-			{ "<leader>cm", "<cmd>ChatGPTCompleteCode<cr>" },
-			{ "<leader>ci", "<cmd>ChatGPTEditWithInstructions<cr>" },
-			{ "<leader>cf", "<cmd>ChatGPTRun fix_bugs<cr>" },
-			{ "<leader>cr", "<cmd>ChatGPTRun code_readability_analysis<cr>" },
-			{ "<leader>co", "<cmd>ChatGPTRun optimize_code<cr>" },
-			{ "<leader>ce", "<cmd>ChatGPTRun explain_code<cr>" },
+			{ "<leader>cc", "<cmd>ChatGPT<cr>", mode = { "n", "v" } },
+			{ "<leader>cm", "<cmd>ChatGPTCompleteCode<cr>", mode = { "n", "v" } },
+			{ "<leader>ci", "<cmd>ChatGPTEditWithInstructions<cr>", mode = { "n", "v" } },
+			{ "<leader>cf", "<cmd>ChatGPTRun fix_bugs<cr>", mode = { "n", "v" } },
+			{ "<leader>cr", "<cmd>ChatGPTRun code_readability_analysis<cr>", mode = { "n", "v" } },
+			{ "<leader>co", "<cmd>ChatGPTRun optimize_code<cr>", mode = { "n", "v" } },
+			{ "<leader>ce", "<cmd>ChatGPTRun explain_code<cr>", mode = { "n", "v" } },
 		},
 		opts = {
 			openai_params = { model = "gpt-4-turbo-preview", max_tokens = 2400, temperature = 0.2, top_p = 0.1 },
