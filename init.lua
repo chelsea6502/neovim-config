@@ -122,21 +122,6 @@ require("lazy").setup({
 		end,
 	},
 	{
-		"nvim-treesitter/nvim-treesitter",
-		build = ":TSUpdate",
-		opts = {
-			auto_install = true,
-			sync_install = true,
-			highlight = { enable = true },
-			indent = { enable = true },
-		},
-		config = function(_, opts)
-			require("nvim-treesitter.configs").setup(opts)
-		end,
-	},
-	{ "windwp/nvim-autopairs", event = "InsertEnter", opts = { check_ts = true } },
-	{ "windwp/nvim-ts-autotag", ft = HTML, opts = { filetypes = HTML } },
-	{
 		"nvim-telescope/telescope.nvim",
 		dependencies = {
 			"nvim-lua/plenary.nvim",
@@ -216,6 +201,44 @@ require("lazy").setup({
 		end,
 	},
 	{
+		"hrsh7th/nvim-cmp",
+		dependencies = {
+			{ "VonHeikemen/lsp-zero.nvim", branch = "v3.x" },
+			"hrsh7th/cmp-nvim-lsp",
+			"L3MON4D3/LuaSnip",
+		},
+		event = "InsertEnter",
+		opts = function()
+			local cmp = require("cmp")
+			cmp.event:on("confirm_done", require("nvim-autopairs.completion.cmp").on_confirm_done())
+			local cmp_action = require("lsp-zero").cmp_action()
+
+			return {
+				sources = { { name = "nvim_lsp" }, { name = "luasnip" } },
+				mapping = cmp.mapping.preset.insert({
+					["<Tab>"] = cmp_action.luasnip_supertab(),
+					["<S-Tab>"] = cmp_action.luasnip_shift_supertab(),
+					["<CR>"] = cmp.mapping.confirm({ select = false }),
+				}),
+			}
+		end,
+	},
+	{
+		"nvim-treesitter/nvim-treesitter",
+		build = ":TSUpdate",
+		opts = {
+			auto_install = true,
+			sync_install = true,
+			highlight = { enable = true },
+			indent = { enable = true },
+		},
+		config = function(_, opts)
+			require("nvim-treesitter.configs").setup(opts)
+		end,
+	},
+	{ "windwp/nvim-autopairs", event = "InsertEnter", opts = { check_ts = true } },
+	{ "windwp/nvim-ts-autotag", ft = HTML, opts = { filetypes = HTML } },
+	{
 		"shortcuts/no-neck-pain.nvim",
 		opts = {
 			autocmds = { enableOnVimEnter = true },
@@ -268,29 +291,6 @@ require("lazy").setup({
 				map("n", "<leader>gR", gs.reset_buffer)
 			end,
 		},
-	},
-	{
-		"hrsh7th/nvim-cmp",
-		dependencies = {
-			{ "VonHeikemen/lsp-zero.nvim", branch = "v3.x" },
-			"hrsh7th/cmp-nvim-lsp",
-			"L3MON4D3/LuaSnip",
-		},
-		event = "InsertEnter",
-		opts = function()
-			local cmp = require("cmp")
-			cmp.event:on("confirm_done", require("nvim-autopairs.completion.cmp").on_confirm_done())
-			local cmp_action = require("lsp-zero").cmp_action()
-
-			return {
-				sources = { { name = "nvim_lsp" }, { name = "luasnip" } },
-				mapping = cmp.mapping.preset.insert({
-					["<Tab>"] = cmp_action.luasnip_supertab(),
-					["<S-Tab>"] = cmp_action.luasnip_shift_supertab(),
-					["<CR>"] = cmp.mapping.confirm({ select = false }),
-				}),
-			}
-		end,
 	},
 
 	{
