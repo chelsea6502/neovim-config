@@ -1,4 +1,3 @@
--- General nvim settings
 vim.cmd([[
 	let g:mapleader = " "
 
@@ -223,7 +222,6 @@ require("lazy").setup({
 			end,
 		},
 	},
-
 	{
 		"lewis6991/gitsigns.nvim",
 		event = "LspAttach",
@@ -243,13 +241,14 @@ require("lazy").setup({
 					vim.keymap.set(mode, l, r, { buffer = buffer, desc = desc })
 				end
 
-				map("n", "<leader>gp", gs.preview_hunk_inline, "Preview Hunk Inline")
-				map({ "n", "v" }, "<leader>gr", ":Gitsigns reset_hunk<CR>", "Reset Hunk")
-				map("n", "<leader>gR", gs.reset_buffer, "Reset Buffer")
+				map("n", "<leader>gp", gs.preview_hunk_inline)
+				map("n", "<leader>gr", gs.reset_hunk)
+				map("n", "<leader>gR", gs.reset_buffer)
 			end,
 		},
 	},
 	{
+		-- TODO
 		"hrsh7th/nvim-cmp",
 		dependencies = {
 			{ "VonHeikemen/lsp-zero.nvim", branch = "v3.x" },
@@ -272,6 +271,7 @@ require("lazy").setup({
 		end,
 	},
 	{
+		-- TODO
 		"nvimtools/none-ls.nvim",
 		dependencies = { "nvimtools/none-ls-extras.nvim" },
 		config = function()
@@ -372,21 +372,20 @@ require("lazy").setup({
 	},
 	{
 		"jackMort/ChatGPT.nvim",
-		key = "<leader>c",
-		config = function()
-			require("chatgpt").setup({
-				openai_params = { model = "gpt-4-turbo-preview", max_tokens = 2400, temperature = 0.2, top_p = 0.1 },
-				openai_edit_params = { model = "gpt-4-turbo-preview", temperature = 0.6, top_p = 0.7 },
-			})
-
-			vim.keymap.set({ "n", "v" }, "<Leader>cc", "<cmd>:ChatGPT<cr>")
-			vim.keymap.set({ "n", "v" }, "<Leader>cm", "<cmd>:ChatGPTCompleteCode<cr>")
-			vim.keymap.set({ "n", "v" }, "<Leader>ci", "<cmd>:ChatGPTEditWithInstructions<cr>")
-			vim.keymap.set({ "n", "v" }, "<Leader>cf", "<cmd>:ChatGPTRun fix_bugs<cr>")
-			vim.keymap.set({ "n", "v" }, "<Leader>cr", "<cmd>:ChatGPTRun code_readability_analysis<cr>")
-			vim.keymap.set({ "n", "v" }, "<Leader>co", "<cmd>:ChatGPTRun optimize_code<cr>")
-			vim.keymap.set({ "n", "v" }, "<Leader>ce", "<cmd>:ChatGPTRun explain_code<cr>")
-		end,
+		keys = {
+			{ "<leader>cc", "<cmd>ChatGPT<cr>" },
+			{ "<leader>cm", "<cmd>ChatGPTCompleteCode<cr>" },
+			{ "<leader>ci", "<cmd>ChatGPTEditWithInstructions<cr>" },
+			{ "<leader>cf", "<cmd>ChatGPTRun fix_bugs<cr>" },
+			{ "<leader>cr", "<cmd>ChatGPTRun code_readability_analysis<cr>" },
+			{ "<leader>co", "<cmd>ChatGPTRun optimize_code<cr>" },
+			{ "<leader>ce", "<cmd>ChatGPTRun explain_code<cr>" },
+		},
+		opts = {
+			openai_params = { model = "gpt-4-turbo-preview", max_tokens = 2400, temperature = 0.2, top_p = 0.1 },
+			openai_edit_params = { model = "gpt-4-turbo-preview", temperature = 0.6, top_p = 0.7 },
+		},
+		main = "chatgpt",
 		dependencies = {
 			"MunifTanjim/nui.nvim",
 			"nvim-lua/plenary.nvim",
