@@ -49,8 +49,6 @@ vim.cmd([[
 	" Command shortcuts
 	command! Ec edit ~/.config/nvim/init.lua
 
-	autocmd VimEnter * wincmd w  " for NoNeckPain
-	
 	nnoremap <leader>a <cmd>lua vim.lsp.buf.hover()<CR>
 	nnoremap <leader>s <cmd>lua vim.lsp.buf.type_definition()<CR>
 	nnoremap <leader>d <cmd>lua vim.diagnostic.open_float()<CR>
@@ -77,6 +75,8 @@ if not vim.loop.fs_stat(lazypath) then
 	})
 end
 vim.opt.rtp:prepend(lazypath)
+
+local REACT = { "typescript", "javascript", "typescriptreact", "javascriptreact" }
 
 require("lazy").setup({
 	{
@@ -105,7 +105,14 @@ require("lazy").setup({
 			require("nvim-treesitter.configs").setup(opts)
 		end,
 	},
+	{ "windwp/nvim-autopairs", event = "InsertEnter", config = { check_ts = true } },
 	{
+		"windwp/nvim-ts-autotag",
+		ft = { "html", "xml", "javascriptreact", "typescriptreact" },
+		opts = { filetypes = { "html", "xml", "javascriptreact", "typescriptreact" } },
+	},
+	{
+		-- TODO
 		"nvim-telescope/telescope.nvim",
 		lazy = false,
 		dependencies = {
@@ -151,6 +158,7 @@ require("lazy").setup({
 		end,
 	},
 	{
+		-- TODO
 		"neovim/nvim-lspconfig",
 		dependencies = {
 			"williamboman/mason.nvim",
@@ -186,18 +194,13 @@ require("lazy").setup({
 			vim.lsp.set_log_level("off")
 		end,
 	},
-	{ "windwp/nvim-autopairs", event = "InsertEnter", config = true },
 	{
 		"shortcuts/no-neck-pain.nvim",
 		opts = {
+			autocmds = { enableOnVimEnter = true },
 			options = { width = 100, minSideBufferWidth = 100 },
 			buffers = { right = { enabled = false }, wo = { fillchars = "vert: ,eob: " } },
 		},
-		config = function(_, opts)
-			local nnp = require("no-neck-pain")
-			nnp.setup(opts)
-			nnp.enable()
-		end,
 	},
 	{
 		"lukas-reineke/indent-blankline.nvim",
@@ -211,8 +214,7 @@ require("lazy").setup({
 		keys = "gc",
 		dependencies = {
 			"JoosepAlviste/nvim-ts-context-commentstring",
-			ft = { "typescript", "javascript", "typescriptreact", "javascriptreact" },
-			keys = "gc",
+			ft = REACT,
 			opts = { enable_autocmd = false },
 		},
 		opts = {
@@ -326,7 +328,7 @@ require("lazy").setup({
 
 	{
 		"pmizio/typescript-tools.nvim",
-		ft = { "javascript", "typescript", "javascriptreact", "typescriptreact" },
+		ft = REACT,
 		dependencies = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig" },
 		opts = {
 			settings = {
@@ -354,11 +356,6 @@ require("lazy").setup({
 				virtual_improved = { current_line = "only" },
 			})
 		end,
-	},
-	{
-		"windwp/nvim-ts-autotag",
-		ft = { "html", "xml", "javascriptreact", "typescriptreact" },
-		opts = { filetypes = { "html", "xml", "javascriptreact", "typescriptreact" } },
 	},
 	{
 		"akinsho/toggleterm.nvim",
