@@ -256,18 +256,19 @@ require("lazy").setup({
 			"L3MON4D3/LuaSnip",
 		},
 		event = "InsertEnter",
-		config = function()
+		opts = function()
 			local cmp = require("cmp")
 			cmp.event:on("confirm_done", require("nvim-autopairs.completion.cmp").on_confirm_done())
 			local cmp_action = require("lsp-zero").cmp_action()
 
-			cmp.setup({
+			return {
+				sources = { { name = "nvim_lsp" }, { name = "luasnip" } },
 				mapping = cmp.mapping.preset.insert({
 					["<Tab>"] = cmp_action.luasnip_supertab(),
 					["<S-Tab>"] = cmp_action.luasnip_shift_supertab(),
 					["<CR>"] = cmp.mapping.confirm({ select = false }),
 				}),
-			})
+			}
 		end,
 	},
 	{
@@ -362,12 +363,8 @@ require("lazy").setup({
 		keys = { { "tt", "<cmd>ToggleTerm<CR>" } },
 		version = "*",
 		opts = { direction = "float", autochdir = true, persist_mode = false, persist_size = false },
-		config = function(_, opts)
-			require("toggleterm").setup(opts)
-
-			vim.cmd(
-				'autocmd! TermOpen term://*toggleterm#* lua vim.keymap.set("t", "<esc>", [[<C-\\><C-n><cmd>ToggleTerm<CR>]], {buffer = 0})'
-			)
+		init = function()
+			vim.cmd("autocmd! TermOpen term://*toggleterm#* tnoremap <buffer> <esc> <cmd>close<CR>")
 		end,
 	},
 	{
