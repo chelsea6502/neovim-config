@@ -157,7 +157,6 @@ require("lazy").setup({
 		end,
 	},
 	{
-		-- TODO
 		"neovim/nvim-lspconfig",
 		dependencies = {
 			"williamboman/mason.nvim",
@@ -165,18 +164,13 @@ require("lazy").setup({
 		},
 		event = "BufRead",
 		config = function()
-			local lsp_zero = require("lsp-zero")
-			lsp_zero.extend_lspconfig()
-
-			lsp_zero.on_attach(function(_, bufnr)
-				lsp_zero.default_keymaps({ buffer = bufnr })
-			end)
+			-- TODO
 
 			require("mason").setup()
 			require("mason-lspconfig").setup({
 				automatic_installation = true,
 				handlers = {
-					lsp_zero.default_setup,
+					require("lsp-zero").default_setup,
 					tailwindcss = function()
 						require("lspconfig").tailwindcss.setup({
 							settings = {
@@ -248,7 +242,6 @@ require("lazy").setup({
 		},
 	},
 	{
-		-- TODO
 		"hrsh7th/nvim-cmp",
 		dependencies = {
 			{ "VonHeikemen/lsp-zero.nvim", branch = "v3.x" },
