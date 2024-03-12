@@ -108,7 +108,6 @@ require("lazy").setup({
 	{
 		"nvim-telescope/telescope.nvim",
 		cmd = "Telescope",
-		lazy = false,
 		dependencies = {
 			"nvim-lua/plenary.nvim",
 			"jonarrien/telescope-cmdline.nvim",
@@ -165,7 +164,6 @@ require("lazy").setup({
 			"williamboman/mason-lspconfig.nvim",
 		},
 		event = "BufRead",
-		opts = { inlay_hints = { enabled = true } },
 		config = function()
 			local lsp_zero = require("lsp-zero")
 			lsp_zero.extend_lspconfig()
@@ -298,14 +296,14 @@ require("lazy").setup({
 			vim.api.nvim_create_autocmd("LspAttach", {
 				callback = function(event)
 					local client = vim.lsp.get_client_by_id(event.data.client_id)
+					-- Variable highlighting
 					if client and client.supports_method("textDocument/documentHighlight") then
-						-- Variable highlighting
 						vim.cmd([[
 							autocmd CursorHold <buffer> lua vim.lsp.buf.document_highlight()
 							autocmd CursorMoved <buffer> lua vim.lsp.buf.clear_references()
 						]])
 					end
-					-- Inlay hintts
+					-- Inlay hints
 					if client and client.server_capabilities.inlayHintProvider then
 						vim.lsp.inlay_hint.enable(event.buf)
 					end
@@ -350,13 +348,16 @@ require("lazy").setup({
 
 			vim.diagnostic.config({
 				underline = false,
-				severity_sort = true,
-				virtual_text = false, -- Disable builtin virtual text diagnostic.
+				virtual_text = false,
 				virtual_improved = { current_line = "only" },
 			})
 		end,
 	},
-	{ "windwp/nvim-ts-autotag", opts = { filetypes = { "html", "xml", "javascriptreact", "typescriptreact" } } },
+	{
+		"windwp/nvim-ts-autotag",
+		ft = { "html", "xml", "javascriptreact", "typescriptreact" },
+		opts = { filetypes = { "html", "xml", "javascriptreact", "typescriptreact" } },
+	},
 	{
 		"akinsho/toggleterm.nvim",
 		keys = { { "tt", "<cmd>ToggleTerm<CR>" } },
@@ -372,16 +373,15 @@ require("lazy").setup({
 	},
 	{
 		"jackMort/ChatGPT.nvim",
-		event = "VeryLazy",
+		cmd = "ChatGPT",
 		config = function()
 			require("chatgpt").setup({
-				openai_params = { model = "gpt-4-turbo-preview", max_tokens = 1200, temperature = 0.2, top_p = 0.1 },
+				openai_params = { model = "gpt-4-turbo-preview", max_tokens = 2400, temperature = 0.2, top_p = 0.1 },
 				openai_edit_params = { model = "gpt-4-turbo-preview", temperature = 0.6, top_p = 0.7 },
 			})
 
-			vim.keymap.set({ "n", "v" }, "<Leader>ch", "<cmd>:ChatGPT<cr>")
-			vim.keymap.set({ "n", "v" }, "<Leader>cc", "<cmd>:ChatGPTCompleteCode<cr>")
-
+			vim.keymap.set({ "n", "v" }, "<Leader>cc", "<cmd>:ChatGPT<cr>")
+			vim.keymap.set({ "n", "v" }, "<Leader>cm", "<cmd>:ChatGPTCompleteCode<cr>")
 			vim.keymap.set({ "n", "v" }, "<Leader>ci", "<cmd>:ChatGPTEditWithInstructions<cr>")
 			vim.keymap.set({ "n", "v" }, "<Leader>cf", "<cmd>:ChatGPTRun fix_bugs<cr>")
 			vim.keymap.set({ "n", "v" }, "<Leader>cr", "<cmd>:ChatGPTRun code_readability_analysis<cr>")
