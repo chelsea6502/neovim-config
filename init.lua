@@ -161,12 +161,17 @@ require("lazy").setup({
 			end)
 
 			lsp_zero.set_sign_icons({ error = "✘", warn = "▲", hint = "⚑", info = "»" })
+
 			lsp_zero.extend_lspconfig()
 			require("mason").setup()
 			require("mason-lspconfig").setup({
 				automatic_installation = true,
 				handlers = {
 					lsp_zero.default_setup,
+					lua_ls = function()
+						local lua_opts = lsp_zero.nvim_lua_ls()
+						require("lspconfig").lua_ls.setup(lua_opts)
+					end,
 					tailwindcss = function()
 						local twRegex = { "tw`([^`]*)", "tw\\.[^`]+`([^`]*)`", "tw\\(.*?\\).*?`([^`]*)" }
 						require("lspconfig").tailwindcss.setup({
@@ -186,16 +191,16 @@ require("lazy").setup({
 		},
 		event = "InsertEnter",
 		opts = function()
+			require("lsp-zero").extend_cmp()
 			local cmp = require("cmp")
 			cmp.event:on("confirm_done", require("nvim-autopairs.completion.cmp").on_confirm_done())
 			local cmp_action = require("lsp-zero").cmp_action()
 
 			return {
-				sources = { { name = "nvim_lsp" }, { name = "luasnip" } },
 				mapping = cmp.mapping.preset.insert({
 					["<Tab>"] = cmp_action.luasnip_supertab(),
 					["<S-Tab>"] = cmp_action.luasnip_shift_supertab(),
-					["<CR>"] = cmp.mapping.confirm({ select = false }),
+					["<CR>"] = cmp.mapping.confirm({ select = true }),
 				}),
 			}
 		end,
