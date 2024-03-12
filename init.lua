@@ -107,7 +107,7 @@ require("lazy").setup({
 	},
 	{
 		"nvim-telescope/telescope.nvim",
-		cmd = "Telescope",
+		lazy = false,
 		dependencies = {
 			"nvim-lua/plenary.nvim",
 			"jonarrien/telescope-cmdline.nvim",
@@ -133,11 +133,7 @@ require("lazy").setup({
 			require("telescope").setup({
 				defaults = {
 					file_ignore_patterns = { "node_modules", "dist" },
-					mappings = {
-						i = {
-							["<esc>"] = actions.close,
-						},
-					},
+					mappings = { i = { ["<esc>"] = actions.close } },
 				},
 				extensions = {
 					["ui-select"] = { theme.get_dropdown() },
@@ -281,6 +277,7 @@ require("lazy").setup({
 		dependencies = { "nvimtools/none-ls-extras.nvim" },
 		config = function()
 			local null_ls = require("null-ls")
+			local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
 
 			null_ls.setup({
 				sources = {
@@ -290,6 +287,24 @@ require("lazy").setup({
 					require("none-ls.diagnostics.eslint_d"),
 					require("none-ls.code_actions.eslint_d"),
 				},
+				on_attach = function(client, bufnr)
+					if client.supports_method("textDocument/formatting") then
+						vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
+						vim.api.nvim_create_autocmd("BufWritePre", {
+							group = augroup,
+							buffer = bufnr,
+							callback = function()
+								vim.lsp.buf.format({
+									bufnr = bufnr,
+									filter = function(client2)
+										return client2.name == "null-ls"
+									end,
+									async = false,
+								})
+							end,
+						})
+					end
+				end,
 			})
 
 			-- Enable LSP-based features
@@ -309,20 +324,9 @@ require("lazy").setup({
 					end
 				end,
 			})
-
-			-- Format on save
-			vim.api.nvim_create_autocmd("BufWritePre", {
-				callback = function()
-					vim.lsp.buf.format({
-						async = false,
-						filter = function(client)
-							return client.name == "null-ls"
-						end,
-					})
-				end,
-			})
 		end,
 	},
+
 	{
 		"pmizio/typescript-tools.nvim",
 		ft = { "javascript", "typescript", "javascriptreact", "typescriptreact" },
