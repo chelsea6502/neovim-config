@@ -112,7 +112,7 @@ require("lazy").setup({
 			{
 				"ahmedkhalf/project.nvim",
 				main = "project_nvim",
-				opts = { detection_methods = { "pattern" }, patterns = { ".git" } },
+				opts = { detection_methods = { "pattern" } },
 			},
 			"nvim-telescope/telescope-ui-select.nvim",
 		},
@@ -151,11 +151,13 @@ require("lazy").setup({
 		event = "BufRead",
 		config = function()
 			-- TODO
+			local lsp_zero = require("lsp-zero")
+			lsp_zero.extend_lspconfig()
 			require("mason").setup()
 			require("mason-lspconfig").setup({
 				automatic_installation = true,
 				handlers = {
-					require("lsp-zero").default_setup,
+					lsp_zero.default_setup,
 					tailwindcss = function()
 						local twRegex = { "tw`([^`]*)", "tw\\.[^`]+`([^`]*)`", "tw\\(.*?\\).*?`([^`]*)" }
 						require("lspconfig").tailwindcss.setup({
