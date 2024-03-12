@@ -128,8 +128,8 @@ require("lazy").setup({
 			{ ":", "<cmd>Telescope cmdline<CR>" },
 			{ "/", "<cmd>Telescope current_buffer_fuzzy_find theme=dropdown<CR>" },
 		},
-		config = function()
-			require("telescope").setup({
+		opts = function()
+			return {
 				defaults = {
 					file_ignore_patterns = { "node_modules", "dist" },
 					mappings = { i = { ["<esc>"] = require("telescope.actions").close } },
@@ -142,8 +142,10 @@ require("lazy").setup({
 						run_input = "<C-CR>",
 					},
 				},
-			})
-
+			}
+		end,
+		config = function(_, opts)
+			require("telescope").setup(opts)
 			require("telescope").load_extension("projects")
 			require("telescope").load_extension("cmdline")
 			require("telescope").load_extension("ui-select")
@@ -158,21 +160,15 @@ require("lazy").setup({
 		event = "BufRead",
 		config = function()
 			-- TODO
-
 			require("mason").setup()
 			require("mason-lspconfig").setup({
 				automatic_installation = true,
 				handlers = {
 					require("lsp-zero").default_setup,
 					tailwindcss = function()
+						local twRegex = { "tw`([^`]*)", "tw\\.[^`]+`([^`]*)`", "tw\\(.*?\\).*?`([^`]*)" }
 						require("lspconfig").tailwindcss.setup({
-							settings = {
-								tailwindCSS = {
-									experimental = {
-										classRegex = { "tw`([^`]*)", "tw\\.[^`]+`([^`]*)`", "tw\\(.*?\\).*?`([^`]*)" },
-									},
-								},
-							},
+							settings = { tailwindCSS = { experimental = { classRegex = twRegex } } },
 						})
 					end,
 				},
