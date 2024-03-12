@@ -66,15 +66,6 @@ vim.cmd([[
 
 	]])
 
-vim.api.nvim_create_autocmd("LspAttach", {
-	pattern = "*",
-	callback = function(args)
-		local client = vim.lsp.get_client_by_id(args.data.client_id)
-		if client and client.server_capabilities.inlayHintProvider then
-			vim.lsp.inlay_hint.enable(args.buf)
-		end
-	end,
-})
 -- Enable lazy
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
@@ -303,15 +294,20 @@ require("lazy").setup({
 				},
 			})
 
-			-- Variable highlighting on cursor
+			-- Enable LSP-based features
 			vim.api.nvim_create_autocmd("LspAttach", {
 				callback = function(event)
 					local client = vim.lsp.get_client_by_id(event.data.client_id)
 					if client and client.supports_method("textDocument/documentHighlight") then
+						-- Variable highlighting
 						vim.cmd([[
 							autocmd CursorHold <buffer> lua vim.lsp.buf.document_highlight()
 							autocmd CursorMoved <buffer> lua vim.lsp.buf.clear_references()
 						]])
+					end
+					-- Inlay hintts
+					if client and client.server_capabilities.inlayHintProvider then
+						vim.lsp.inlay_hint.enable(event.buf)
 					end
 				end,
 			})
