@@ -51,8 +51,6 @@ vim.cmd([[
 
 	autocmd VimEnter * wincmd w  " for NoNeckPain
 	
-	autocmd FileType * setlocal formatoptions+=t 	" Line wrapping
-
 	nnoremap <leader>a <cmd>lua vim.lsp.buf.hover()<CR>
 	nnoremap <leader>s <cmd>lua vim.lsp.buf.type_definition()<CR>
 	nnoremap <leader>d <cmd>lua vim.diagnostic.open_float()<CR>
