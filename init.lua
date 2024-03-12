@@ -71,6 +71,7 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 local REACT = { "typescript", "javascript", "typescriptreact", "javascriptreact" }
+local HTML = { "html", "xml", "typescriptreact", "javascriptreact" }
 
 require("lazy").setup({
 	{
@@ -100,11 +101,7 @@ require("lazy").setup({
 		end,
 	},
 	{ "windwp/nvim-autopairs", event = "InsertEnter", config = { check_ts = true } },
-	{
-		"windwp/nvim-ts-autotag",
-		ft = { "html", "xml", "javascriptreact", "typescriptreact" },
-		opts = { filetypes = { "html", "xml", "javascriptreact", "typescriptreact" } },
-	},
+	{ "windwp/nvim-ts-autotag", ft = HTML, opts = { filetypes = HTML } },
 	{
 		-- TODO
 		"nvim-telescope/telescope.nvim",
@@ -135,13 +132,7 @@ require("lazy").setup({
 					mappings = { i = { ["<esc>"] = require("telescope.actions").close } },
 				},
 				extensions = { ["ui-select"] = { require("telescope.themes").get_cursor() } },
-				cmdline = {
-					mappings = {
-						complete = "<Tab>",
-						run_selection = "<CR>",
-						run_input = "<C-CR>",
-					},
-				},
+				cmdline = { mappings = { run_selection = "<CR>", run_input = "<C-CR>" } },
 			}
 		end,
 		config = function(_, opts)
