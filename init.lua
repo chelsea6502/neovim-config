@@ -133,10 +133,7 @@ require("lazy").setup({
 					file_ignore_patterns = { "node_modules", "dist" },
 					mappings = { i = { ["<esc>"] = actions.close } },
 				},
-				extensions = {
-					["ui-select"] = { theme.get_cursor() },
-					["find_files"] = { theme.get_dropdown() },
-				},
+				extensions = { ["ui-select"] = { theme.get_cursor() } },
 				cmdline = {
 					mappings = {
 						complete = "<Tab>",
