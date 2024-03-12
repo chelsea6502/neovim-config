@@ -100,17 +100,16 @@ require("lazy").setup({
 			require("nvim-treesitter.configs").setup(opts)
 		end,
 	},
-	{ "windwp/nvim-autopairs", event = "InsertEnter", config = { check_ts = true } },
+	{ "windwp/nvim-autopairs", event = "InsertEnter", opts = { check_ts = true } },
 	{ "windwp/nvim-ts-autotag", ft = HTML, opts = { filetypes = HTML } },
 	{
-		-- TODO
 		"nvim-telescope/telescope.nvim",
-		lazy = false,
 		dependencies = {
 			"nvim-lua/plenary.nvim",
 			"jonarrien/telescope-cmdline.nvim",
 			{
 				"ahmedkhalf/project.nvim",
+				event = "BufRead",
 				main = "project_nvim",
 				opts = { detection_methods = { "pattern" } },
 			},
@@ -145,6 +144,7 @@ require("lazy").setup({
 	{
 		"neovim/nvim-lspconfig",
 		dependencies = {
+			{ "VonHeikemen/lsp-zero.nvim", branch = "v3.x" },
 			"williamboman/mason.nvim",
 			"williamboman/mason-lspconfig.nvim",
 		},
@@ -166,7 +166,6 @@ require("lazy").setup({
 					end,
 				},
 			})
-			vim.lsp.set_log_level("off")
 		end,
 	},
 	{
@@ -313,7 +312,7 @@ require("lazy").setup({
 	},
 	{
 		"luozhiya/lsp-virtual-improved.nvim",
-		event = { "LspAttach" },
+		event = "LspAttach",
 		config = function()
 			require("lsp-virtual-improved").setup()
 
