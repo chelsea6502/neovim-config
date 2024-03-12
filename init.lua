@@ -142,6 +142,7 @@ require("lazy").setup({
 		end,
 	},
 	{
+		-- TODO: Clean
 		"neovim/nvim-lspconfig",
 		dependencies = {
 			{ "VonHeikemen/lsp-zero.nvim", branch = "v3.x" },
@@ -150,7 +151,6 @@ require("lazy").setup({
 		},
 		event = "BufRead",
 		config = function()
-			-- TODO
 			local lsp_zero = require("lsp-zero")
 			lsp_zero.extend_lspconfig()
 			require("mason").setup()
@@ -165,6 +165,52 @@ require("lazy").setup({
 						})
 					end,
 				},
+			})
+		end,
+	},
+	{
+		-- TODO: Clean
+		"nvimtools/none-ls.nvim",
+		dependencies = { "nvimtools/none-ls-extras.nvim" },
+		config = function()
+			local null_ls = require("null-ls")
+			local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
+
+			null_ls.setup({
+				sources = {
+					null_ls.builtins.formatting.stylua,
+					null_ls.builtins.formatting.prettierd,
+					require("none-ls.diagnostics.eslint_d"),
+					require("none-ls.code_actions.eslint_d"),
+				},
+				on_attach = function(client, bufnr)
+					-- Format on save
+					if client.supports_method("textDocument/formatting") then
+						vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
+						vim.api.nvim_create_autocmd("BufWritePre", {
+							group = augroup,
+							buffer = bufnr,
+							callback = function()
+								vim.lsp.buf.format({
+									bufnr = bufnr,
+									filter = function(client2)
+										return client2.name == "null-ls"
+									end,
+									async = false,
+								})
+							end,
+						})
+					end
+					-- Variable highlighting
+					if client.supports_method("textDocument/documentHighlight") then
+						vim.cmd([[
+							autocmd CursorHold <buffer> lua vim.lsp.buf.document_highlight()
+							autocmd CursorMoved <buffer> lua vim.lsp.buf.clear_references()
+						]])
+					end
+
+					vim.lsp.inlay_hint.enable(bufnr, true)
+				end,
 			})
 		end,
 	},
@@ -243,52 +289,6 @@ require("lazy").setup({
 					["<CR>"] = cmp.mapping.confirm({ select = false }),
 				}),
 			}
-		end,
-	},
-	{
-		-- TODO
-		"nvimtools/none-ls.nvim",
-		dependencies = { "nvimtools/none-ls-extras.nvim" },
-		config = function()
-			local null_ls = require("null-ls")
-			local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
-
-			null_ls.setup({
-				sources = {
-					null_ls.builtins.formatting.stylua,
-					null_ls.builtins.formatting.prettierd,
-					require("none-ls.diagnostics.eslint_d"),
-					require("none-ls.code_actions.eslint_d"),
-				},
-				on_attach = function(client, bufnr)
-					-- Format on save
-					if client.supports_method("textDocument/formatting") then
-						vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
-						vim.api.nvim_create_autocmd("BufWritePre", {
-							group = augroup,
-							buffer = bufnr,
-							callback = function()
-								vim.lsp.buf.format({
-									bufnr = bufnr,
-									filter = function(client2)
-										return client2.name == "null-ls"
-									end,
-									async = false,
-								})
-							end,
-						})
-					end
-					-- Variable highlighting
-					if client.supports_method("textDocument/documentHighlight") then
-						vim.cmd([[
-							autocmd CursorHold <buffer> lua vim.lsp.buf.document_highlight()
-							autocmd CursorMoved <buffer> lua vim.lsp.buf.clear_references()
-						]])
-					end
-
-					vim.lsp.inlay_hint.enable(bufnr, true)
-				end,
-			})
 		end,
 	},
 
