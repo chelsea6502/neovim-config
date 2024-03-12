@@ -73,6 +73,40 @@ vim.opt.rtp:prepend(lazypath)
 local REACT = { "typescript", "javascript", "typescriptreact", "javascriptreact" }
 local HTML = { "html", "xml", "typescriptreact", "javascriptreact" }
 
+-- LSP-specific features
+vim.api.nvim_create_autocmd("LspAttach", {
+	callback = function(args)
+		local client = vim.lsp.get_client_by_id(args.data.client_id)
+		-- Highlighting on hover
+		if client.supports_method("textDocument/documentHighlight") then
+			vim.cmd([[
+				autocmd CursorHold <buffer> lua vim.lsp.buf.document_highlight()
+				autocmd CursorMoved <buffer> lua vim.lsp.buf.clear_references()
+			]])
+		end
+
+		-- Inlay Hints
+		if client.supports_method("textDocument/inlayHint") then
+			vim.lsp.inlay_hint.enable(args.buf, true)
+		end
+
+		-- Format on save
+		if client.supports_method("textDocument/formatting") then
+			vim.api.nvim_create_autocmd("BufWritePre", {
+				callback = function()
+					vim.lsp.buf.format({
+						bufnr = args.buf,
+						filter = function(client2)
+							return client2.name == "null-ls"
+						end,
+						async = false,
+					})
+				end,
+			})
+		end
+	end,
+})
+
 require("lazy").setup({
 	{
 		"sainnhe/gruvbox-material",
@@ -169,49 +203,17 @@ require("lazy").setup({
 		end,
 	},
 	{
-		-- TODO: Clean
 		"nvimtools/none-ls.nvim",
-		dependencies = { "nvimtools/none-ls-extras.nvim" },
-		config = function()
-			local null_ls = require("null-ls")
-			local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
-
-			null_ls.setup({
+		dependencies = "nvimtools/none-ls-extras.nvim",
+		opts = function()
+			return {
 				sources = {
-					null_ls.builtins.formatting.stylua,
-					null_ls.builtins.formatting.prettierd,
+					require("null-ls").builtins.formatting.stylua,
+					require("null-ls").builtins.formatting.prettierd,
 					require("none-ls.diagnostics.eslint_d"),
 					require("none-ls.code_actions.eslint_d"),
 				},
-				on_attach = function(client, bufnr)
-					-- Format on save
-					if client.supports_method("textDocument/formatting") then
-						vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
-						vim.api.nvim_create_autocmd("BufWritePre", {
-							group = augroup,
-							buffer = bufnr,
-							callback = function()
-								vim.lsp.buf.format({
-									bufnr = bufnr,
-									filter = function(client2)
-										return client2.name == "null-ls"
-									end,
-									async = false,
-								})
-							end,
-						})
-					end
-					-- Variable highlighting
-					if client.supports_method("textDocument/documentHighlight") then
-						vim.cmd([[
-							autocmd CursorHold <buffer> lua vim.lsp.buf.document_highlight()
-							autocmd CursorMoved <buffer> lua vim.lsp.buf.clear_references()
-						]])
-					end
-
-					vim.lsp.inlay_hint.enable(bufnr, true)
-				end,
-			})
+			}
 		end,
 	},
 	{
