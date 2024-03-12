@@ -83,11 +83,13 @@ require("lazy").setup({
 		"sainnhe/gruvbox-material",
 		lazy = false,
 		priority = 1000,
-		init = function()
-			vim.g.gruvbox_material_foreground = "material"
-			vim.g.gruvbox_material_background = "medium"
-			vim.g.gruvbox_material_better_performance = 1
-			vim.cmd.colorscheme("gruvbox-material")
+		config = function()
+			vim.cmd([[
+				let g:gruvbox_material_foreground = "material"
+				let g:gruvbox_material_background = "medium"
+				let g:gruvbox_material_better_performance = 1
+				colorscheme gruvbox-material
+			]])
 		end,
 	},
 	{
@@ -373,7 +375,7 @@ require("lazy").setup({
 	},
 	{
 		"jackMort/ChatGPT.nvim",
-		cmd = "ChatGPT",
+		key = "<leader>c",
 		config = function()
 			require("chatgpt").setup({
 				openai_params = { model = "gpt-4-turbo-preview", max_tokens = 2400, temperature = 0.2, top_p = 0.1 },
