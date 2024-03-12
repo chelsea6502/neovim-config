@@ -134,7 +134,7 @@ require("lazy").setup({
 					mappings = { i = { ["<esc>"] = actions.close } },
 				},
 				extensions = {
-					["ui-select"] = { theme.get_dropdown() },
+					["ui-select"] = { theme.get_cursor() },
 					["find_files"] = { theme.get_dropdown() },
 				},
 				cmdline = {
