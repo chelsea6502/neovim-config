@@ -52,30 +52,29 @@ vim.cmd([[
 	autocmd VimEnter * wincmd w  " for NoNeckPain
 	
 	autocmd FileType * setlocal formatoptions+=t 	" Line wrapping
-	autocmd LspAttach * lua vim.lsp.inlay_hint.enable() -- Inlay hints
+
+	nnoremap <leader>a <cmd>lua vim.lsp.buf.hover()<CR>
+	nnoremap <leader>s <cmd>lua vim.lsp.buf.type_definition()<CR>
+	nnoremap <leader>d <cmd>lua vim.diagnostic.open_float()<CR>
+	nnoremap <leader>f <cmd>lua vim.lsp.buf.code_action()<CR>
+
+	" Make sure the leader key works in visual mode
+	nnoremap <Space> <Nop>
 
 	" Highlight on yank
 	autocmd TextYankPost * silent! 	lua vim.highlight.on_yank {higroup=(vim.fn['hlexists']('HighlightedyankRegion') > 0 and 'HighlightedyankRegion' or 'IncSearch'), timeout=300}	
 
 	]])
 
-vim.api.nvim_set_keymap("", "<Space>", "<Nop>", { noremap = true, silent = true })
-
-vim.diagnostic.config({
-	underline = false,
-
-	severity_sort = true,
-	virtual_text = false, -- Disable builtin virtual text diagnostic.
-	virtual_improved = { current_line = "only" },
+vim.api.nvim_create_autocmd("LspAttach", {
+	pattern = "*",
+	callback = function(args)
+		local client = vim.lsp.get_client_by_id(args.data.client_id)
+		if client and client.server_capabilities.inlayHintProvider then
+			vim.lsp.inlay_hint.enable(args.buf)
+		end
+	end,
 })
-
-vim.keymap.set("n", "<leader>a", vim.lsp.buf.hover, {})
-vim.keymap.set("n", "<leader>s", vim.lsp.buf.type_definition, {})
-vim.keymap.set("n", "<leader>d", vim.diagnostic.open_float, {})
-vim.keymap.set("n", "<leader>f", vim.lsp.buf.code_action, {})
-
-vim.loader.enable()
-
 -- Enable lazy
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
@@ -352,6 +351,13 @@ require("lazy").setup({
 		event = { "LspAttach" },
 		config = function()
 			require("lsp-virtual-improved").setup()
+
+			vim.diagnostic.config({
+				underline = false,
+				severity_sort = true,
+				virtual_text = false, -- Disable builtin virtual text diagnostic.
+				virtual_improved = { current_line = "only" },
+			})
 		end,
 	},
 	{ "windwp/nvim-ts-autotag", opts = { filetypes = { "html", "xml", "javascriptreact", "typescriptreact" } } },
@@ -373,11 +379,13 @@ require("lazy").setup({
 		event = "VeryLazy",
 		config = function()
 			require("chatgpt").setup({
-				openai_params = { model = "gpt-4-turbo-preview", max_tokens = 1200 },
-				openai_edit_params = { model = "gpt-4-turbo-preview" },
+				openai_params = { model = "gpt-4-turbo-preview", max_tokens = 1200, temperature = 0.2, top_p = 0.1 },
+				openai_edit_params = { model = "gpt-4-turbo-preview", temperature = 0.6, top_p = 0.7 },
 			})
 
-			vim.keymap.set({ "n", "v" }, "<Leader>cc", "<cmd>:ChatGPT<cr>")
+			vim.keymap.set({ "n", "v" }, "<Leader>ch", "<cmd>:ChatGPT<cr>")
+			vim.keymap.set({ "n", "v" }, "<Leader>cc", "<cmd>:ChatGPTCompleteCode<cr>")
+
 			vim.keymap.set({ "n", "v" }, "<Leader>ci", "<cmd>:ChatGPTEditWithInstructions<cr>")
 			vim.keymap.set({ "n", "v" }, "<Leader>cf", "<cmd>:ChatGPTRun fix_bugs<cr>")
 			vim.keymap.set({ "n", "v" }, "<Leader>cr", "<cmd>:ChatGPTRun code_readability_analysis<cr>")
