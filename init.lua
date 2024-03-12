@@ -58,6 +58,7 @@ vim.cmd([[
 
 -- Enable lazy
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+---@diagnostic disable-next-line: undefined-field
 if not vim.loop.fs_stat(lazypath) then
 	vim.fn.system({
 		"git",
@@ -68,6 +69,7 @@ if not vim.loop.fs_stat(lazypath) then
 		lazypath,
 	})
 end
+---@diagnostic disable-next-line: undefined-field
 vim.opt.rtp:prepend(lazypath)
 
 local REACT = { "typescript", "javascript", "typescriptreact", "javascriptreact" }
@@ -146,10 +148,13 @@ require("lazy").setup({
 			{ "VonHeikemen/lsp-zero.nvim", branch = "v3.x" },
 			"williamboman/mason.nvim",
 			"williamboman/mason-lspconfig.nvim",
+			{ "folke/neodev.nvim", config = true },
 		},
 		event = "BufRead",
 		config = function()
 			local lsp_zero = require("lsp-zero")
+
+			require("neodev").setup()
 
 			-- LSP-specific features
 			lsp_zero.on_attach(function(client, bufnr)
