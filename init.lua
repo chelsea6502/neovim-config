@@ -160,6 +160,7 @@ require("lazy").setup({
 			lsp_zero.on_attach(function(client, bufnr)
 				lsp_zero.highlight_symbol(client, bufnr)
 				lsp_zero.buffer_autoformat({ name = "null-ls" })
+				-- Don't uncomment until v0.10
 				--if client.supports_method("textDocument/inlayHint") then
 				--	vim.lsp.inlay_hint.enable(bufnr, true)
 				--end
