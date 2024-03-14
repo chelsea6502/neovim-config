@@ -160,9 +160,9 @@ require("lazy").setup({
 			lsp_zero.on_attach(function(client, bufnr)
 				lsp_zero.highlight_symbol(client, bufnr)
 				lsp_zero.buffer_autoformat({ name = "null-ls" })
-				if client.supports_method("textDocument/inlayHint") then
-					vim.lsp.inlay_hint.enable(bufnr, true)
-				end
+				--if client.supports_method("textDocument/inlayHint") then
+				--	vim.lsp.inlay_hint.enable(bufnr, true)
+				--end
 			end)
 
 			lsp_zero.set_sign_icons({ error = "✘", warn = "▲", hint = "⚑", info = "»" })
