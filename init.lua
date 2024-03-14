@@ -161,10 +161,6 @@ require("lazy").setup({
 			lsp_zero.on_attach(function(client, bufnr)
 				lsp_zero.highlight_symbol(client, bufnr)
 				lsp_zero.buffer_autoformat({ name = "null-ls" })
-				-- Don't uncomment until v0.10
-				--if client.supports_method("textDocument/inlayHint") then
-				--	vim.lsp.inlay_hint.enable(bufnr, true)
-				--end
 			end)
 
 			lsp_zero.set_sign_icons({ error = "✘", warn = "▲", hint = "⚑", info = "»" })
@@ -286,19 +282,7 @@ require("lazy").setup({
 		"pmizio/typescript-tools.nvim",
 		ft = REACT,
 		dependencies = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig" },
-		opts = {
-			settings = {
-				complete_function_calls = true,
-				expose_as_code_action = "all",
-				tsserver_file_preferences = {
-					includeInlayParameterNameHints = "literals",
-					includeInlayFunctionParameterTypeHints = true,
-					includeInlayFunctionLikeReturnTypeHints = true,
-					-- includeInlayPropertyDeclarationTypeHints = true, -- this crashes
-					-- includeInlayVariableTypeHints = true, -- this sucks
-				},
-			},
-		},
+		opts = { settings = { complete_function_calls = true, expose_as_code_action = "all" } },
 	},
 	{
 		"luozhiya/lsp-virtual-improved.nvim",
