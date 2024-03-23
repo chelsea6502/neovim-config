@@ -172,8 +172,7 @@ require("lazy").setup({
 				handlers = {
 					lsp_zero.default_setup,
 					lua_ls = function()
-						local lua_opts = lsp_zero.nvim_lua_ls()
-						require("lspconfig").lua_ls.setup(lua_opts)
+						require("lspconfig").lua_ls.setup(lsp_zero.nvim_lua_ls())
 					end,
 					tailwindcss = function()
 						local twRegex = { "tw`([^`]*)", "tw\\.[^`]+`([^`]*)`", "tw\\(.*?\\).*?`([^`]*)" }
@@ -226,7 +225,7 @@ require("lazy").setup({
 	{
 		"shortcuts/no-neck-pain.nvim",
 		opts = {
-			autocmds = { enableOnVimEnter = true },
+			autocmds = { enableOnVimEnter = true, skipEnteringNoNeckPainBuffer = true },
 			options = { width = 100, minSideBufferWidth = 100 },
 			buffers = { right = { enabled = false }, wo = { fillchars = "vert: ,eob: " } },
 		},
