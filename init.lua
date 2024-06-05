@@ -52,24 +52,15 @@ vim.cmd([[
 	nnoremap <leader>f <cmd>lua vim.lsp.buf.code_action()<CR>
 
 	" Highlight on yank
-	autocmd TextYankPost * silent! 	lua vim.highlight.on_yank {higroup=(vim.fn['hlexists']('HighlightedyankRegion') > 0 and 'HighlightedyankRegion' or 'IncSearch'), timeout=300}	
+	autocmd TextYankPost * silent! lua vim.highlight.on_yank {higroup=(vim.fn['hlexists']('HighlightedyankRegion') > 0 and 'HighlightedyankRegion' or 'IncSearch'), timeout=300}	
 
 	]])
 
 -- Enable lazy
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
----@diagnostic disable-next-line: undefined-field
-if not vim.loop.fs_stat(lazypath) then
-	vim.fn.system({
-		"git",
-		"clone",
-		"--filter=blob:none",
-		"https://github.com/folke/lazy.nvim.git",
-		"--branch=stable",
-		lazypath,
-	})
-end
----@diagnostic disable-next-line: undefined-field
+-- if not vim.loop.fs_stat(lazypath) then
+-- 	vim.fn.system({ "git", "clone", "--filter=blob:none", "https://github.com/folke/lazy.nvim.git", "--branch=stable", lazypath })
+-- end
 vim.opt.rtp:prepend(lazypath)
 
 local REACT = { "typescript", "javascript", "typescriptreact", "javascriptreact" }
@@ -109,8 +100,8 @@ require("lazy").setup({
 			{ "ff", "<cmd>Telescope git_files<CR>" },
 			{ "fF", "<cmd>Telescope oldfiles<CR>" },
 			{ "FF", "<cmd>Telescope projects theme=dropdown<CR>" },
-			{ ":", "<cmd>Telescope cmdline<CR>" },
-			{ "/", "<cmd>Telescope current_buffer_fuzzy_find theme=dropdown<CR>" },
+			{ ":",  "<cmd>Telescope cmdline<CR>" },
+			{ "/",  "<cmd>Telescope current_buffer_fuzzy_find theme=dropdown<CR>" },
 		},
 		opts = function()
 			return {
@@ -137,8 +128,8 @@ require("lazy").setup({
 				sources = {
 					require("null-ls").builtins.formatting.stylua,
 					require("null-ls").builtins.formatting.prettierd,
-					require("none-ls.diagnostics.eslint_d"),
-					require("none-ls.code_actions.eslint_d"),
+					require("none-ls.diagnostics.eslint"),
+					require("none-ls.code_actions.eslint"),
 				},
 			}
 		end,
@@ -149,7 +140,7 @@ require("lazy").setup({
 			{ "VonHeikemen/lsp-zero.nvim", branch = "v3.x" },
 			"williamboman/mason.nvim",
 			"williamboman/mason-lspconfig.nvim",
-			{ "folke/neodev.nvim", config = true },
+			{ "folke/neodev.nvim",         config = true },
 		},
 		event = "BufRead",
 		config = function()
@@ -160,7 +151,7 @@ require("lazy").setup({
 			-- LSP-specific features
 			lsp_zero.on_attach(function(client, bufnr)
 				lsp_zero.highlight_symbol(client, bufnr)
-				lsp_zero.buffer_autoformat({ name = "null-ls" })
+				lsp_zero.buffer_autoformat()
 			end)
 
 			lsp_zero.set_sign_icons({ error = "✘", warn = "▲", hint = "⚑", info = "»" })
@@ -220,8 +211,8 @@ require("lazy").setup({
 			require("nvim-treesitter.configs").setup(opts)
 		end,
 	},
-	{ "windwp/nvim-autopairs", event = "InsertEnter", opts = { check_ts = true } },
-	{ "windwp/nvim-ts-autotag", ft = HTML, opts = { filetypes = HTML } },
+	{ "windwp/nvim-autopairs",  event = "InsertEnter", opts = { check_ts = true } },
+	{ "windwp/nvim-ts-autotag", ft = HTML,             opts = { filetypes = HTML } },
 	{
 		"shortcuts/no-neck-pain.nvim",
 		opts = {
@@ -235,21 +226,6 @@ require("lazy").setup({
 		event = "BufRead",
 		main = "ibl",
 		opts = { indent = { char = "▏" } },
-	},
-	{
-		"terrortylor/nvim-comment",
-		main = "nvim_comment",
-		keys = "gc",
-		dependencies = {
-			"JoosepAlviste/nvim-ts-context-commentstring",
-			ft = REACT,
-			opts = { enable_autocmd = false },
-		},
-		opts = {
-			hook = function()
-				require("ts_context_commentstring").update_commentstring()
-			end,
-		},
 	},
 	{
 		"lewis6991/gitsigns.nvim",
@@ -276,7 +252,6 @@ require("lazy").setup({
 			end,
 		},
 	},
-
 	{
 		"pmizio/typescript-tools.nvim",
 		ft = REACT,
@@ -304,28 +279,5 @@ require("lazy").setup({
 		init = function()
 			vim.cmd("autocmd! TermOpen term://*toggleterm#* tnoremap <buffer> <esc> <cmd>close<CR>")
 		end,
-	},
-	{
-		"jackMort/ChatGPT.nvim",
-		keys = {
-			{ "<leader>cc", "<cmd>ChatGPT<cr>", mode = { "n", "v" } },
-			{ "<leader>cm", "<cmd>ChatGPTCompleteCode<cr>", mode = { "n", "v" } },
-			{ "<leader>ci", "<cmd>ChatGPTEditWithInstructions<cr>", mode = { "n", "v" } },
-			{ "<leader>cf", "<cmd>ChatGPTRun fix_bugs<cr>", mode = { "n", "v" } },
-			{ "<leader>cr", "<cmd>ChatGPTRun code_readability_analysis<cr>", mode = { "n", "v" } },
-			{ "<leader>co", "<cmd>ChatGPTRun optimize_code<cr>", mode = { "n", "v" } },
-			{ "<leader>ce", "<cmd>ChatGPTRun explain_code<cr>", mode = { "n", "v" } },
-		},
-		opts = {
-			openai_params = { model = "gpt-4-turbo-preview", max_tokens = 2400, temperature = 0.2, top_p = 0.1 },
-			openai_edit_params = { model = "gpt-4-turbo-preview", temperature = 0.6, top_p = 0.7 },
-		},
-		main = "chatgpt",
-		dependencies = {
-			"MunifTanjim/nui.nvim",
-			"nvim-lua/plenary.nvim",
-			"folke/trouble.nvim",
-			"nvim-telescope/telescope.nvim",
-		},
 	},
 })
