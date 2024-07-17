@@ -1,0 +1,62 @@
+working_directory = "/Users/chelseawilkinson/GitHub"
+
+[font]
+size = 14.0
+offset = { x = 0, y = 0 }
+
+[font.bold]
+family = "FiraCode Nerd Font"
+style = "Bold"
+
+[font.bold_italic]
+family = "FiraCode Nerd Font"
+style = "Bold Italic"
+
+[font.italic]
+family = "FiraCode Nerd Font"
+style = "Italic"
+
+[font.normal]
+family = "FiraCode Nerd Font"
+style = "Regular"
+
+[cursor]
+style = { shape = "Beam" , blinking = "On" } 
+
+[window]
+startup_mode = "Fullscreen"
+decorations = "None"
+padding = { x = 14, y = 14 }
+option_as_alt = "OnlyLeft"
+
+[scrolling]
+multiplier = 1
+
+# Colors (Gruvbox Material Medium Dark)
+
+# Default colors
+[colors.primary]
+background = '#282828'
+foreground = '#d4be98'
+
+# Normal colors
+[colors.normal]
+black   = '#3c3836'
+red     = '#ea6962'
+green   = '#a9b665'
+yellow  = '#d8a657'
+blue    = '#7daea3'
+magenta = '#d3869b'
+cyan    = '#89b482'
+white   = '#d4be98'
+
+# Bright colors (same as normal colors)
+[colors.bright]
+black   = '#3c3836'
+red     = '#ea6962'
+green   = '#a9b665'
+yellow  = '#d8a657'
+blue    = '#7daea3'
+magenta = '#d3869b'
+cyan    = '#89b482'
+white   = '#d4be98'
